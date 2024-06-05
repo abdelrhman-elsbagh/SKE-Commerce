@@ -1,4 +1,4 @@
-@extends('layouts.vertical', ['page_title' => 'Tags'])
+@extends('layouts.vertical', ['page_title' => 'Diamond Rates'])
 
 @section('css')
     @vite([
@@ -14,24 +14,29 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="header-title">Tags</h4>
+                        <h4 class="header-title">Diamond Rates</h4>
+                        <div class="d-flex justify-content-end mb-3">
+                            <a href="{{ route('diamond_rates.create') }}" class="btn btn-primary">Create Diamond Rate</a>
+                        </div>
                         <table id="basic-datatable" class="table table-striped table-bordered dt-responsive nowrap">
                             <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Name</th>
+                                <th>Diamonds</th>
+                                <th>USD</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach($tags as $tag)
-                                <tr id="tag-{{ $tag->id }}">
-                                    <td>{{ $tag->id }}</td>
-                                    <td>{{ $tag->name }}</td>
+                            @foreach($diamondRates as $diamondRate)
+                                <tr id="diamondRate-{{ $diamondRate->id }}">
+                                    <td>{{ $diamondRate->id }}</td>
+                                    <td>{{ $diamondRate->diamonds }}</td>
+                                    <td>{{ $diamondRate->usd }}</td>
                                     <td>
-                                        <a href="{{ route('tags.show', $tag->id) }}" class="btn btn-info">Show</a>
-                                        <a href="{{ route('tags.edit', $tag->id) }}" class="btn btn-warning">Edit</a>
-                                        <button class="btn btn-danger btn-delete" data-id="{{ $tag->id }}">Delete</button>
+                                        <a href="{{ route('diamond_rates.show', $diamondRate->id) }}" class="btn btn-info">Show</a>
+                                        <a href="{{ route('diamond_rates.edit', $diamondRate->id) }}" class="btn btn-warning">Edit</a>
+                                        <button class="btn btn-danger btn-delete" data-id="{{ $diamondRate->id }}">Delete</button>
                                     </td>
                                 </tr>
                             @endforeach
@@ -54,7 +59,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    Are you sure you want to delete this tag?
+                    Are you sure you want to delete this diamond rate?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -75,17 +80,17 @@
 @section('admin-script')
     <script>
         $(document).ready(function() {
-            var tagIdToDelete;
+            var diamondRateIdToDelete;
 
             // Ensure click event handler is attached only once using event delegation
             $(document).on('click', '.btn-delete', function() {
-                tagIdToDelete = $(this).data('id');
+                diamondRateIdToDelete = $(this).data('id');
                 $('#deleteModal').modal('show');
             });
 
             $('#confirmDelete').on('click', function() {
                 $.ajax({
-                    url: '{{ route('tags.index') }}/' + tagIdToDelete,
+                    url: '{{ route('diamond_rates.index') }}/' + diamondRateIdToDelete,
                     type: 'POST',
                     data: {
                         _method: 'DELETE',
@@ -93,12 +98,12 @@
                     },
                     success: function(result) {
                         $('#deleteModal').modal('hide');
-                        $('#tag-' + tagIdToDelete).remove();
+                        $('#diamondRate-' + diamondRateIdToDelete).remove();
                         // Show success message
                         $.toast().reset('all'); // Reset previous toasts
                         $.toast({
                             heading: 'Success',
-                            text: 'Tag deleted successfully.',
+                            text: 'Diamond rate deleted successfully.',
                             icon: 'success',
                             loader: true,
                             loaderBg: '#f96868',
@@ -111,7 +116,7 @@
                         $.toast().reset('all'); // Reset previous toasts
                         $.toast({
                             heading: 'Error',
-                            text: 'An error occurred while deleting the tag.',
+                            text: 'An error occurred while deleting the diamond rate.',
                             icon: 'error',
                             loader: true,
                             loaderBg: '#f96868',
@@ -122,5 +127,6 @@
                 });
             });
         });
+
     </script>
 @endsection

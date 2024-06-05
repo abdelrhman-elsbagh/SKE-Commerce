@@ -12,16 +12,26 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
+                <div class="page-title-box">
+                    <h4 class="page-title">Items</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="header-title">Items</h4>
+                        <a href="{{ route('items.create') }}" class="btn btn-primary mb-3">Create Item</a>
                         <table id="basic-datatable" class="table table-striped table-bordered dt-responsive nowrap">
                             <thead>
                             <tr>
                                 <th>ID</th>
                                 <th>Name</th>
-                                <th>Category</th>
+                                <th>Description</th>
                                 <th>Price in Diamonds</th>
+                                <th>Category</th>
+                                <th>Tags</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
@@ -30,8 +40,14 @@
                                 <tr id="item-{{ $item->id }}">
                                     <td>{{ $item->id }}</td>
                                     <td>{{ $item->name }}</td>
-                                    <td>{{ $item->category->name }}</td>
+                                    <td>{{ $item->description }}</td>
                                     <td>{{ $item->price_in_diamonds }}</td>
+                                    <td>{{ $item->category->name }}</td>
+                                    <td>
+                                        @foreach($item->tags as $tag)
+                                            <span class="badge bg-primary">{{ $tag->name }}</span>
+                                        @endforeach
+                                    </td>
                                     <td>
                                         <a href="{{ route('items.show', $item->id) }}" class="btn btn-info">Show</a>
                                         <a href="{{ route('items.edit', $item->id) }}" class="btn btn-warning">Edit</a>
@@ -126,5 +142,6 @@
                 });
             });
         });
+
     </script>
 @endsection

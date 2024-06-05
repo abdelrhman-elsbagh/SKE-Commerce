@@ -4,18 +4,24 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
+                <div class="page-title-box">
+                    <h4 class="page-title">Tag Details</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="header-title">Tag Details</h4>
-                        <p><strong>ID:</strong> {{ $tag->id }}</p>
-                        <p><strong>Name:</strong> {{ $tag->name }}</p>
-                    </div> <!-- end card-body -->
-                </div> <!-- end card -->
-            </div> <!-- end col -->
-        </div> <!-- end row -->
-    </div> <!-- container -->
-@endsection
-
-@section('script')
-    <!-- Your custom script goes here -->
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <p id="name">{{ $tag->name }}</p>
+                        </div>
+                        <a href="{{ route('tags.index') }}" class="btn btn-secondary">Back</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection

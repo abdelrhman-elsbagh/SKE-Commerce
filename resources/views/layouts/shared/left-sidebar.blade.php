@@ -397,6 +397,25 @@
             </li>
 
             <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarDiamondRates" aria-expanded="false" aria-controls="sidebarDiamondRates" class="side-nav-link nav-link">
+                    <i class="ri-money-dollar-circle-line"></i>
+                    <span> Diamond Rates </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarDiamondRates">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('diamond_rates.index') }}" class="nav-link">View All</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('diamond_rates.create') }}" class="nav-link">Create New</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+
+            <li class="side-nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarCategories" aria-expanded="false" aria-controls="sidebarCategories" class="side-nav-link nav-link">
                     <i class="ri-folder-line"></i>
                     <span> Categories </span>
@@ -452,7 +471,7 @@
 
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarSubscriptions" aria-expanded="false" aria-controls="sidebarSubscriptions" class="side-nav-link nav-link">
-                    <i class="ri-subscriptions-line"></i>
+                    <i class="ri-coin-line"></i>
                     <span> Subscriptions </span>
                     <span class="menu-arrow"></span>
                 </a>
@@ -481,6 +500,42 @@
                         </li>
                         <li>
                             <a href="{{ route('tags.create') }}" class="nav-link">Create Tag</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarUserWallets" aria-expanded="false" aria-controls="sidebarUserWallets" class="side-nav-link nav-link">
+                    <i class="ri-wallet-line"></i>
+                    <span> User Wallets </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarUserWallets">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('user-wallets.index') }}" class="nav-link">View All</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('user-wallets.create') }}" class="nav-link">Create New</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarBusinessClientWallets" aria-expanded="false" aria-controls="sidebarBusinessClientWallets" class="side-nav-link nav-link">
+                    <i class="ri-wallet-3-line"></i>
+                    <span> Business Client Wallets </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarBusinessClientWallets">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('business-client-wallets.index') }}" class="nav-link">View All</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('business-client-wallets.create') }}" class="nav-link">Create New</a>
                         </li>
                     </ul>
                 </div>

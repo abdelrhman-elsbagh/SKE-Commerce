@@ -32,6 +32,10 @@
                                 <textarea class="form-control" id="description" name="description">{{ $item->description }}</textarea>
                             </div>
                             <div class="mb-3">
+                                <label for="price" class="form-label">Price</label>
+                                <input type="number" step="0.01" class="form-control" id="price" name="price" required value="{{ $item->price }}">
+                            </div>
+                            <div class="mb-3">
                                 <label for="price_in_diamonds" class="form-label">Price in Diamonds</label>
                                 <input type="number" class="form-control" id="price_in_diamonds" name="price_in_diamonds" required value="{{ $item->price_in_diamonds }}">
                             </div>
@@ -44,15 +48,21 @@
                                 </select>
                             </div>
                             <div class="mb-3">
+                                <label for="tags" class="form-label">Tags</label>
+                                <select class="form-control" id="tags" name="tags[]" multiple>
+                                    @foreach($tags as $tag)
+                                        <option value="{{ $tag->id }}" {{ in_array($tag->id, $item->tags->pluck('id')->toArray()) ? 'selected' : '' }}>{{ $tag->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="mb-3">
                                 <label for="image" class="form-label">Image</label>
                                 <input type="file" class="form-control" id="image" name="image" accept="image/*">
-                                @if($item->getMedia('images')->isNotEmpty())
-                                    <div class="mt-2" id="image-preview">
+                                <div class="mt-2" id="image-preview">
+                                    @if($item->getMedia('images')->isNotEmpty())
                                         <img src="{{ $item->getFirstMediaUrl('images') }}" alt="Item Image" style="max-width: 200px;">
-                                    </div>
-                                @else
-                                    <div class="mt-2" id="image-preview"></div>
-                                @endif
+                                    @endif
+                                </div>
                             </div>
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </form>
@@ -100,6 +110,10 @@
                             position: 'top-right',
                             hideAfter: 3000
                         });
+
+                        // Optionally, reset the form fields
+                        $('#edit-item-form')[0].reset();
+                        $('#image-preview').html('');
                     },
                     error: function(response) {
                         $.toast().reset('all'); // Reset previous toasts

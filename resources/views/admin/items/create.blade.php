@@ -32,13 +32,27 @@
                             </div>
                             <div class="mb-3">
                                 <label for="price_in_diamonds" class="form-label">Price in Diamonds</label>
-                                <input type="number" class="form-control" id="price_in_diamonds" name="price_in_diamonds" required>
+                                <select class="form-control" id="price_in_diamonds" name="price_in_diamonds" required>
+                                    @foreach($diamondRates as $rate)
+                                        <option value="{{ $rate->diamonds }}">
+                                            {{ $rate->diamonds }} Diamonds - ${{ $rate->usd }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="mb-3">
                                 <label for="category_id" class="form-label">Category</label>
                                 <select class="form-control" id="category_id" name="category_id">
                                     @foreach($categories as $category)
                                         <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="tags" class="form-label">Tags</label>
+                                <select class="form-control" id="tags" name="tags[]" multiple>
+                                    @foreach($tags as $tag)
+                                        <option value="{{ $tag->id }}">{{ $tag->name }}</option>
                                     @endforeach
                                 </select>
                             </div>

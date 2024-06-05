@@ -11,15 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('subscriptions', function (Blueprint $table) {
+        Schema::create('business_client_wallets', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('business_client_id');
-            $table->unsignedBigInteger('plan_id');
-            $table->timestamp('start_date')->nullable();
-            $table->timestamp('end_date')->nullable();
-            $table->foreign('business_client_id')->references('id')->on('business_clients')->onDelete('cascade');
-            $table->foreign('plan_id')->references('id')->on('plans')->onDelete('cascade');
+            $table->decimal('balance', 15, 2)->default(0.00);
             $table->timestamps();
+
+            $table->foreign('business_client_id')->references('id')->on('business_clients')->onDelete('cascade');
         });
     }
 
@@ -28,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('subscriptions');
+        Schema::dropIfExists('business_client_wallets');
     }
 };

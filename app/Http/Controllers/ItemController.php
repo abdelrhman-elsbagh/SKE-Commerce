@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DiamondRate;
 use App\Models\Item;
 use App\Models\Category;
 use App\Models\Tag;
@@ -27,36 +28,63 @@ class ItemController extends Controller
     {
         $mode = 'create'; // Set the mode to 'create' for creating a new item
         $categories = Category::all();
-        return view('admin.items.create', compact('mode', 'categories'));
+        $tags = Tag::all();
+        $diamondRates = DiamondRate::all();
+        return view('admin.items.create', compact('mode', 'categories', 'tags', 'diamondRates'));
     }
+
 
     public function store(Request $request)
     {
-        $item = Item::create($request->all());
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'price_in_diamonds' => 'required|integer',
+            'category_id' => 'required|exists:categories,id',
+            'tags' => 'array|nullable',
+            'tags.*' => 'exists:tags,id',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        $item = Item::create($validatedData);
 
         if ($request->has('tags')) {
             $item->tags()->attach($request->tags);
         }
 
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $file) {
-                $item->addMedia($file)->toMediaCollection('images');
-            }
+        if ($request->hasFile('image')) {
+            $item->addMedia($request->file('image'))->toMediaCollection('images');
+        }
+
+        if ($request->ajax()) {
+            return response()->json(['status' => 'success', 'message' => 'Item created successfully.']);
         }
 
         return redirect()->route('items.index')->with('success', 'Item created successfully.');
     }
 
+
     public function edit($id)
     {
-        $mode = 'edit'; // Set the mode to 'edit' for editing an existing item
         $item = Item::findOrFail($id);
         $categories = Category::all();
-        return view('admin.items.edit', compact('mode', 'item', 'categories'));
+        $tags = Tag::all();
+        $mode = 'edit';
+        return view('admin.items.edit', compact('item', 'categories', 'tags', 'mode'));
     }
 
     public function update(Request $request, $id)
     {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'price' => 'required|numeric',
+            'price_in_diamonds' => 'required|integer',
+            'category_id' => 'required|exists:categories,id',
+            'tags' => 'array|exists:tags,id',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+        ]);
+
         $item = Item::findOrFail($id);
         $item->update($request->all());
 

@@ -43,13 +43,14 @@
     <script>
         $(document).ready(function() {
             $('#create-tag-form').on('submit', function(e) {
-                e.preventDefault(); // Prevent the default form submission behavior
+                e.preventDefault();
 
                 $.ajax({
                     url: $(this).attr('action'),
                     method: $(this).attr('method'),
                     data: $(this).serialize(),
                     success: function(response) {
+                        $.toast().reset('all'); // Reset previous toasts
                         $.toast({
                             heading: 'Success',
                             text: 'Tag created successfully.',
@@ -63,15 +64,34 @@
                         $('#create-tag-form')[0].reset();
                     },
                     error: function(response) {
-                        $.toast({
-                            heading: 'Error',
-                            text: 'There was an error creating the tag.',
-                            icon: 'error',
-                            loader: true,
-                            loaderBg: '#f96868',
-                            position: 'top-right',
-                            hideAfter: 3000
-                        });
+                        if (response.responseJSON && response.responseJSON.errors) {
+                            var errors = response.responseJSON.errors;
+                            for (var key in errors) {
+                                if (errors.hasOwnProperty(key)) {
+                                    $.toast().reset('all'); // Reset previous toasts
+                                    $.toast({
+                                        heading: 'Error',
+                                        text: errors[key][0],
+                                        icon: 'error',
+                                        loader: true,
+                                        loaderBg: '#f96868',
+                                        position: 'top-right',
+                                        hideAfter: 3000
+                                    });
+                                }
+                            }
+                        } else {
+                            $.toast().reset('all'); // Reset previous toasts
+                            $.toast({
+                                heading: 'Error',
+                                text: 'There was an error creating the tag.',
+                                icon: 'error',
+                                loader: true,
+                                loaderBg: '#f96868',
+                                position: 'top-right',
+                                hideAfter: 3000
+                            });
+                        }
                     }
                 });
             });
