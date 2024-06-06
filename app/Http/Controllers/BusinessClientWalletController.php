@@ -2,27 +2,31 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BusinessClient;
 use Illuminate\Http\Request;
 use App\Models\BusinessClientWallet;
 use Illuminate\Support\Facades\Auth;
+
 class BusinessClientWalletController extends Controller
 {
     public function index()
     {
-        $wallet = Auth::user()->wallet;
-        return view('admin.client_wallets.business_client.index', compact('wallet'));
+        $wallets = BusinessClientWallet::where('business_client_id', Auth::id())->get();
+        return view('admin.client_wallets.index', compact('wallets'));
     }
 
     public function show($id)
     {
         $wallet = BusinessClientWallet::findOrFail($id);
-        return view('admin.client_wallets.business_client.show', compact('wallet'));
+        return view('admin.client_wallets.show', compact('wallet'));
     }
 
     public function create()
     {
-        return view('admin.client_wallets.business_client.create');
+        $businessClients = BusinessClient::all();
+        return view('admin.client_wallets.create', compact('businessClients'));
     }
+
 
     public function store(Request $request)
     {
@@ -31,13 +35,14 @@ class BusinessClientWalletController extends Controller
             'balance' => $request->input('balance', 0.00),
         ]);
 
-        return redirect()->route('business_client.admin.client_wallets.index')->with('success', 'Wallet created successfully.');
+        return redirect()->route('client-wallets.index')->with('success', 'Wallet created successfully.');
     }
 
     public function edit($id)
     {
         $wallet = BusinessClientWallet::findOrFail($id);
-        return view('admin.client_wallets.business_client.edit', compact('wallet'));
+        $businessClients = BusinessClient::all();
+        return view('admin.client_wallets.business_client.edit', compact('wallet', 'businessClients'));
     }
 
     public function update(Request $request, $id)
@@ -45,7 +50,7 @@ class BusinessClientWalletController extends Controller
         $wallet = BusinessClientWallet::findOrFail($id);
         $wallet->update($request->all());
 
-        return redirect()->route('business_client.admin.client_wallets.index')->with('success', 'Wallet updated successfully.');
+        return redirect()->route('client-wallets.index')->with('success', 'Wallet updated successfully.');
     }
 
     public function destroy($id)

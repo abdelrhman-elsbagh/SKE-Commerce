@@ -541,6 +541,13 @@
                 </div>
             </li>
 
+            <li class="side-nav-item">
+                <a href="{{ route('sliders.index') }}" class="side-nav-link nav-link">
+                    <i class="ri-slideshow-line"></i>
+                    <span> Sliders </span>
+                </a>
+            </li>
+
 
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarIcons" aria-expanded="false" aria-controls="sidebarIcons" class="side-nav-link nav-link">

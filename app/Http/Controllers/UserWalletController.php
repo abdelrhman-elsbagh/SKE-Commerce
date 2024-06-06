@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\UserWallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -10,43 +11,63 @@ class UserWalletController extends Controller
 {
     public function index()
     {
-        $wallet = Auth::user()->wallet;
-        return view('admin.wallets.user.index', compact('wallet'));
+        $wallets = UserWallet::all();
+        return view('admin.user_wallet.index', compact('wallets'));
     }
 
     public function show($id)
     {
         $wallet = UserWallet::findOrFail($id);
-        return view('admin.wallets.user.show', compact('wallet'));
+        return view('admin.user_wallet.show', compact('wallet'));
     }
 
     public function create()
     {
-        return view('admin.wallets.user.create');
+        $users = User::all();
+        return view('admin.user_wallet.create', compact('users'));
     }
 
     public function store(Request $request)
     {
-        $wallet = UserWallet::create([
-            'user_id' => Auth::id(),
-            'balance' => $request->input('balance', 0.00),
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'balance' => 'required|numeric',
         ]);
 
-        return redirect()->route('user.admin.wallets.index')->with('success', 'Wallet created successfully.');
+        $wallet = UserWallet::create([
+            'user_id' => $request->user_id,
+            'balance' => $request->balance,
+        ]);
+
+        if ($request->ajax()) {
+            return response()->json(['status' => 'success', 'message' => 'Wallet created successfully.']);
+        }
+
+        return redirect()->route('user-wallets.index')->with('success', 'Wallet created successfully.');
     }
 
     public function edit($id)
     {
         $wallet = UserWallet::findOrFail($id);
-        return view('admin.wallets.user.edit', compact('wallet'));
+        $users = User::all();
+        return view('admin.user_wallet.edit', compact('wallet', 'users'));
     }
 
     public function update(Request $request, $id)
     {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'balance' => 'required|numeric',
+        ]);
+
         $wallet = UserWallet::findOrFail($id);
         $wallet->update($request->all());
 
-        return redirect()->route('user.admin.wallets.index')->with('success', 'Wallet updated successfully.');
+        if ($request->ajax()) {
+            return response()->json(['status' => 'success', 'message' => 'Wallet updated successfully.']);
+        }
+
+        return redirect()->route('user-wallets.index')->with('success', 'Wallet updated successfully.');
     }
 
     public function destroy($id)

@@ -7,6 +7,7 @@ use App\Http\Controllers\DiamondRatesController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\PlanController;
+use App\Http\Controllers\SliderController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\UserWalletController;
@@ -23,7 +24,8 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
     Route::get('/home', [RoutingController::class, 'index'])->name('admin.home');
 
     Route::resource('user-wallets', UserWalletController::class);
-    Route::resource('business-client-wallets', BusinessClientWalletController::class);
+    Route::resource('sliders', SliderController::class);
+    Route::resource('business-client-wallets', BusinessClientWalletController::class)->names('business-client-wallets');
     Route::resource('categories', CategoryController::class);
     Route::resource('diamond-rates', DiamondRatesController::class)->names('diamond_rates');
     Route::resource('items', ItemController::class);
