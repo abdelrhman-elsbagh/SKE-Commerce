@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BusinessClientWalletController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\DiamondRateController;
 use App\Http\Controllers\DiamondRatesController;
 use App\Http\Controllers\HomeController;
@@ -14,9 +16,18 @@ use App\Http\Controllers\UserWalletController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoutingController;
 
+
 require __DIR__ . '/auth.php';
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('registration', [HomeController::class, 'register_page'])->name('register-page');
+Route::get('sign-in', [HomeController::class, 'login_page'])->name('sign-in');
+Route::get('/item/{id}', [HomeController::class, 'item'])->name('item.show');
+Route::post('purchase', [HomeController::class, 'purchase'])->name('purchase');
+Route::post('login', [HomeController::class, 'login']);
+Route::get('wallet', [HomeController::class, 'wallet'])->name('wallet');
+Route::post('register', [HomeController::class, 'register'])->name('register');
+
 
 
 Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
@@ -25,6 +36,8 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
 
     Route::resource('user-wallets', UserWalletController::class);
     Route::resource('sliders', SliderController::class);
+    Route::get('configs/edit', [ConfigController::class, 'edit'])->name('configs.edit');
+    Route::put('configs/{id}', [ConfigController::class, 'update'])->name('configs.update');
     Route::resource('business-client-wallets', BusinessClientWalletController::class)->names('business-client-wallets');
     Route::resource('categories', CategoryController::class);
     Route::resource('diamond-rates', DiamondRatesController::class)->names('diamond_rates');

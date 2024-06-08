@@ -17,11 +17,33 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Marcellus&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
 
 
 </head>
 
 <body class="page-store">
+
+<!-- Toastr JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> <!-- if jQuery is not already included -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+<script>
+    // Configuration for Toastr
+    toastr.options = {
+        "closeButton": true,
+        "progressBar": true,
+        "positionClass": "toast-top-right",
+        "showDuration": "400",
+        "hideDuration": "1000",
+        "timeOut": "7000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+    }
+</script>
 
 <input id="toggle" type="checkbox">
 <script type="text/javascript">
@@ -55,7 +77,7 @@
         <div class="page-header__inner">
             <div class="page-header__sidebar">
                 <div class="page-header__menu-btn"><button class="menu-btn ico_menu is-active"></button></div>
-                <div class="page-header__logo"><img src="{{ asset('assets/img/logo.png')}}" alt="logo"><span class="page-header__logo_text">TEAMHOST</span></div>
+                <div class="page-header__logo"><img src="{{ asset('assets/img/logo.png')}}" alt="logo"><span class="page-header__logo_text">{{$config->name}}</span></div>
             </div>
         </div>
     </header>

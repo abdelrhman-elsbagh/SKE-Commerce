@@ -7,15 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Config extends Model implements HasMedia
+class SubItem extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia;
 
-    protected $fillable = ['name', 'description', 'whatsapp', 'telegram', 'facebook', 'fee', 'discount'];
+    protected $fillable = ['item_id', 'name', 'description', 'amount', 'price'];
+
+    public function item()
+    {
+        return $this->belongsTo(Item::class);
+    }
+
 
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('logos')
-            ->singleFile(); // Ensures only one logo is stored
+        $this->addMediaCollection('images')->singleFile();
     }
 }

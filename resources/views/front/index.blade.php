@@ -1,5 +1,3 @@
-{{-- front/index.blade.php --}}
-
 @extends('front.layout')
 
 @section('title', 'Ske E-Commerce')
@@ -72,4 +70,11 @@
             @endforeach
         </div>
     </main>
+    @if(session('success'))
+        @push('scripts')
+            <script>
+                toastr.success("{{ session('success') }}");
+            </script>
+        @endpush
+    @endif
 @endsection

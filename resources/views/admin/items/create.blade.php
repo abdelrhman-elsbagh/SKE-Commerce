@@ -31,16 +31,6 @@
                                 <textarea class="form-control" id="description" name="description"></textarea>
                             </div>
                             <div class="mb-3">
-                                <label for="price_in_diamonds" class="form-label">Price in Diamonds</label>
-                                <select class="form-control" id="price_in_diamonds" name="price_in_diamonds" required>
-                                    @foreach($diamondRates as $rate)
-                                        <option value="{{ $rate->diamonds }}">
-                                            {{ $rate->diamonds }} Diamonds - ${{ $rate->usd }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="mb-3">
                                 <label for="category_id" class="form-label">Category</label>
                                 <select class="form-control" id="category_id" name="category_id">
                                     @foreach($categories as $category)
@@ -61,9 +51,68 @@
                                 <input type="file" class="form-control" id="image" name="image" accept="image/*">
                                 <div class="mt-2" id="image-preview"></div>
                             </div>
+
+                            <div id="sub-items-container">
+                                <h5>Sub Items</h5>
+                                <button type="button" class="btn btn-secondary mb-3" data-bs-toggle="modal" data-bs-target="#subItemModal">Add Sub Item</button>
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Description</th>
+                                        <th>Amount</th>
+                                        <th>Price</th>
+                                        <th>Image</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="sub-items-table-body">
+                                    <!-- Sub-items will be appended here -->
+                                    </tbody>
+                                </table>
+                            </div>
+
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </form>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sub Item Modal -->
+    <div class="modal fade" id="subItemModal" tabindex="-1" aria-labelledby="subItemModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="subItemModalLabel">Add Sub Item</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="create-sub-item-form">
+                        <div class="mb-3">
+                            <label for="sub_item_name_modal" class="form-label">Sub Item Name</label>
+                            <input type="text" class="form-control" id="sub_item_name_modal" name="sub_item_name_modal" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="sub_item_description_modal" class="form-label">Sub Item Description</label>
+                            <textarea class="form-control" id="sub_item_description_modal" name="sub_item_description_modal"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="sub_item_amount_modal" class="form-label">Sub Item Amount</label>
+                            <input type="number" class="form-control" id="sub_item_amount_modal" name="sub_item_amount_modal" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="sub_item_price_modal" class="form-label">Sub Item Price</label>
+                            <input type="number" step="0.01" class="form-control" id="sub_item_price_modal" name="sub_item_price_modal" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="sub_item_image_modal" class="form-label">Sub Item Image</label>
+                            <input type="file" class="form-control" id="sub_item_image_modal" name="sub_item_image_modal" accept="image/*">
+                            <div class="mt-2" id="sub-item-image-preview-modal"></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Sub Item</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -85,10 +134,88 @@
                 reader.readAsDataURL(this.files[0]);
             });
 
+            $('#sub_item_image_modal').change(function() {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#sub-item-image-preview-modal').html('<img src="' + e.target.result + '" alt="Sub Item Image Preview" style="max-width: 200px;">');
+                }
+                reader.readAsDataURL(this.files[0]);
+            });
+
+            $('#create-sub-item-form').on('submit', function(e) {
+                e.preventDefault();
+
+                let subItemName = $('#sub_item_name_modal').val();
+                let subItemDescription = $('#sub_item_description_modal').val();
+                let subItemAmount = $('#sub_item_amount_modal').val();
+                let subItemPrice = $('#sub_item_price_modal').val();
+                let subItemImage = $('#sub_item_image_modal')[0].files[0];
+
+                let subItemCount = $('#sub-items-table-body tr').length;
+
+                let subItemRow = `
+                    <tr>
+                        <td>
+                            <input type="hidden" name="sub_items[${subItemCount}][name]" value="${subItemName}">
+                            ${subItemName}
+                        </td>
+                        <td>
+                            <input type="hidden" name="sub_items[${subItemCount}][description]" value="${subItemDescription}">
+                            ${subItemDescription}
+                        </td>
+                        <td>
+                            <input type="hidden" name="sub_items[${subItemCount}][amount]" value="${subItemAmount}">
+                            ${subItemAmount}
+                        </td>
+                        <td>
+                            <input type="hidden" name="sub_items[${subItemCount}][price]" value="${subItemPrice}">
+                            ${subItemPrice}
+                        </td>
+                        <td>
+                            <input type="hidden" name="sub_items[${subItemCount}][image]" class="sub-item-image-file" data-index="${subItemCount}">
+                            <img src="" alt="Sub Item Image" class="sub-item-image-preview" style="max-width: 100px;">
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger remove-sub-item">Remove</button>
+                        </td>
+                    </tr>
+                `;
+
+                $('#sub-items-table-body').append(subItemRow);
+
+                if (subItemImage) {
+                    let reader = new FileReader();
+                    reader.onload = function(e) {
+                        $('#sub-items-table-body').find('tr:last .sub-item-image-preview').attr('src', e.target.result);
+                    }
+                    reader.readAsDataURL(subItemImage);
+
+                    let imageData = new DataTransfer();
+                    imageData.items.add(subItemImage);
+                    $('#sub-items-table-body').find('tr:last .sub-item-image-file').prop('files', imageData.files);
+                }
+
+                // Clear modal form fields
+                $('#create-sub-item-form')[0].reset();
+                $('#sub-item-image-preview-modal').html('');
+
+                // Hide the modal after adding the sub-item
+                $('#subItemModal').modal('hide');
+            });
+
             $('#create-item-form').on('submit', function(e) {
                 e.preventDefault();
 
                 var formData = new FormData(this);
+
+                // Append sub-item images manually
+                $('#sub-items-table-body .sub-item-image-file').each(function() {
+                    let index = $(this).data('index');
+                    let files = $(this).prop('files');
+                    if (files && files.length > 0) {
+                        formData.append(`sub_items[${index}][image]`, files[0]);
+                    }
+                });
 
                 $.ajax({
                     url: $(this).attr('action'),
@@ -97,6 +224,7 @@
                     processData: false,
                     contentType: false,
                     success: function(response) {
+                        console.log('Form submission success:', response);
                         $.toast().reset('all'); // Reset previous toasts
                         $.toast({
                             heading: 'Success',
@@ -111,8 +239,10 @@
                         // Optionally, reset the form fields
                         $('#create-item-form')[0].reset();
                         $('#image-preview').html('');
+                        $('#sub-items-table-body').html('');
                     },
                     error: function(response) {
+                        console.log('Form submission error:', response);
                         $.toast().reset('all'); // Reset previous toasts
                         $.toast({
                             heading: 'Error',
@@ -125,6 +255,10 @@
                         });
                     }
                 });
+            });
+
+            $(document).on('click', '.remove-sub-item', function() {
+                $(this).closest('tr').remove();
             });
         });
     </script>

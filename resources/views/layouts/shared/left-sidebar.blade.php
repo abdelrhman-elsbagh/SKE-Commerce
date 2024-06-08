@@ -568,6 +568,13 @@
             </li>
 
             <li class="side-nav-item">
+                <a href="{{ route('configs.edit') }}" class="side-nav-link">
+                    <i class="ri-settings-3-line"></i>
+                    <span> Configuration </span>
+                </a>
+            </li>
+
+            <li class="side-nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarCharts" aria-expanded="false" aria-controls="sidebarCharts" class="side-nav-link nav-link">
                     <i class="ri-bar-chart-line"></i>
                     <span> Charts </span>

@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\DiamondRate;
 use App\Models\Item;
 use App\Models\Category;
+use App\Models\SubItem;
 use App\Models\Tag;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 
 class ItemController extends Controller
 {
@@ -26,27 +28,14 @@ class ItemController extends Controller
 
     public function create()
     {
-        $mode = 'create'; // Set the mode to 'create' for creating a new item
         $categories = Category::all();
         $tags = Tag::all();
-        $diamondRates = DiamondRate::all();
-        return view('admin.items.create', compact('mode', 'categories', 'tags', 'diamondRates'));
+        return view('admin.items.create', compact('categories', 'tags'));
     }
-
 
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'price_in_diamonds' => 'required|integer',
-            'category_id' => 'required|exists:categories,id',
-            'tags' => 'array|nullable',
-            'tags.*' => 'exists:tags,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
-
-        $item = Item::create($validatedData);
+        $item = Item::create($request->all());
 
         if ($request->has('tags')) {
             $item->tags()->attach($request->tags);
@@ -56,35 +45,35 @@ class ItemController extends Controller
             $item->addMedia($request->file('image'))->toMediaCollection('images');
         }
 
-        if ($request->ajax()) {
-            return response()->json(['status' => 'success', 'message' => 'Item created successfully.']);
+        if ($request->has('sub_items')) {
+            foreach ($request->input('sub_items') as $subItemData) {
+                $subItem = new SubItem([
+                    'name' => $subItemData['name'],
+                    'description' => $subItemData['description'],
+                    'amount' => $subItemData['amount'],
+                    'price' => $subItemData['price']
+                ]);
+                if (isset($subItemData['image'])) {
+                    $subItem->addMedia($subItemData['image'])->toMediaCollection('images');
+                }
+                $item->subItems()->save($subItem);
+            }
         }
 
         return redirect()->route('items.index')->with('success', 'Item created successfully.');
     }
 
-
     public function edit($id)
     {
-        $item = Item::findOrFail($id);
+        $item = Item::with(['subItems', 'subItems.media', 'media'])->findOrFail($id);
         $categories = Category::all();
         $tags = Tag::all();
-        $mode = 'edit';
-        return view('admin.items.edit', compact('item', 'categories', 'tags', 'mode'));
+//        dd($item->subItems[3]);
+        return view('admin.items.edit', compact('item', 'categories', 'tags'));
     }
 
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric',
-            'price_in_diamonds' => 'required|integer',
-            'category_id' => 'required|exists:categories,id',
-            'tags' => 'array|exists:tags,id',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
-        ]);
-
         $item = Item::findOrFail($id);
         $item->update($request->all());
 
@@ -92,15 +81,38 @@ class ItemController extends Controller
             $item->tags()->sync($request->tags);
         }
 
-        if ($request->hasFile('images')) {
-            $item->clearMediaCollection('images');
-            foreach ($request->file('images') as $file) {
-                $item->addMedia($file)->toMediaCollection('images');
+        if ($request->has('sub_items_to_remove')) {
+            foreach ($request->sub_items_to_remove as $subItemId) {
+                $subItem = SubItem::find($subItemId);
+                if ($subItem) {
+                    $subItem->delete();
+                }
+            }
+        }
+
+        if ($request->has('sub_items')) {
+            foreach ($request->sub_items as $subItemData) {
+                if (isset($subItemData['id'])) {
+                    $subItem = SubItem::findOrFail($subItemData['id']);
+                    $subItem->update($subItemData);
+
+                    if (isset($subItemData['image']) && $subItemData['image'] instanceof \Illuminate\Http\UploadedFile) {
+                        $subItem->clearMediaCollection('images');
+                        $subItem->addMedia($subItemData['image'])->toMediaCollection('images');
+                    }
+                } else {
+                    $subItem = $item->subItems()->create($subItemData);
+
+                    if (isset($subItemData['image']) && $subItemData['image'] instanceof \Illuminate\Http\UploadedFile) {
+                        $subItem->addMedia($subItemData['image'])->toMediaCollection('images');
+                    }
+                }
             }
         }
 
         return redirect()->route('items.index')->with('success', 'Item updated successfully.');
     }
+
 
     public function destroy($id)
     {
