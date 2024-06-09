@@ -11,7 +11,7 @@ class UserWalletController extends Controller
 {
     public function index()
     {
-        $wallets = UserWallet::all();
+        $wallets = UserWallet::with('user')->get();
         return view('admin.user_wallet.index', compact('wallets'));
     }
 

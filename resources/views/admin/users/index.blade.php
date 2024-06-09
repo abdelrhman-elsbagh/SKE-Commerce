@@ -1,4 +1,4 @@
-@extends('layouts.vertical', ['page_title' => 'User Wallets'])
+@extends('layouts.vertical', ['page_title' => 'Users'])
 
 @section('css')
     @vite([
@@ -12,29 +12,37 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
+                <div class="page-title-box">
+                    <h4 class="page-title">Users</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="header-title">User Wallets</h4>
-                        <a href="{{ route('user-wallets.create') }}" class="btn btn-primary mb-3">Create New Wallet</a>
+                        <a href="{{ route('users.create') }}" class="btn btn-primary mb-3">Create New User</a>
                         <table id="basic-datatable" class="table table-striped table-bordered dt-responsive nowrap">
                             <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>User</th>
-                                <th>Balance</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Roles</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach($wallets as $wallet)
-                                <tr id="wallet-{{ $wallet->id }}">
-                                    <td>{{ $wallet->id }}</td>
-                                    <td>{{ $wallet->user->name }}</td>
-                                    <td>{{ $wallet->balance }}</td>
+                            @foreach($users as $user)
+                                <tr id="user-{{ $user->id }}">
+                                    <td>{{ $user->id }}</td>
+                                    <td>{{ $user->name }}</td>
+                                    <td>{{ $user->email }}</td>
+                                    <td>{{ implode(', ', $user->roles->pluck('name')->toArray()) }}</td>
                                     <td>
-                                        <a href="{{ route('user-wallets.show', $wallet->id) }}" class="btn btn-info">Show</a>
-                                        <a href="{{ route('user-wallets.edit', $wallet->id) }}" class="btn btn-warning">Edit</a>
-                                        <button class="btn btn-danger btn-delete" data-id="{{ $wallet->id }}">Delete</button>
+                                        <a href="{{ route('users.edit', $user->id) }}" class="btn btn-warning">Edit</a>
+                                        <button class="btn btn-danger btn-delete" data-id="{{ $user->id }}">Delete</button>
                                     </td>
                                 </tr>
                             @endforeach
@@ -57,7 +65,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    Are you sure you want to delete this wallet?
+                    Are you sure you want to delete this user?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -76,18 +84,18 @@
 
     <script>
         $(document).ready(function() {
-            var walletIdToDelete;
+            var userIdToDelete;
 
             // Open delete confirmation modal
             $(document).on('click', '.btn-delete', function() {
-                walletIdToDelete = $(this).data('id');
+                userIdToDelete = $(this).data('id');
                 $('#deleteModal').modal('show');
             });
 
             // Confirm delete
             $('#confirmDelete').on('click', function() {
                 $.ajax({
-                    url: '{{ route('user-wallets.index') }}/' + walletIdToDelete,
+                    url: '{{ route('users.index') }}/' + userIdToDelete,
                     type: 'POST',
                     data: {
                         _method: 'DELETE',
@@ -95,12 +103,10 @@
                     },
                     success: function(result) {
                         $('#deleteModal').modal('hide');
-                        $('#wallet-' + walletIdToDelete).remove();
-                        // Show success message
-                        $.toast().reset('all'); // Reset previous toasts
+                        $('#user-' + userIdToDelete).remove();
                         $.toast({
                             heading: 'Success',
-                            text: 'Wallet deleted successfully.',
+                            text: 'User deleted successfully.',
                             icon: 'success',
                             loader: true,
                             loaderBg: '#f96868',
@@ -108,12 +114,10 @@
                             hideAfter: 3000
                         });
                     },
-                    error: function(err) {
-                        // Show error message
-                        $.toast().reset('all'); // Reset previous toasts
+                    error: function(xhr) {
                         $.toast({
                             heading: 'Error',
-                            text: 'An error occurred while deleting the wallet.',
+                            text: 'An error occurred while deleting the user.',
                             icon: 'error',
                             loader: true,
                             loaderBg: '#f96868',
@@ -124,6 +128,5 @@
                 });
             });
         });
-
     </script>
 @endsection

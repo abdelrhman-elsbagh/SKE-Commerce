@@ -39,18 +39,17 @@ class HomeController extends Controller
 
     public function wallet(Request $request)
     {
+        $config = Config::with('media')->first();
+        View::share('config', $config);
         // Ensure the user is authenticated
         $user = Auth::user();
         if (!$user) {
             return redirect()->route('login'); // Redirect to login if not authenticated
         }
-
-        // Retrieve the user's wallet information
         $wallet = UserWallet::where('user_id', $user->id)->firstOrFail(); // Use firstOrFail to handle no wallet case
-
-        // Return the wallet view and pass the wallet data
         return view('front.wallet', ['wallet' => $wallet]);
     }
+
 
     public function register_page(Request $request)
     {
@@ -103,7 +102,7 @@ class HomeController extends Controller
         // Attempt to log the user in
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $request->filled('remember'))) {
             // If successful, redirect to their intended location
-            return redirect()->intended('dashboard');  // Change 'dashboard' to wherever you want users to go after login
+            return redirect()->intended('admin');  // Change 'dashboard' to wherever you want users to go after login
         }
 
         // If unsuccessful, redirect back with input (except for password)
@@ -116,8 +115,8 @@ class HomeController extends Controller
     {
         $config = Config::with('media')->first();
         $item = Item::with(['subItems', 'subItems.media', 'media'])->findOrFail($id);
-//        dd($item->subItems[0]->getFirstMediaUrl('images'));
-        return view('front.item', compact('item', 'config'));
+        $userFavorites = Auth::user()->favorites->pluck('sub_item_id')->toArray();
+        return view('front.item', compact('item', 'config', 'userFavorites'));
     }
 
     public function purchase(Request $request)
@@ -126,11 +125,27 @@ class HomeController extends Controller
             'sub_item_id' => 'required|exists:sub_items,id',
         ]);
 
-        // Handle the purchase logic here
-        // For example, create an order or add the item to the cart
-
         return redirect()->route('home')->with('success', 'Purchase successful!');
     }
+
+    public function profile(Request $request)
+    {
+        /*$user = Auth::user();
+      if (!$user) {
+          return redirect()->route('login'); // Redirect to login if not authenticated
+      }*/
+        $config = Config::with('media')->first();
+        View::share('config', $config);
+        return view('front.profile');
+    }
+    public function favourites(Request $request)
+    {
+        $config = Config::with('media')->first();
+        $userFavorites = Auth::user()->favorites()->with(['item', 'subItem.item', 'item.media', 'subItem.media'])->get();
+        View::share('config', $config);
+        return view('front.favourites', compact('userFavorites'));
+    }
+
 
 
 

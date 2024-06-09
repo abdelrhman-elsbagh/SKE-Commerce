@@ -32,6 +32,30 @@
                                 <textarea class="form-control" id="description" name="description">{{ $config->description }}</textarea>
                             </div>
                             <div class="mb-3">
+                                <label for="whatsapp" class="form-label">WhatsApp</label>
+                                <textarea class="form-control" id="whatsapp" name="whatsapp">{{ $config->whatsapp }}</textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="telegram" class="form-label">Telegram</label>
+                                <textarea class="form-control" id="telegram" name="telegram">{{ $config->telegram }}</textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Phone</label>
+                                <textarea class="form-control" id="phone" name="phone">{{ $config->phone }}</textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="facebook" class="form-label">Facebook</label>
+                                <textarea class="form-control" id="facebook" name="facebook">{{ $config->facebook }}</textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="fee" class="form-label">Fee (%)</label>
+                                <input type="number" step="0.01" class="form-control" id="fee" name="fee" value="{{ $config->fee }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="discount" class="form-label">Discount (%)</label>
+                                <input type="number" step="0.01" class="form-control" id="discount" name="discount" value="{{ $config->discount }}" required>
+                            </div>
+                            <div class="mb-3">
                                 <label for="logo" class="form-label">Logo</label>
                                 <input type="file" class="form-control" id="logo" name="logo" accept="image/*">
                                 <div class="mt-2" id="logo-preview">

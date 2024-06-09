@@ -12,7 +12,7 @@
                     </div>
                     <div class="widjet__body">
                         <div class="wallet-info">
-                            <div class="wallet-value">504.00 USD</div>
+                            <div class="wallet-value">{{ number_format($wallet->balance, 2) }} USD</div>
                             <div class="wallet-label">Available</div>
                         </div>
                     </div>
@@ -21,7 +21,7 @@
             <div class="uk-width-1-3@l">
                 <div class="widjet --payment-method">
                     <div class="widjet__head">
-                        <h3 class="uk-text-lead">Payment Method</h3><a href="#!">Edit</a>
+                        <h3 class="uk-text-lead">Payment Method</h3>
                     </div>
                     <div class="widjet__body">
                         <div class="payment-card">
@@ -33,14 +33,13 @@
                                     <img src="{{ asset('assets/img/payment-card-logo.svg') }}" alt="logo">
                                 </div>
                             </div>
-                            <div class="payment-card__number">**** **** **** 6958</div>
-                            <div class="payment-card__value">$ 18,320.00</div>
+                            <div class="payment-card__number">Direct Transfer</div>
                         </div>
                     </div>
                 </div>
                 <div class="widjet --activities">
                     <div class="widjet__head">
-                        <h3 class="uk-text-lead">Activities</h3><a href="09_games-store.html">View All</a>
+                        <h3 class="uk-text-lead">Activities</h3>
                     </div>
                     <div class="widjet__body">
                         <ul class="activities-list">

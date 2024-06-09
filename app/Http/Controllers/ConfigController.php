@@ -15,6 +15,12 @@ class ConfigController extends Controller
             $config = Config::create([
                 'name' => 'Default Name',
                 'description' => 'Default Description',
+                'whatsapp' => 'Default WhatsApp',
+                'telegram' => 'Default Telegram',
+                'phone' => 'Default Phone',
+                'facebook' => 'Default Facebook',
+                'fee' => 10,
+                'discount' => 0,
             ]);
         }
 
