@@ -3,7 +3,7 @@
 @section('title', 'Ske E-Commerce')
 
 @section('content')
-    <main class="page-main">
+    <main class="page-main" style="width: 100%;">
         <div class="uk-grid" data-uk-grid>
             <div class="uk-width-2-3@l">
                 <div class="widjet --profile">
@@ -12,58 +12,74 @@
                     </div>
                     <div class="widjet__body">
                         <div class="user-info">
-                            <div class="user-info__avatar"><img src="{{ asset('assets/img/profile.png') }}" alt="profile"></div>
+                            <div class="user-info__avatar">
+                                @if($user->getFirstMediaUrl('avatars'))
+                                    <img src="{{ $user->getFirstMediaUrl('avatars') }}" alt="profile">
+                                @else
+                                    <img src="{{ asset('assets/img/profile.png') }}" alt="profile">
+                                @endif
+                            </div>
                             <div class="user-info__box">
-                                <div class="user-info__title">John Doe</div>
-                                <div class="user-info__text">Egypt, Member since May 2022</div>
+                                <div class="user-info__title">{{ $user->name }}</div>
+                                <div class="user-info__text">{{ $user->address }}, Member since {{ $user->created_at->format('F Y') }}</div>
                             </div>
                         </div>
-                        <a class="uk-button uk-button-danger" href="04_profile.html"><i class="ico_edit"></i><span class="uk-margin-small-left">Edit Profile</span></a>
                     </div>
                 </div>
                 <div class="widjet --bio">
                     <div class="widjet__head">
                         <h3 class="uk-text-lead">Bio</h3>
                     </div>
-                    <div class="widjet__body"><span>Here you can put your biography you need try to make it attractive and professional, just be honest and polite.</span></div>
+                    <div class="widjet__body"><span>{{ $user->bio ?? 'No bio available.' }}</span></div>
                 </div>
                 <div class="widjet --activity">
-
-                    <div class="widjet__body">
-                        <div class="widjet-game">
-                            <div class="widjet-game__media"><a href="10_game-profile.html"><img src="{{ asset('assets/img/game-2.jpg') }}" alt="image"></a></div>
-                            <div class="widjet-game__info"><a class="widjet-game__title" href="10_game-profile.html"> Chrome Fear</a>
-                                <div class="widjet-game__record">3 hours on record</div>
-                                <div class="widjet-game__last-played">last played on 18 Feb, 2022</div>
-                            </div>
-                        </div>
-                        <div class="widjet-game-info">
-                            <div class="widjet-game-info__title">Achievement Progress</div>
-                            <div class="widjet-game-info__progress"><span>50 of 150</span>
-                                <div class="progress-box">
-                                    <div class="progress-line" style="width: 80%"></div>
-                                </div>
-                            </div>
-                            <div class="widjet-game-info__acheivement">
-                                <ul>
-                                    <li><img src="{{ asset('assets/img/acheivement-1.png') }}" alt="acheivement"></li>
-                                    <li><img src="{{ asset('assets/img/acheivement-2.png') }}" alt="acheivement"></li>
-                                    <li><img src="{{ asset('assets/img/acheivement-3.png') }}" alt="acheivement"></li>
-                                    <li><img src="{{ asset('assets/img/acheivement-4.png') }}" alt="acheivement"></li>
-                                    <li><img src="{{ asset('assets/img/acheivement-5.png') }}" alt="acheivement"></li>
-                                    <li><span>+10</span></li>
-                                </ul>
-                            </div>
-                        </div>
+                    <div class="widjet__head">
+                        <h3 class="uk-text-lead">Recent Activity</h3>
                     </div>
                     <div class="widjet__body">
-                        <div class="widjet-game">
-                            <div class="widjet-game__media"><a href="10_game-profile.html"><img src="{{ asset('assets/img/game-3.jpg') }}" alt="image"></a></div>
-                            <div class="widjet-game__info"><a class="widjet-game__title" href="10_game-profile.html"> Retaliate of Prosecution</a>
-                                <div class="widjet-game__record">0.2 hours on record</div>
-                                <div class="widjet-game__last-played">last played on 25 Apr, 2022</div>
+                        @foreach($orders as $order)
+                            @foreach($order->subItems as $subItem)
+                                <div class="widjet-game" style="margin-bottom: 20px;">
+                                    <div class="widjet-game__media">
+                                        @if($subItem->subItem->getFirstMediaUrl('images'))
+                                            <a href="{{ route('item.show', ['id' => $subItem->subItem->item->id]) }}">
+                                                <img src="{{ $subItem->subItem->getFirstMediaUrl('images') }}" alt="{{ $subItem->subItem->name }}">
+                                            </a>
+                                        @endif
+                                    </div>
+                                    <div class="widjet-game__info">
+                                        <a class="widjet-game__title" href="{{ route('item.show', ['id' => $subItem->subItem->item->id]) }}"> {{ $subItem->subItem->name }}</a>
+                                        <div class="widjet-game__record">{{ $subItem->price }} USD</div>
+                                        <div class="widjet-game__last-played">Purchased on {{ $order->created_at->format('d M, Y') }}</div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @endforeach
+                    </div>
+                </div>
+                <div class="widjet --purchase-requests">
+                    <div class="widjet__head">
+                        <h3 class="uk-text-lead">Purchase Requests</h3>
+                    </div>
+                    <div class="widjet__body">
+                        @foreach($purchaseRequests as $request)
+                            <div class="widjet-game" style="margin-bottom: 20px;">
+                                <div class="widjet-game__media">
+                                    @if($request->getFirstMediaUrl('images'))
+                                        <a href="#">
+                                            <img src="{{ $request->getFirstMediaUrl('images') }}" alt="Purchase Request Image">
+                                        </a>
+                                    @endif
+                                </div>
+                                <div class="widjet-game__info">
+                                    <div class="widjet-game__title">Request ID: {{ $request->id }}</div>
+                                    <div class="widjet-game__record">{{ $request->amount }} USD</div>
+                                    <div class="widjet-game__last-played">Status: {{ ucfirst($request->status) }}</div>
+                                    <div class="widjet-game__last-played">Requested on {{ $request->created_at->format('d M, Y') }}</div>
+                                    <div class="widjet-game__description">{{ $request->notes }}</div>
+                                </div>
                             </div>
-                        </div>
+                        @endforeach
                     </div>
                 </div>
             </div>

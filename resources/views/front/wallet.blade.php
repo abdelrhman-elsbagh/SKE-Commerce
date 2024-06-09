@@ -17,6 +17,27 @@
                         </div>
                     </div>
                 </div>
+                <div class="widjet --purchase-requests">
+                    <div class="widjet__head">
+                        <h3 class="uk-text-lead">Recent Purchase Requests</h3>
+                    </div>
+                    <div class="widjet__body">
+                        <ul class="activities-list">
+                            @foreach($purchaseRequests as $request)
+                                <li class="activities-item">
+                                    <div class="activities-item__logo">
+                                        <img src="{{ $request->getFirstMediaUrl('images') ?? asset('assets/img/default-image.jpg') }}" alt="image">
+                                    </div>
+                                    <div class="activities-item__info">
+                                        <div class="activities-item__title">{{ $request->notes }}</div>
+                                        <div class="activities-item__date">{{ $request->created_at->format('d M, Y') }}</div>
+                                    </div>
+                                    <div class="activities-item__price">${{ number_format($request->amount, 2) }}</div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
             </div>
             <div class="uk-width-1-3@l">
                 <div class="widjet --payment-method">
@@ -33,40 +54,42 @@
                                     <img src="{{ asset('assets/img/payment-card-logo.svg') }}" alt="logo">
                                 </div>
                             </div>
-                            <div class="payment-card__number">Direct Transfer</div>
+                            <div class="payment-card__number">Direct Payment</div>
                         </div>
                     </div>
                 </div>
                 <div class="widjet --activities">
                     <div class="widjet__head">
-                        <h3 class="uk-text-lead">Activities</h3>
+                        <h3 class="uk-text-lead">Recent Orders</h3>
                     </div>
                     <div class="widjet__body">
                         <ul class="activities-list">
-                            <li class="activities-item">
-                                <div class="activities-item__logo">
-                                    <a href="10_game-profile.html">
-                                        <img src="{{ asset('assets/img/game-1.jpg') }}" alt="image">
-                                    </a>
-                                </div>
-                                <div class="activities-item__info">
-                                    <a class="activities-item__title" href="10_game-profile.html"> Grand Theft Auto...</a>
-                                    <div class="activities-item__date">5 Jul, 2020</div>
-                                </div>
-                                <div class="activities-item__price">-14.80 USD</div>
-                            </li>
-                            <li class="activities-item">
-                                <div class="activities-item__logo">
-                                    <a href="10_game-profile.html">
-                                        <img src="{{ asset('assets/img/game-2.jpg') }}" alt="image">
-                                    </a>
-                                </div>
-                                <div class="activities-item__info">
-                                    <a class="activities-item__title" href="10_game-profile.html"> Counter-Strike: G...</a>
-                                    <div class="activities-item__date">25 Apr, 2020</div>
-                                </div>
-                                <div class="activities-item__price">-14.99 USD</div>
-                            </li>
+                            @foreach($orders as $order)
+                                @foreach($order->subItems as $orderSubItem)
+                                    @php
+                                        $subItem = $orderSubItem->subItem;
+                                        $item = $subItem->item;
+                                    @endphp
+                                    <li class="activities-item">
+                                        <div class="activities-item__logo">
+                                            <a href="{{ route('item.show', ['id' => $item->id]) }}">
+                                                @if($item->getFirstMediaUrl('images'))
+                                                    <img src="{{ $item->getFirstMediaUrl('images') }}" alt="{{ $item->name }}">
+                                                @else
+                                                    <img src="{{ asset('assets/img/default-image.jpg') }}" alt="Default Image">
+                                                @endif
+                                            </a>
+                                        </div>
+                                        <div class="activities-item__info">
+                                            <a class="activities-item__title" href="{{ route('item.show', ['id' => $item->id]) }}">
+                                                {{ $item->name }}
+                                            </a>
+                                            <div class="activities-item__date">{{ $order->created_at->format('d M, Y') }}</div>
+                                        </div>
+                                        <div class="activities-item__price">${{ number_format($orderSubItem->price, 2) }}</div>
+                                    </li>
+                                @endforeach
+                            @endforeach
                         </ul>
                     </div>
                 </div>

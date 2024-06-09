@@ -11,12 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('plans', function (Blueprint $table) {
+        Schema::create('features', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->decimal('price', 8, 2);
-            $table->integer('duration'); // Duration in days
             $table->text('description')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('feature_plan', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('feature_id')->constrained()->onDelete('cascade');
+            $table->foreignId('plan_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -26,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('plans');
-    }
+        Schema::dropIfExists('feature_plan');
+        Schema::dropIfExists('features');    }
 };

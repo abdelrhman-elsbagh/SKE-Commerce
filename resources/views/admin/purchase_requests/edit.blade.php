@@ -40,8 +40,8 @@
                                 <input type="number" step="0.01" class="form-control" id="amount" name="amount" value="{{ $purchaseRequest->amount }}" required>
                             </div>
                             <div class="mb-3">
-                                <label for="status" class="form-label">Status</label>
-                                <select class="form-control" id="status" name="status" required>
+                                <label for="status_id" class="form-label">Status</label>
+                                <select class="form-control" id="status_id" name="status" required>
                                     <option value="pending" {{ $purchaseRequest->status == 'pending' ? 'selected' : '' }}>Pending</option>
                                     <option value="approved" {{ $purchaseRequest->status == 'approved' ? 'selected' : '' }}>Approved</option>
                                     <option value="rejected" {{ $purchaseRequest->status == 'rejected' ? 'selected' : '' }}>Rejected</option>

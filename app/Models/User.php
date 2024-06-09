@@ -80,4 +80,9 @@ class User extends Authenticatable implements HasMedia
     {
         return $this->hasMany(Favorite::class);
     }
+
+    public function purchaseRequests()
+    {
+        return $this->hasMany(PurchaseRequest::class);
+    }
 }

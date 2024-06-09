@@ -9,62 +9,24 @@ class OrderController extends Controller
 {
     public function index()
     {
-        return Order::with('user', 'orderItems.item')->get();
+        $orders = Order::with(['user', 'subItems.subItem'])->get();
+        return view('admin.orders.index', compact('orders'));
     }
 
     public function show($id)
     {
-        return Order::with('user', 'orderItems.item')->findOrFail($id);
-    }
-
-    public function store(Request $request)
-    {
-        $order = Order::create([
-            'user_id' => $request->user_id,
-            'total_in_diamonds' => 0, // Initial total
-            'status' => $request->status,
-        ]);
-
-        $totalInDiamonds = 0;
-        foreach ($request->order_items as $orderItem) {
-            $item = Item::findOrFail($orderItem['item_id']);
-            $totalInDiamonds += $item->price_in_diamonds * $orderItem['quantity'];
-            $order->orderItems()->create([
-                'item_id' => $orderItem['item_id'],
-                'quantity' => $orderItem['quantity'],
-                'price_in_diamonds' => $item->price_in_diamonds,
-            ]);
-        }
-
-        $order->update(['total_in_diamonds' => $totalInDiamonds]);
-        return $order->load('user', 'orderItems.item');
-    }
-
-    public function update(Request $request, $id)
-    {
-        $order = Order::findOrFail($id);
-        $order->update($request->all());
-
-        // Update order items
-        $order->orderItems()->delete();
-        $totalInDiamonds = 0;
-        foreach ($request->order_items as $orderItem) {
-            $item = Item::findOrFail($orderItem['item_id']);
-            $totalInDiamonds += $item->price_in_diamonds * $orderItem['quantity'];
-            $order->orderItems()->create([
-                'item_id' => $orderItem['item_id'],
-                'quantity' => $orderItem['quantity'],
-                'price_in_diamonds' => $item->price_in_diamonds,
-            ]);
-        }
-
-        $order->update(['total_in_diamonds' => $totalInDiamonds]);
-        return $order->load('user', 'orderItems.item');
+        $order = Order::with(['user', 'subItems.subItem'])->findOrFail($id);
+        return view('admin.orders.show', compact('order'));
     }
 
     public function destroy($id)
     {
-        Order::findOrFail($id)->delete();
-        return response()->noContent();
+        try {
+            $order = Order::findOrFail($id);
+            $order->delete();
+            return response()->json(['status' => 'success', 'message' => 'Order deleted successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'An error occurred while deleting the order.']);
+        }
     }
 }

@@ -9,10 +9,19 @@ class Plan extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'price', 'duration', 'features'];
-
+    protected $fillable = [
+        'name',
+        'price',
+        'duration',
+        'description',
+    ];
     public function subscriptions()
     {
         return $this->hasMany(Subscription::class);
+    }
+
+    public function features()
+    {
+        return $this->belongsToMany(Feature::class, 'feature_plan');
     }
 }

@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 use App\Models\Config;
 use App\Models\Item;
+use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\OrderSubItem;
 use App\Models\Slider;
+use App\Models\SubItem;
 use App\Models\User;
 use App\Models\UserWallet;
 use App\Providers\RouteServiceProvider;
@@ -22,33 +26,31 @@ class HomeController extends Controller
     {
         $sliders = Slider::with('media')->get();
         $config = Config::with('media')->first();
-
-        // Retrieve all items with their associated categories and media
         $items = Item::with('category', 'media')->get();
-
         View::share('config', $config);
-
-        // Organize items by category
         $categorizedItems = $items->groupBy(function($item) {
             return $item->category->name;
         });
-
-        // Pass the categorized items with media to the view
         return view('front.index', ['categorizedItems' => $categorizedItems, 'sliders' => $sliders, 'config' => $config]);
     }
-
     public function wallet(Request $request)
     {
         $config = Config::with('media')->first();
         View::share('config', $config);
-        // Ensure the user is authenticated
+
         $user = Auth::user();
         if (!$user) {
-            return redirect()->route('login'); // Redirect to login if not authenticated
+            return redirect()->route('login');
         }
-        $wallet = UserWallet::where('user_id', $user->id)->firstOrFail(); // Use firstOrFail to handle no wallet case
-        return view('front.wallet', ['wallet' => $wallet]);
+
+        $wallet = UserWallet::where('user_id', $user->id)->firstOrFail();
+        $orders = $user->orders()->with('subItems.subItem.item.media')->get();
+        $purchaseRequests = $user->purchaseRequests()->latest()->take(5)->get();
+
+        return view('front.wallet', ['wallet' => $wallet, 'orders' => $orders, 'purchaseRequests' => $purchaseRequests]);
     }
+
+
 
 
     public function register_page(Request $request)
@@ -130,14 +132,21 @@ class HomeController extends Controller
 
     public function profile(Request $request)
     {
-        /*$user = Auth::user();
-      if (!$user) {
-          return redirect()->route('login'); // Redirect to login if not authenticated
-      }*/
         $config = Config::with('media')->first();
+        $user = Auth::user();
+
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
         View::share('config', $config);
-        return view('front.profile');
+
+        $orders = $user->orders()->with('subItems.subItem.media')->get();
+        $purchaseRequests = $user->purchaseRequests()->with('media')->get();
+
+        return view('front.profile', compact('user', 'orders', 'purchaseRequests'));
     }
+
     public function favourites(Request $request)
     {
         $config = Config::with('media')->first();
@@ -146,7 +155,50 @@ class HomeController extends Controller
         return view('front.favourites', compact('userFavorites'));
     }
 
+    public function purchase_order(Request $request)
+    {
+        $request->validate([
+            'sub_item_id' => 'required|exists:sub_items,id',
+        ]);
 
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'User not authenticated'], 401);
+        }
 
+        // Retrieve the user's wallet
+        $wallet = UserWallet::where('user_id', $user->id)->first();
+        if (!$wallet) {
+            return response()->json(['success' => false, 'message' => 'Wallet not found'], 404);
+        }
 
+        // Retrieve the selected sub-item
+        $subItem = SubItem::findOrFail($request->sub_item_id);
+        $totalPrice = $subItem->price;
+
+        // Check if the user has enough balance
+        if ($wallet->balance < $totalPrice) {
+            return response()->json(['success' => false, 'message' => 'Insufficient balance in wallet'], 400);
+        }
+
+        // Deduct the amount from the user's wallet
+        $wallet->balance -= $totalPrice;
+        $wallet->save();
+
+        // Create the order
+        $order = Order::create([
+            'user_id' => $user->id,
+            'total' => $totalPrice,
+            'status' => 'active',
+        ]);
+
+        // Create the order sub item
+        OrderSubItem::create([
+            'order_id' => $order->id,
+            'sub_item_id' => $subItem->id,
+            'price' => $subItem->price,
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Purchase successful', 'order' => $order], 200);
+    }
 }

@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('plans', function (Blueprint $table) {
+        Schema::create('order_sub_items', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->unsignedBigInteger('order_id');
+            $table->unsignedBigInteger('sub_item_id');
             $table->decimal('price', 8, 2);
-            $table->integer('duration'); // Duration in days
-            $table->text('description')->nullable();
+            $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
+            $table->foreign('sub_item_id')->references('id')->on('sub_items')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('plans');
+        Schema::dropIfExists('order_sub_items');
     }
 };

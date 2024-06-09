@@ -52,7 +52,7 @@
                                     @endforeach
                                 </div>
                                 <input type="hidden" name="sub_item_id" id="selectedSubItemId">
-{{--                                <button type="submit" class="uk-button uk-button-primary uk-margin-top">Purchase</button>--}}
+                                {{--                                <button type="submit" class="uk-button uk-button-primary uk-margin-top">Purchase</button>--}}
                             </form>
                         </div>
                     </div>
@@ -136,11 +136,10 @@
                 formData.append('sub_item_id', selectedSubItemId);
                 formData.append('_token', document.querySelector('input[name="_token"]').value);
 
-                fetch('{{ route('purchase') }}', {
+                fetch('{{ route('purchase_order') }}', {
                     method: 'POST',
                     body: formData
-                })
-                    .then(response => response.json())
+                }).then(response => response.json())
                     .then(data => {
                         if (data.success) {
                             toastr.success(data.message);

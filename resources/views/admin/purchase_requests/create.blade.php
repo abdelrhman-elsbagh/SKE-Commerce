@@ -39,8 +39,8 @@
                                 <input type="number" step="0.01" class="form-control" id="amount" name="amount" required>
                             </div>
                             <div class="mb-3">
-                                <label for="status" class="form-label">Status</label>
-                                <select class="form-control" id="status" name="status" required>
+                                <label for="status_id" class="form-label">Status</label>
+                                <select class="form-control" id="status_id" name="status" required>
                                     <option value="pending">Pending</option>
                                     <option value="approved">Approved</option>
                                     <option value="rejected">Rejected</option>

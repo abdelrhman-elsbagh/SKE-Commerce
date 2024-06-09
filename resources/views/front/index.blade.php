@@ -13,7 +13,7 @@
                             <div class="swiper-slide">
                                 <div class="recommend-slide">
                                     <div class="tour-slide__box">
-                                        <a href="#">
+                                        <a href="{{route('home')}}">
                                             @if($slider->getFirstMediaUrl('images'))
                                                 <img src="{{ $slider->getFirstMediaUrl('images') }}" alt="{{ $slider->name }}" style="width: 100%">
                                             @else
@@ -45,7 +45,7 @@
                                 <div class="game-card">
                                     <div class="game-card__box">
                                         <div class="game-card__media">
-                                            <a href="10_game-profile.html">
+                                            <a href="{{route('item.show', ['id' => $item->id])}}">
                                                 @if ($item->getFirstMediaUrl('images'))
                                                     <img src="{{ $item->getFirstMediaUrl('images') }}" alt="{{ $item->name }}">
                                                 @else

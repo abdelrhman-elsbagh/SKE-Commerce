@@ -11,13 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('plans', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->decimal('price', 8, 2);
-            $table->integer('duration'); // Duration in days
-            $table->text('description')->nullable();
-            $table->timestamps();
+        Schema::table('sub_items', function (Blueprint $table) {
+            $table->text('service_id')->nullable()->after('price');
         });
     }
 
@@ -26,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('plans');
+        Schema::table('sub_items', function (Blueprint $table) {
+            $table->dropColumn('service_id');
+        });
     }
 };
