@@ -50,7 +50,8 @@ class UserController extends Controller
             $user->addMedia($request->file('avatar'))->toMediaCollection('avatars');
         }
 
-        $user->assignRole($request->role);
+        $role = Role::findById($request->role);
+        $user->syncRoles($role->name);
 
         return redirect()->route('users.index')->with('success', 'User created successfully.');
     }
@@ -90,7 +91,8 @@ class UserController extends Controller
             $user->addMedia($request->file('avatar'))->toMediaCollection('avatars');
         }
 
-        $user->syncRoles($request->role);
+        $role = Role::findById($request->role);
+        $user->syncRoles($role->name);
 
         return redirect()->route('users.index')->with('success', 'User updated successfully.');
     }

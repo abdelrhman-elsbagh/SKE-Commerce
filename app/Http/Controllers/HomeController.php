@@ -6,6 +6,8 @@ use App\Models\Item;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderSubItem;
+use App\Models\PaymentMethod;
+use App\Models\Plan;
 use App\Models\Slider;
 use App\Models\SubItem;
 use App\Models\User;
@@ -27,15 +29,34 @@ class HomeController extends Controller
         $sliders = Slider::with('media')->get();
         $config = Config::with('media')->first();
         $items = Item::with('category', 'media')->get();
+        $user = Auth::user();
+
+        $favoritesCount = 0;
+        if ($user) {
+            $favoritesCount = $user->favorites()->count();
+        }
+
         View::share('config', $config);
+        View::share('favoritesCount', $favoritesCount);
+
         $categorizedItems = $items->groupBy(function($item) {
             return $item->category->name;
         });
+
         return view('front.index', ['categorizedItems' => $categorizedItems, 'sliders' => $sliders, 'config' => $config]);
     }
+
     public function wallet(Request $request)
     {
         $config = Config::with('media')->first();
+        View::share('config', $config);
+
+        $user = Auth::user();
+        $favoritesCount = 0;
+        if ($user) {
+            $favoritesCount = $user->favorites()->count();
+        }
+        View::share('favoritesCount', $favoritesCount);
         View::share('config', $config);
 
         $user = Auth::user();
@@ -115,6 +136,12 @@ class HomeController extends Controller
 
     public function item(Request $request, $id)
     {
+        $user = Auth::user();
+        $favoritesCount = 0;
+        if ($user) {
+            $favoritesCount = $user->favorites()->count();
+        }
+        View::share('favoritesCount', $favoritesCount);
         $config = Config::with('media')->first();
         $item = Item::with(['subItems', 'subItems.media', 'media'])->findOrFail($id);
         $userFavorites = Auth::user()->favorites->pluck('sub_item_id')->toArray();
@@ -138,6 +165,11 @@ class HomeController extends Controller
         if (!$user) {
             return redirect()->route('login');
         }
+        $favoritesCount = 0;
+        if ($user) {
+            $favoritesCount = $user->favorites()->count();
+        }
+        View::share('favoritesCount', $favoritesCount);
 
         View::share('config', $config);
 
@@ -149,6 +181,12 @@ class HomeController extends Controller
 
     public function favourites(Request $request)
     {
+        $user = Auth::user();
+        $favoritesCount = 0;
+        if ($user) {
+            $favoritesCount = $user->favorites()->count();
+        }
+        View::share('favoritesCount', $favoritesCount);
         $config = Config::with('media')->first();
         $userFavorites = Auth::user()->favorites()->with(['item', 'subItem.item', 'item.media', 'subItem.media'])->get();
         View::share('config', $config);
@@ -200,5 +238,38 @@ class HomeController extends Controller
         ]);
 
         return response()->json(['success' => true, 'message' => 'Purchase successful', 'order' => $order], 200);
+    }
+
+    public function plans(Request $request)
+    {
+        $user = Auth::user();
+
+        $config = Config::with('media')->first();
+        View::share('config', $config);
+
+        $favoritesCount = 0;
+        if ($user) {
+            $favoritesCount = $user->favorites()->count();
+        }
+        View::share('favoritesCount', $favoritesCount);
+
+        $plans = Plan::with('features')->get();
+        return view('front.plans', compact('plans'));
+    }
+
+    public function payment_methods(Request $request)
+    {
+        $user = Auth::user();
+        $config = Config::with('media')->first();
+        View::share('config', $config);
+
+        $favoritesCount = 0;
+        if ($user) {
+            $favoritesCount = $user->favorites()->count();
+        }
+        View::share('favoritesCount', $favoritesCount);
+
+        $paymentMethods = PaymentMethod::with('media')->get();
+        return view('front.payment-methods', ['paymentMethods' => $paymentMethods]);
     }
 }

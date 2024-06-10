@@ -49,7 +49,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="date_of_birth" class="form-label">Date of Birth</label>
-                                <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" value="{{ $user->date_of_birth }}">
+                                <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" value="{{ \Carbon\Carbon::parse($user->date_of_birth)->format('Y-m-d') }}">
                             </div>
                             <div class="mb-3">
                                 <label for="status" class="form-label">Status</label>

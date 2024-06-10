@@ -10,6 +10,7 @@ use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SliderController;
@@ -29,6 +30,8 @@ Route::get('sign-in', [HomeController::class, 'login_page'])->name('sign-in');
 Route::get('profile', [HomeController::class, 'profile'])->name('profile');
 Route::get('favourites', [HomeController::class, 'favourites'])->name('favourites');
 Route::get('wallet', [HomeController::class, 'wallet'])->name('wallet');
+Route::get('plans', [HomeController::class, 'plans'])->name('plans-page');
+Route::get('payment-methods', [HomeController::class, 'payment_methods'])->name('payments-page');
 Route::get('/item/{id}', [HomeController::class, 'item'])->name('item.show');
 Route::post('purchase', [HomeController::class, 'purchase'])->name('purchase');
 Route::post('purchase_order', [HomeController::class, 'purchase_order'])->name('purchase_order');
@@ -57,6 +60,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
     Route::resource('diamond-rates', DiamondRatesController::class)->names('diamond_rates');
     Route::resource('items', ItemController::class);
     Route::resource('plans', PlanController::class);
+    Route::resource('payment-methods', PaymentMethodController::class);
     Route::resource('subscriptions', SubscriptionController::class);
     Route::resource('tags', TagController::class);
 

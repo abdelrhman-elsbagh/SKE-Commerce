@@ -596,6 +596,24 @@
                 </a>
             </li>
 
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarPaymentMethods" aria-expanded="false" aria-controls="sidebarPaymentMethods" class="side-nav-link nav-link">
+                    <i class="ri-money-dollar-box-line"></i>
+                    <span> Payment Methods </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarPaymentMethods">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('payment-methods.index') }}" class="nav-link">All Payment Methods</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('payment-methods.create') }}" class="nav-link">Create Payment Method</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
 
 
             <li class="side-nav-item">

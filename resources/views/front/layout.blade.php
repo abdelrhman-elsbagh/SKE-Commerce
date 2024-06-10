@@ -149,21 +149,28 @@
                 <ul class="uk-nav">
                     <li class="uk-active"><a href="{{route('home')}}"><i class="ico_store"></i><span>Home</span></a></li>
                     <li><a href="{{route('profile')}}"><i class="ico_profile"></i><span>Profile</span></a></li>
-                    <li><a href="{{route('favourites')}}"><i class="ico_favourites"></i><span>Favourites</span><span class="count">15</span></a></li>
+                    <li><a href="{{route('favourites')}}"><i class="ico_favourites"></i><span>Favourites</span><span class="count">{{$favoritesCount}}</span></a></li>
                     <li><a href="06_chats.html"><i class="ico_chats"></i><span>Chats</span></a></li>
                     <li><a href="07_friends.html"><i class="ico_friends"></i><span>Friends</span></a></li>
                     <li><a href="{{route('wallet')}}"><i class="ico_wallet"></i><span>Wallet</span></a></li>
+                    <li><a href="{{ route('plans-page') }}"><i class="fas fa-box-open"></i><span>Plans</span></a></li>
                     <li><a href="#modal-report" data-uk-toggle><i class="ico_report"></i><span>Report</span></a></li>
                     <li><a href="#modal-purchase-request" data-uk-toggle><i class="fas fa-money-bill-wave" style="font-size: 20px;"></i><span>Purchase Request</span></a></li>
-                    <li>
-                        <a href="https://wa.me/{{ $config->whatsapp }}?text={{ urlencode('Welcome to ' . str($config->name ?? "") ) }}" target="_blank">
-                            <i class="fab fa-whatsapp" style="font-size: 22px"></i><span>WhatsApp</span>
+                    <li><a href="{{ route('payments-page') }}"><i class="fas fa-credit-card"></i><span>Payment Methods</span></a></li>
+
+                    <li style="display: flex; justify-content: center; align-items: center;">
+                        <a href="https://wa.me/{{ $config->whatsapp }}?text={{ urlencode('Welcome to ' . str($config->name ?? "") ) }}" target="_blank" style="text-decoration: none; margin-right: 15px;">
+                            <i class="fab fa-whatsapp" style="font-size: 22px; color: #25D366;"></i>
+                        </a>
+                        <a href="{{ $config->telegram }}" target="_blank" style="text-decoration: none; margin-right: 15px;">
+                            <i class="fab fa-telegram" style="font-size: 22px; color: #0088cc;"></i>
+                        </a>
+                        <a href="{{ $config->facebook }}" target="_blank" style="text-decoration: none;">
+                            <i class="fab fa-facebook" style="font-size: 22px; color: #1877F2;"></i>
                         </a>
                     </li>
-                    <li><a href="{{ $config->whatsapp }}" target="_blank">
-                            <i class="fab fa-telegram" style="font-size: 22px"></i><span>Telegram</span></a></li>
-                    <li><a href="{{ $config->facebook }}" target="_blank"><i class="fab fa-facebook" style="font-size: 22px"></i><span>Facebook</span></a></li>
                 </ul>
+
 
             </div>
         </aside>
