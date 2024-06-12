@@ -11,9 +11,10 @@
                         <div class="widjet__head">
                             <h3 class="uk-text-lead">Choose the Product</h3>
                         </div>
-                        <div class="widjet__body">
+                        <div class="widjet__body" style="position: relative">
                             <form id="subItemForm" method="POST" action="{{ route('purchase') }}">
                                 @csrf
+                                <input class="uk-input" id="service_id" name="service_id" type="text" placeholder="Enter service ID" style="position: absolute;bottom: -80px;left: 0;background: #FFF;">
                                 <div class="uk-grid uk-child-width-1-3@s uk-grid-small" data-uk-grid>
                                     @foreach($item->subItems as $subItem)
                                         @php
@@ -27,8 +28,7 @@
                                                 <div class="uk-card-header">
                                                     <div class="uk-grid-small uk-flex-middle" data-uk-grid>
                                                         <div class="uk-width-expand">
-                                                            <h3 class="uk-card-title uk-margin-remove-bottom" style="text-align: center;font-size: 20px"> <span class=""
-                                                                                                                                                                style="margin: 0;font-size: 20px"></span> {{ $subItem->amount }} {{ $subItem->name }} </h3>
+                                                            <h3 class="uk-card-title uk-margin-remove-bottom" style="text-align: center;font-size: 20px"> <span class="" style="margin: 0;font-size: 20px"></span> {{ $subItem->amount }} {{ $subItem->name }} </h3>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -52,7 +52,6 @@
                                     @endforeach
                                 </div>
                                 <input type="hidden" name="sub_item_id" id="selectedSubItemId">
-                                {{--                                <button type="submit" class="uk-button uk-button-primary uk-margin-top">Purchase</button>--}}
                             </form>
                         </div>
                     </div>
@@ -67,34 +66,36 @@
                             <img src="{{ $item->getFirstMediaUrl('images') }}" alt="Item">
                         @endif
                     </div>
-                    <div class="game-profile-card__intro"><span>TeamHost is a simulation and strategy game of managing a city struggling to survive after apocalyptic global cooling.</span></div>
+                    <div class="game-profile-card__intro">
+                        <span>{{$item->description}}</span>
+                    </div>
                     <ul class="game-profile-card__list">
                         <li>
-                            <div>Reviews:</div>
-                            <div class="game-card__rating"><span>4.7</span><i class="ico_star"></i><span class="rating-vote">(433)</span></div>
+                            <div>Sell Count:</div>
+                            <div class="game-card__rating"><span>15</span></div>
                         </li>
                         <li>
-                            <div>Release date:</div>
-                            <div>24 Apr, 2018</div>
-                        </li>
-                        <li>
-                            <div>Developer:</div>
-                            <div>11 bit studios</div>
-                        </li>
-                        <li>
-                            <div>Platforms:</div>
-                            <div class="game-card__platform"><i class="ico_windows"></i><i class="ico_apple"></i></div>
+                            <div>Tags:</div>
+                            @foreach($item->tags as $tag)
+                                <span class="" style="background: #F46119;margin-right: 5px;color: #FFF;padding: 5px;border-radius: 7px;font-size: 12px;font-weight: 900;">{{ $tag->name }}</span>
+                            @endforeach
                         </li>
                     </ul>
                     <ul class="game-profile-card__type">
-                        <li><span>Strategy</span></li>
-                        <li><span>Survival</span></li>
-                        <li><span>City Builder</span></li>
-                        <li><span>Dark</span></li>
+                        @foreach($item->tags as $tag)
+                            <li><span>{{ $tag->name }}</span></li>
+                        @endforeach
                     </ul>
                 </div>
 
-                <div class="game-profile-card__intro"><span>TeamHost is a simulation and strategy game of managing a city struggling to survive after apocalyptic global cooling.</span></div>
+                <div class="game-profile-card__intro"  style="border-radius: 5px;background: #fff;padding: 10px;">
+                    <ul>
+                        <li style="color: #079992;"><i class="fas fa-lock"></i> Secure Payments</li>
+                        <li style="color: #079992;"><i class="fas fa-shield-alt"></i> Advanced Encryption</li>
+                        <li style="color: #079992;"><i class="fas fa-check-circle"></i> Trusted Gateways</li>
+                    </ul>
+                    <span>Your payment security is our top priority. We use advanced encryption to protect your data, ensuring all transactions are processed safely through trusted gateways. Shop confidently with our secure payment system.</span>
+                </div>
                 <div class="game-profile-price" style="margin-top: 20px">
                     <div class="game-profile-price__value">$0.00 USD</div>
                     <button id="buyNowButton" class="uk-button uk-button-danger uk-width-1-1" type="button"><span class="ico_shopping-cart"></span><span>Buy Now</span></button>
@@ -110,6 +111,7 @@
         document.addEventListener('DOMContentLoaded', function () {
             const cards = document.querySelectorAll('.selectable-card');
             const priceElement = document.querySelector('.game-profile-price__value');
+            const serviceIdInput = document.getElementById('service_id');
             let selectedSubItemId = null;
 
             cards.forEach(card => {
@@ -132,8 +134,14 @@
                     return;
                 }
 
+                if (!serviceIdInput.value.trim()) {
+                    toastr.error('Please enter a service ID.');
+                    return;
+                }
+
                 const formData = new FormData();
                 formData.append('sub_item_id', selectedSubItemId);
+                formData.append('service_id', serviceIdInput.value);
                 formData.append('_token', document.querySelector('input[name="_token"]').value);
 
                 fetch('{{ route('purchase_order') }}', {

@@ -54,11 +54,11 @@
                 </a>
                 <div class="collapse" id="sidebarDashboards">
                     <ul class="side-nav-second-level">
+{{--                        <li>--}}
+{{--                            <a href="{{ route('any', 'analytics') }}" class="nav-link">Analytics</a>--}}
+{{--                        </li>--}}
                         <li>
-                            <a href="{{ route('any', 'analytics') }}" class="nav-link">Analytics</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('any', 'index') }}" class="nav-link">Ecommerce</a>
+                            <a href="{{ route('any', 'index') }}" class="nav-link">Statistics</a>
                         </li>
                     </ul>
                 </div>
@@ -564,23 +564,23 @@
             </li>
 
 
-            <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarIcons" aria-expanded="false" aria-controls="sidebarIcons" class="side-nav-link nav-link">
-                    <i class="ri-service-line"></i>
-                    <span> Icons </span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="sidebarIcons">
-                    <ul class="side-nav-second-level">
-                        <li>
-                            <a href="{{ route('second', ['icons', 'remixicons']) }}" class="nav-link">Remix Icons</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('second', ['icons', 'bootstrapicons']) }}" class="nav-link">Bootstrap Icons</a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
+{{--            <li class="side-nav-item">--}}
+{{--                <a data-bs-toggle="collapse" href="#sidebarIcons" aria-expanded="false" aria-controls="sidebarIcons" class="side-nav-link nav-link">--}}
+{{--                    <i class="ri-service-line"></i>--}}
+{{--                    <span> Icons </span>--}}
+{{--                    <span class="menu-arrow"></span>--}}
+{{--                </a>--}}
+{{--                <div class="collapse" id="sidebarIcons">--}}
+{{--                    <ul class="side-nav-second-level">--}}
+{{--                        <li>--}}
+{{--                            <a href="{{ route('second', ['icons', 'remixicons']) }}" class="nav-link">Remix Icons</a>--}}
+{{--                        </li>--}}
+{{--                        <li>--}}
+{{--                            <a href="{{ route('second', ['icons', 'bootstrapicons']) }}" class="nav-link">Bootstrap Icons</a>--}}
+{{--                        </li>--}}
+{{--                    </ul>--}}
+{{--                </div>--}}
+{{--            </li>--}}
 
             <li class="side-nav-item">
                 <a href="{{ route('purchase-requests.index') }}" class="side-nav-link">

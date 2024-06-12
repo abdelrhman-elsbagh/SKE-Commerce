@@ -11,7 +11,7 @@ class Item extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia;
 
-    protected $fillable = ['name', 'description', 'price_in_diamonds', 'category_id'];
+    protected $fillable = ['name', 'description', 'price_in_diamonds', 'category_id', 'status', 'title', 'title_type',];
 
     public function category()
     {

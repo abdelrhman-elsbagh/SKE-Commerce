@@ -40,6 +40,7 @@ Route::post('register', [HomeController::class, 'register'])->name('register');
 Route::post('/purchase-request', [PurchaseController::class, 'request'])->name('purchase.request');
 Route::post('/favorites/add', [FavoriteController::class, 'add'])->name('favorites.add');
 
+Route::post('logout', [HomeController::class, 'logout'])->name('logout');
 
 
 

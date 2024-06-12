@@ -35,31 +35,41 @@ class ItemController extends Controller
 
     public function store(Request $request)
     {
+        // Create the main item
         $item = Item::create($request->all());
 
+        // Attach tags if provided
         if ($request->has('tags')) {
             $item->tags()->attach($request->tags);
         }
 
+        // Handle the main item image if provided
         if ($request->hasFile('image')) {
             $item->addMedia($request->file('image'))->toMediaCollection('images');
         }
 
+        // Handle sub-items if provided
         if ($request->has('sub_items')) {
-            foreach ($request->input('sub_items') as $subItemData) {
+            foreach ($request->input('sub_items') as $index => $subItemData) {
+                // Create the sub-item
                 $subItem = new SubItem([
                     'name' => $subItemData['name'],
                     'description' => $subItemData['description'],
                     'amount' => $subItemData['amount'],
                     'price' => $subItemData['price']
                 ]);
-                if (isset($subItemData['image'])) {
-                    $subItem->addMedia($subItemData['image'])->toMediaCollection('images');
-                }
+
+                // Save the sub-item to the parent item
                 $item->subItems()->save($subItem);
+
+                // Handle the sub-item image if provided
+                if ($request->hasFile("sub_items.{$index}.image")) {
+                    $subItem->addMedia($request->file("sub_items.{$index}.image"))->toMediaCollection('images');
+                }
             }
         }
 
+        // Redirect to the items index with a success message
         return redirect()->route('items.index')->with('success', 'Item created successfully.');
     }
 

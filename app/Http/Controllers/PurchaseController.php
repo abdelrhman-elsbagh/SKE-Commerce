@@ -13,7 +13,8 @@ class PurchaseController extends Controller
         $validator = Validator::make($request->all(), [
             'amount' => 'required|numeric',
             'notes' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Adjust the max size as needed
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'payment_method_id' => 'nullable',
         ]);
 
         if ($validator->fails()) {
@@ -25,6 +26,7 @@ class PurchaseController extends Controller
             $purchaseRequest->user_id = auth()->id();
             $purchaseRequest->amount = $request->amount;
             $purchaseRequest->notes = $request->notes;
+            $purchaseRequest->payment_method_id = $request->payment_method_id;
 
             if ($request->hasFile('image')) {
                 $purchaseRequest->addMedia($request->file('image'))->toMediaCollection('purchase_requests');

@@ -48,6 +48,14 @@
                                 </select>
                             </div>
                             <div class="mb-3">
+                                <label for="payment_method_id" class="form-label">Payment Method</label>
+                                <select class="form-control" id="payment_method_id" name="payment_method_id" required>
+                                    @foreach($paymentMethods as $paymentMethod)
+                                        <option value="{{ $paymentMethod->id }}" {{ $purchaseRequest->payment_method_id == $paymentMethod->id ? 'selected' : '' }}>{{ $paymentMethod->gateway }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="mb-3">
                                 <label for="purchase_documents" class="form-label">Document</label>
                                 <input type="file" class="form-control" id="purchase_documents" name="purchase_documents" accept="image/*">
                                 <div class="mt-2" id="document-preview">

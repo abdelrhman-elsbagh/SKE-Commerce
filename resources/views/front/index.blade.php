@@ -42,10 +42,10 @@
                     <div class="uk-grid uk-child-width-1-6@xl uk-child-width-1-5@m uk-child-width-1-3@s uk-grid-small">
                         @foreach ($items as $item)
                             <div class="uk-width-1-6@xl uk-width-1-5@m uk-width-1-3@s" style="margin-top: 15px;">
-                                <div class="game-card">
+                                <div class="game-card {{ $item->status == 'inactive' ? 'inactive' : '' }}">
                                     <div class="game-card__box">
                                         <div class="game-card__media">
-                                            <a href="{{route('item.show', ['id' => $item->id])}}">
+                                            <a href="{{ $item->status == 'active' ? route('item.show', ['id' => $item->id]) : '#' }}" class="{{ $item->status == 'inactive' ? 'disabled-link' : '' }}">
                                                 @if ($item->getFirstMediaUrl('images'))
                                                     <img src="{{ $item->getFirstMediaUrl('images') }}" alt="{{ $item->name }}">
                                                 @else
@@ -55,11 +55,9 @@
                                         </div>
                                         <div class="game-card__info">
                                             <a class="game-card__title" href="10_game-profile.html">{{ $item->name }}</a>
-                                            <div class="game-card__genre">{{ $item->category->name }}</div>
-                                            <div class="game-card__rating-and-price">
-                                                <div class="game-card__rating"><span>{{ $item->rating ?? 'N/A' }}</span><i class="ico_star"></i></div>
-                                                <div class="game-card__price"><span>${{ number_format($item->getPriceInUsdAttribute() ?? 0, 2) }}</span></div>
-                                            </div>
+                                            @foreach($item->tags as $tag)
+                                                <span class="game-card__genre">{{ $tag->name }}</span>
+                                            @endforeach
                                         </div>
                                     </div>
                                 </div>

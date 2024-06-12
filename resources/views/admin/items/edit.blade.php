@@ -50,6 +50,25 @@
                                 </select>
                             </div>
                             <div class="mb-3">
+                                <label for="status_type" class="form-label">Status</label>
+                                <select class="form-control" id="status_type" name="status">
+                                    <option value="active" {{ $item->status == 'active' ? 'selected' : '' }}>Active</option>
+                                    <option value="inactive" {{ $item->status == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="title" name="title" value="{{ $item->title ?? '' }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="title_type" class="form-label">Title Type</label>
+                                <select class="form-control" id="title_type" name="title_type">
+                                    <option value="default" {{ $item->title_type == 'default' ? 'selected' : '' }}>Default</option>
+                                    <option value="discount" {{ $item->title_type == 'discount' ? 'selected' : '' }}>Discount</option>
+                                    <option value="new" {{ $item->title_type == 'new' ? 'selected' : '' }}>New</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
                                 <label for="image" class="form-label">Image</label>
                                 <input type="file" class="form-control" id="image" name="image" accept="image/*">
                                 <div class="mt-2" id="image-preview">

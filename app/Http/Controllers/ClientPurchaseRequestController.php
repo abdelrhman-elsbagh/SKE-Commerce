@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\PurchaseRequest;
 use App\Models\User;
+use App\Models\PaymentMethod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -11,14 +12,15 @@ class ClientPurchaseRequestController extends Controller
 {
     public function index()
     {
-        $purchaseRequests = PurchaseRequest::with('user')->get();
+        $purchaseRequests = PurchaseRequest::with('user', 'paymentMethod')->get();
         return view('admin.purchase_requests.index', compact('purchaseRequests'));
     }
 
     public function create()
     {
         $users = User::all();
-        return view('admin.purchase_requests.create', compact('users'));
+        $paymentMethods = PaymentMethod::all();
+        return view('admin.purchase_requests.create', compact('users', 'paymentMethods'));
     }
 
     public function store(Request $request)
@@ -27,6 +29,7 @@ class ClientPurchaseRequestController extends Controller
             'user_id' => 'required|exists:users,id',
             'amount' => 'required|numeric',
             'status' => 'required|string',
+            'payment_method_id' => 'required|exists:payment_methods,id',
             'document' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
@@ -35,6 +38,7 @@ class ClientPurchaseRequestController extends Controller
             'notes' => $request->notes,
             'amount' => $request->amount,
             'status' => $request->status,
+            'payment_method_id' => $request->payment_method_id,
         ]);
 
         if ($request->hasFile('document')) {
@@ -46,7 +50,7 @@ class ClientPurchaseRequestController extends Controller
 
     public function show($id)
     {
-        $purchaseRequest = PurchaseRequest::with('user')->findOrFail($id);
+        $purchaseRequest = PurchaseRequest::with('user', 'paymentMethod')->findOrFail($id);
         return view('admin.purchase_requests.show', compact('purchaseRequest'));
     }
 
@@ -54,7 +58,8 @@ class ClientPurchaseRequestController extends Controller
     {
         $purchaseRequest = PurchaseRequest::findOrFail($id);
         $users = User::all();
-        return view('admin.purchase_requests.edit', compact('purchaseRequest', 'users'));
+        $paymentMethods = PaymentMethod::all();
+        return view('admin.purchase_requests.edit', compact('purchaseRequest', 'users', 'paymentMethods'));
     }
 
     public function update(Request $request, $id)
@@ -63,11 +68,18 @@ class ClientPurchaseRequestController extends Controller
             'user_id' => 'required|exists:users,id',
             'amount' => 'required|numeric',
             'status' => 'required|string',
+            'payment_method_id' => 'required|exists:payment_methods,id',
             'document' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         $purchaseRequest = PurchaseRequest::findOrFail($id);
-        $purchaseRequest->update($request->all());
+        $purchaseRequest->update([
+            'user_id' => $request->user_id,
+            'notes' => $request->notes,
+            'amount' => $request->amount,
+            'status' => $request->status,
+            'payment_method_id' => $request->payment_method_id,
+        ]);
 
         if ($request->hasFile('document')) {
             $purchaseRequest->clearMediaCollection('purchase_documents');

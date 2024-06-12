@@ -79,6 +79,7 @@
                                     <div class="widjet-game__description">{{ $request->notes }}</div>
                                 </div>
                             </div>
+                            <hr>
                         @endforeach
                     </div>
                 </div>

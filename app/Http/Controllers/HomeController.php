@@ -36,6 +36,8 @@ class HomeController extends Controller
             $favoritesCount = $user->favorites()->count();
         }
 
+        $paymentMethods = PaymentMethod::where('status', 'active')->get();
+
         View::share('config', $config);
         View::share('favoritesCount', $favoritesCount);
 
@@ -43,8 +45,14 @@ class HomeController extends Controller
             return $item->category->name;
         });
 
-        return view('front.index', ['categorizedItems' => $categorizedItems, 'sliders' => $sliders, 'config' => $config]);
+        return view('front.index', [
+            'categorizedItems' => $categorizedItems,
+            'sliders' => $sliders,
+            'config' => $config,
+            'paymentMethods' => $paymentMethods
+        ]);
     }
+
 
     public function wallet(Request $request)
     {
@@ -68,7 +76,9 @@ class HomeController extends Controller
         $orders = $user->orders()->with('subItems.subItem.item.media')->get();
         $purchaseRequests = $user->purchaseRequests()->latest()->take(5)->get();
 
-        return view('front.wallet', ['wallet' => $wallet, 'orders' => $orders, 'purchaseRequests' => $purchaseRequests]);
+        $paymentMethods = PaymentMethod::where('status', 'active')->get();
+        return view('front.wallet', ['wallet' => $wallet, 'orders' => $orders, 'purchaseRequests' => $purchaseRequests,
+            'paymentMethods' => $paymentMethods]);
     }
 
 
@@ -125,7 +135,7 @@ class HomeController extends Controller
         // Attempt to log the user in
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $request->filled('remember'))) {
             // If successful, redirect to their intended location
-            return redirect()->intended('admin');  // Change 'dashboard' to wherever you want users to go after login
+            return redirect()->route('home');  // Change 'dashboard' to wherever you want users to go after login
         }
 
         // If unsuccessful, redirect back with input (except for password)
@@ -143,9 +153,11 @@ class HomeController extends Controller
         }
         View::share('favoritesCount', $favoritesCount);
         $config = Config::with('media')->first();
-        $item = Item::with(['subItems', 'subItems.media', 'media'])->findOrFail($id);
+        $item = Item::with(['subItems', 'subItems.media', 'media', 'tags'])->findOrFail($id);
         $userFavorites = Auth::user()->favorites->pluck('sub_item_id')->toArray();
-        return view('front.item', compact('item', 'config', 'userFavorites'));
+        $paymentMethods = PaymentMethod::where('status', 'active')->get();
+
+        return view('front.item', compact('item', 'config', 'userFavorites', 'paymentMethods'));
     }
 
     public function purchase(Request $request)
@@ -176,7 +188,9 @@ class HomeController extends Controller
         $orders = $user->orders()->with('subItems.subItem.media')->get();
         $purchaseRequests = $user->purchaseRequests()->with('media')->get();
 
-        return view('front.profile', compact('user', 'orders', 'purchaseRequests'));
+        $paymentMethods = PaymentMethod::where('status', 'active')->get();
+
+        return view('front.profile', compact('user', 'orders', 'purchaseRequests', 'paymentMethods'));
     }
 
     public function favourites(Request $request)
@@ -190,13 +204,15 @@ class HomeController extends Controller
         $config = Config::with('media')->first();
         $userFavorites = Auth::user()->favorites()->with(['item', 'subItem.item', 'item.media', 'subItem.media'])->get();
         View::share('config', $config);
-        return view('front.favourites', compact('userFavorites'));
+        $paymentMethods = PaymentMethod::where('status', 'active')->get();
+        return view('front.favourites', compact('userFavorites', 'paymentMethods'));
     }
 
     public function purchase_order(Request $request)
     {
         $request->validate([
             'sub_item_id' => 'required|exists:sub_items,id',
+            'service_id' => 'required|string',
         ]);
 
         $user = Auth::user();
@@ -254,7 +270,8 @@ class HomeController extends Controller
         View::share('favoritesCount', $favoritesCount);
 
         $plans = Plan::with('features')->get();
-        return view('front.plans', compact('plans'));
+        $paymentMethods = PaymentMethod::where('status', 'active')->get();
+        return view('front.plans', compact('plans', 'paymentMethods'));
     }
 
     public function payment_methods(Request $request)
@@ -271,5 +288,17 @@ class HomeController extends Controller
 
         $paymentMethods = PaymentMethod::with('media')->get();
         return view('front.payment-methods', ['paymentMethods' => $paymentMethods]);
+    }
+
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken();
+
+        return redirect()->route('sign-in');
     }
 }

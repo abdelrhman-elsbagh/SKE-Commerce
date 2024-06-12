@@ -42,7 +42,7 @@
                                     <td>{{ $plan->name }}</td>
                                     <td>{{ $plan->price }}</td>
                                     <td>{{ $plan->duration }}</td>
-                                    <td>{{ $plan->description }}</td>
+                                    <td>{{ \Illuminate\Support\Str::limit($plan->description, 50, '...') }}</td>
                                     <td>
                                         <ul>
                                             @foreach($plan->features as $feature)

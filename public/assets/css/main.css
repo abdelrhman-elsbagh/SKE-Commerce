@@ -1,5 +1,14 @@
 @charset "UTF-8";
 
+.game-card.inactive {
+    opacity: 0.5;
+    pointer-events: none; /* Prevents clicking on inactive items */
+    background-color: #f0f0f0;
+}
+
+.disabled-link {
+    cursor: not-allowed;
+}
 
 [class^="ico_"],
 [class*=" ico_"] {
@@ -1471,7 +1480,7 @@ a:hover {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    width: 250px;
+    width: 30%;
     height: 75px;
     padding: 0 30px;
     border-right: 1px solid #F2F2F2;
@@ -1480,7 +1489,7 @@ a:hover {
 .page-header__menu-btn {
     margin-right: 30px;
     margin-bottom: -10px;
-    display: none;
+    display: block;
 }
 
 .page-header__menu-btn .menu-btn {

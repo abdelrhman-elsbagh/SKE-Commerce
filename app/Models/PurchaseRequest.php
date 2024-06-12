@@ -16,6 +16,7 @@ class PurchaseRequest extends Model implements HasMedia
         'notes',
         'amount',
         'status',
+        'payment_method_id',
     ];
 
     public function user()
@@ -27,4 +28,10 @@ class PurchaseRequest extends Model implements HasMedia
     {
         $this->addMediaCollection('purchase_documents')->singleFile();
     }
+
+    public function paymentMethod()
+    {
+        return $this->belongsTo(PaymentMethod::class);
+    }
+
 }

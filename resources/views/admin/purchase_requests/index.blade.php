@@ -30,6 +30,7 @@
                                 <th>User</th>
                                 <th>Amount</th>
                                 <th>Status</th>
+                                <th>Payment Method</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
@@ -40,6 +41,7 @@
                                     <td>{{ $purchaseRequest->user->name }}</td>
                                     <td>{{ $purchaseRequest->amount }}</td>
                                     <td>{{ ucfirst($purchaseRequest->status) }}</td>
+                                    <td>{{ $purchaseRequest->paymentMethod->gateway ?? "" }}</td>
                                     <td>
                                         <a href="{{ route('purchase-requests.show', $purchaseRequest->id) }}" class="btn btn-info">Show</a>
                                         <a href="{{ route('purchase-requests.edit', $purchaseRequest->id) }}" class="btn btn-warning">Edit</a>
@@ -61,9 +63,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     Are you sure you want to delete this purchase request?

@@ -29,7 +29,7 @@
                                 <th>ID</th>
                                 <th>Name</th>
                                 <th>Description</th>
-                                <th>Price in Diamonds</th>
+                                <th>Sub Items</th>
                                 <th>Category</th>
                                 <th>Tags</th>
                                 <th>Actions</th>
@@ -41,7 +41,11 @@
                                     <td>{{ $item->id }}</td>
                                     <td>{{ $item->name }}</td>
                                     <td>{{ $item->description }}</td>
-                                    <td>{{ $item->price_in_diamonds }}</td>
+                                    <td>
+                                        @foreach($item->subItems as $subItem)
+                                            <span class="badge bg-success">{{ $subItem->name }}</span>
+                                        @endforeach
+                                    </td>
                                     <td>{{ $item->category->name }}</td>
                                     <td>
                                         @foreach($item->tags as $tag)

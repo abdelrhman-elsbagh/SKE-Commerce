@@ -1,4 +1,4 @@
-@extends('layouts.vertical', ['page_title' => 'Create Item'])
+@extends('layouts.vertical', ['page_title' => 'Create/Edit Item'])
 
 @section('css')
     @vite([
@@ -11,7 +11,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box">
-                    <h4 class="page-title">Create Item</h4>
+                    <h4 class="page-title">{{ isset($item) ? 'Edit Item' : 'Create Item' }}</h4>
                 </div>
             </div>
         </div>
@@ -20,21 +20,24 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <form id="create-item-form" action="{{ route('items.store') }}" method="POST" enctype="multipart/form-data">
+                        <form id="create-edit-item-form" action="{{ isset($item) ? route('items.update', $item->id) : route('items.store') }}" method="POST" enctype="multipart/form-data">
                             @csrf
+                            @if(isset($item))
+                                @method('PUT')
+                            @endif
                             <div class="mb-3">
                                 <label for="name" class="form-label">Name</label>
-                                <input type="text" class="form-control" id="name" name="name" required>
+                                <input type="text" class="form-control" id="name" name="name" value="{{ $item->name ?? '' }}" required>
                             </div>
                             <div class="mb-3">
                                 <label for="description" class="form-label">Description</label>
-                                <textarea class="form-control" id="description" name="description"></textarea>
+                                <textarea class="form-control" id="description" name="description">{{ $item->description ?? '' }}</textarea>
                             </div>
                             <div class="mb-3">
                                 <label for="category_id" class="form-label">Category</label>
                                 <select class="form-control" id="category_id" name="category_id">
                                     @foreach($categories as $category)
-                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                        <option value="{{ $category->id }}" {{ (isset($item) && $item->category_id == $category->id) ? 'selected' : '' }}>{{ $category->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -42,14 +45,37 @@
                                 <label for="tags" class="form-label">Tags</label>
                                 <select class="form-control" id="tags" name="tags[]" multiple>
                                     @foreach($tags as $tag)
-                                        <option value="{{ $tag->id }}">{{ $tag->name }}</option>
+                                        <option value="{{ $tag->id }}" {{ (isset($item) && $item->tags->contains($tag->id)) ? 'selected' : '' }}>{{ $tag->name }}</option>
                                     @endforeach
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="status_type" class="form-label">Status</label>
+                                <select class="form-control" id="status_type" name="status">
+                                    <option value="active" {{ (isset($item) && $item->status == 'active') ? 'selected' : '' }}>Active</option>
+                                    <option value="inactive" {{ (isset($item) && $item->status == 'inactive') ? 'selected' : '' }}>Inactive</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="title" name="title" value="{{ $item->title ?? '' }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="title_type" class="form-label">Title Type</label>
+                                <select class="form-control" id="title_type" name="title_type">
+                                    <option value="default" {{ (isset($item) && $item->title_type == 'default') ? 'selected' : '' }}>Default</option>
+                                    <option value="discount" {{ (isset($item) && $item->title_type == 'discount') ? 'selected' : '' }}>Discount</option>
+                                    <option value="new" {{ (isset($item) && $item->title_type == 'new') ? 'selected' : '' }}>New</option>
                                 </select>
                             </div>
                             <div class="mb-3">
                                 <label for="image" class="form-label">Image</label>
                                 <input type="file" class="form-control" id="image" name="image" accept="image/*">
-                                <div class="mt-2" id="image-preview"></div>
+                                <div class="mt-2" id="image-preview">
+                                    @if(isset($item) && $item->getFirstMediaUrl('images'))
+                                        <img src="{{ $item->getFirstMediaUrl('images') }}" alt="Image Preview" style="max-width: 200px;">
+                                    @endif
+                                </div>
                             </div>
 
                             <div id="sub-items-container">
@@ -67,7 +93,37 @@
                                     </tr>
                                     </thead>
                                     <tbody id="sub-items-table-body">
-                                    <!-- Sub-items will be appended here -->
+                                    @if(isset($item))
+                                        @foreach($item->subItems as $subItem)
+                                            <tr data-id="{{ $subItem->id }}">
+                                                <td>
+                                                    <input type="hidden" name="sub_items[{{ $loop->index }}][id]" value="{{ $subItem->id }}">
+                                                    <input type="hidden" name="sub_items[{{ $loop->index }}][name]" value="{{ $subItem->name }}">
+                                                    {{ $subItem->name }}
+                                                </td>
+                                                <td>
+                                                    <input type="hidden" name="sub_items[{{ $loop->index }}][description]" value="{{ $subItem->description }}">
+                                                    {{ $subItem->description }}
+                                                </td>
+                                                <td>
+                                                    <input type="hidden" name="sub_items[{{ $loop->index }}][amount]" value="{{ $subItem->amount }}">
+                                                    {{ $subItem->amount }}
+                                                </td>
+                                                <td>
+                                                    <input type="hidden" name="sub_items[{{ $loop->index }}][price]" value="{{ $subItem->price }}">
+                                                    {{ $subItem->price }}
+                                                </td>
+                                                <td>
+                                                    @if($subItem->getFirstMediaUrl('images'))
+                                                        <img src="{{ $subItem->getFirstMediaUrl('images') }}" alt="Sub Item Image" style="max-width: 100px;">
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    <button type="button" class="btn btn-danger remove-sub-item" data-id="{{ $subItem->id }}">Remove</button>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @endif
                                     </tbody>
                                 </table>
                             </div>
@@ -154,7 +210,7 @@
                 let subItemCount = $('#sub-items-table-body tr').length;
 
                 let subItemRow = `
-                    <tr>
+                    <tr data-temp-id="${subItemCount}">
                         <td>
                             <input type="hidden" name="sub_items[${subItemCount}][name]" value="${subItemName}">
                             ${subItemName}
@@ -172,11 +228,11 @@
                             ${subItemPrice}
                         </td>
                         <td>
-                            <input type="hidden" name="sub_items[${subItemCount}][image]" class="sub-item-image-file" data-index="${subItemCount}">
+                            <input type="file" name="sub_items[${subItemCount}][image]" class="sub-item-image-file" data-index="${subItemCount}" style="display: none;">
                             <img src="" alt="Sub Item Image" class="sub-item-image-preview" style="max-width: 100px;">
                         </td>
                         <td>
-                            <button type="button" class="btn btn-danger remove-sub-item">Remove</button>
+                            <button type="button" class="btn btn-danger remove-sub-item" data-id="${subItemCount}">Remove</button>
                         </td>
                     </tr>
                 `;
@@ -198,12 +254,10 @@
                 // Clear modal form fields
                 $('#create-sub-item-form')[0].reset();
                 $('#sub-item-image-preview-modal').html('');
-
-                // Hide the modal after adding the sub-item
                 $('#subItemModal').modal('hide');
             });
 
-            $('#create-item-form').on('submit', function(e) {
+            $('#create-edit-item-form').on('submit', function(e) {
                 e.preventDefault();
 
                 var formData = new FormData(this);
@@ -224,11 +278,10 @@
                     processData: false,
                     contentType: false,
                     success: function(response) {
-                        console.log('Form submission success:', response);
                         $.toast().reset('all'); // Reset previous toasts
                         $.toast({
                             heading: 'Success',
-                            text: 'Item created successfully.',
+                            text: 'Item created/updated successfully.',
                             icon: 'success',
                             loader: true,
                             loaderBg: '#f96868',
@@ -237,16 +290,15 @@
                         });
 
                         // Optionally, reset the form fields
-                        $('#create-item-form')[0].reset();
+                        $('#create-edit-item-form')[0].reset();
                         $('#image-preview').html('');
                         $('#sub-items-table-body').html('');
                     },
                     error: function(response) {
-                        console.log('Form submission error:', response);
                         $.toast().reset('all'); // Reset previous toasts
                         $.toast({
                             heading: 'Error',
-                            text: 'There was an error creating the item.',
+                            text: 'There was an error creating/updating the item.',
                             icon: 'error',
                             loader: true,
                             loaderBg: '#f96868',
@@ -258,7 +310,15 @@
             });
 
             $(document).on('click', '.remove-sub-item', function() {
+                let subItemId = $(this).data('id');
                 $(this).closest('tr').remove();
+
+                // Append a hidden input to indicate removal of a sub-item
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: 'sub_items_to_remove[]',
+                    value: subItemId
+                }).appendTo('#create-edit-item-form');
             });
         });
     </script>
