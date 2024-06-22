@@ -26,13 +26,15 @@
                             @foreach($purchaseRequests as $request)
                                 <li class="activities-item">
                                     <div class="activities-item__logo">
-                                        <img src="{{ $request->getFirstMediaUrl('images') ?? asset('assets/img/default-image.jpg') }}" alt="image">
+                                        <img src="{{ $request->getFirstMediaUrl('purchase_documents') ?? asset('assets/img/default-image.jpg') }}" alt="image">
                                     </div>
                                     <div class="activities-item__info">
-                                        <div class="activities-item__title">{{ $request->notes }}</div>
-                                        <div class="activities-item__date">{{ $request->created_at->format('d M, Y') }}</div>
+                                        <div class="activities-item__title">Request ID: #{{ $request->id }}</div>
+                                        <div class="activities-item__title">Notes: {{ $request->notes }}</div>
+                                        <div class="activities-item__date" style="font-weight: 900">Requested on: {{ $request->created_at->format('d M, Y') }}</div>
+                                        <div class="activities-item__status">Status: {{ ucfirst($request->status) }}</div>
                                     </div>
-                                    <div class="activities-item__price">${{ number_format($request->amount, 2) }}</div>
+                                    <div class="activities-item__price">{{ number_format($request->amount, 2) }} USD</div>
                                 </li>
                             @endforeach
                         </ul>
@@ -74,7 +76,7 @@
                                         <div class="activities-item__logo">
                                             <a href="{{ route('item.show', ['id' => $item->id]) }}">
                                                 @if($item->getFirstMediaUrl('images'))
-                                                    <img src="{{ $item->getFirstMediaUrl('images') }}" alt="{{ $item->name }}">
+                                                    <img src="{{ $item->getFirstMediaUrl('images') }}" alt="{{ $item->name }}" style="height: 100%">
                                                 @else
                                                     <img src="{{ asset('assets/img/default-image.jpg') }}" alt="Default Image">
                                                 @endif
@@ -84,9 +86,11 @@
                                             <a class="activities-item__title" href="{{ route('item.show', ['id' => $item->id]) }}">
                                                 {{ $item->name }}
                                             </a>
+                                            <div class="activities-item__date">Order ID: #{{ $order->id }}</div>
                                             <div class="activities-item__date">{{ $order->created_at->format('d M, Y') }}</div>
+                                            <div class="activities-item__status">{{ $order->status }}</div>
                                         </div>
-                                        <div class="activities-item__price">${{ number_format($orderSubItem->price, 2) }}</div>
+                                        <div class="activities-item__price">{{ number_format($orderSubItem->price, 2) }} USD</div>
                                     </li>
                                 @endforeach
                             @endforeach

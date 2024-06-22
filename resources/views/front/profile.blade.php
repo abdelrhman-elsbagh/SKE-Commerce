@@ -3,9 +3,9 @@
 @section('title', 'Ske E-Commerce')
 
 @section('content')
-    <main class="page-main" style="width: 100%;">
+    <main class="page-main">
         <div class="uk-grid" data-uk-grid>
-            <div class="uk-width-2-3@l">
+            <div class="uk-width-3-3@l">
                 <div class="widjet --profile">
                     <div class="widjet__head">
                         <h3 class="uk-text-lead">Profile</h3>
@@ -49,8 +49,10 @@
                                     </div>
                                     <div class="widjet-game__info">
                                         <a class="widjet-game__title" href="{{ route('item.show', ['id' => $subItem->subItem->item->id]) }}"> {{ $subItem->subItem->name }}</a>
-                                        <div class="widjet-game__record">{{ $subItem->price }} USD</div>
+                                        <div class="widjet-game__record">Order ID: #{{ $order->id }}</div>
+                                        <div class="widjet-game__record">Price: {{ $subItem->price }} USD</div>
                                         <div class="widjet-game__last-played">Purchased on {{ $order->created_at->format('d M, Y') }}</div>
+                                        <div class="widjet-game__record">Status: {{ $order->status }}</div>
                                     </div>
                                 </div>
                             @endforeach

@@ -141,7 +141,12 @@
                 <div class="page-header__menu-btn"><button class="menu-btn ico_menu is-active"></button></div>
                 <div class="page-header__logo">
                     <a href="{{route('home')}}">
-                        <img src="{{ asset('assets/img/logo.png')}}" alt="logo"><span class="page-header__logo_text">{{$config->name}}</span>
+                        @if($config->getFirstMediaUrl('logos'))
+                            <img src="{{ $config->getFirstMediaUrl('logos') }}" alt="logo">
+                        @else
+                            <img src="{{ asset('assets/img/logo.png')}}" alt="logo">
+                        @endif
+                            <span class="page-header__logo_text">{{$config->name}}</span>
                     </a>
                 </div>
             </div>

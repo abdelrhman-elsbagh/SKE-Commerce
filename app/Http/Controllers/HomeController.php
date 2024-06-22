@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\BusinessClient;
+use App\Models\BusinessClientWallet;
 use App\Models\Config;
 use App\Models\Item;
 use App\Models\Order;
@@ -113,16 +115,22 @@ class HomeController extends Controller
 
         Auth::login($user);
 
+        UserWallet::create([
+            'user_id' => $user->id,
+            'balance' => 0,
+        ]);
+
         return response()->json(['message' => 'User registered successfully']);
     }
 
     public function login_page(Request $request)
     {
+        $config = Config::with('media')->first();
         /*$user = Auth::user();
         if (!$user) {
             return redirect()->route('login'); // Redirect to login if not authenticated
         }*/
-        return view('front.login');
+        return view('front.login', compact('config'));
     }
 
     public function login(Request $request)
@@ -142,22 +150,6 @@ class HomeController extends Controller
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
         ])->withInput($request->only('email'));
-    }
-
-    public function item(Request $request, $id)
-    {
-        $user = Auth::user();
-        $favoritesCount = 0;
-        if ($user) {
-            $favoritesCount = $user->favorites()->count();
-        }
-        View::share('favoritesCount', $favoritesCount);
-        $config = Config::with('media')->first();
-        $item = Item::with(['subItems', 'subItems.media', 'media', 'tags'])->findOrFail($id);
-        $userFavorites = Auth::user()->favorites->pluck('sub_item_id')->toArray();
-        $paymentMethods = PaymentMethod::where('status', 'active')->get();
-
-        return view('front.item', compact('item', 'config', 'userFavorites', 'paymentMethods'));
     }
 
     public function purchase(Request $request)
@@ -228,7 +220,13 @@ class HomeController extends Controller
 
         // Retrieve the selected sub-item
         $subItem = SubItem::findOrFail($request->sub_item_id);
-        $totalPrice = $subItem->price;
+
+        // Retrieve the fee percentage from the config
+        $config = Config::first(); // Assuming you have a Config model to fetch the fee percentage
+        $feePercentage = $config->fee;
+
+        // Calculate the total price including the fee
+        $totalPrice = $subItem->price + ($subItem->price * $feePercentage / 100);
 
         // Check if the user has enough balance
         if ($wallet->balance < $totalPrice) {
@@ -290,6 +288,25 @@ class HomeController extends Controller
         return view('front.payment-methods', ['paymentMethods' => $paymentMethods]);
     }
 
+    public function item(Request $request, $id)
+    {
+        $user = Auth::user();
+        $favoritesCount = 0;
+        if ($user) {
+            $favoritesCount = $user->favorites()->count();
+        }
+        View::share('favoritesCount', $favoritesCount);
+        $config = Config::with('media')->first();
+        $item = Item::with(['subItems', 'subItems.media', 'media', 'tags'])->findOrFail($id);
+        $userFavorites = [];
+        if(Auth::user()){
+
+            $userFavorites = Auth::user()->favorites->pluck('sub_item_id')->toArray();
+        }
+        $paymentMethods = PaymentMethod::where('status', 'active')->get();
+
+        return view('front.item', compact('item', 'config', 'userFavorites', 'paymentMethods'));
+    }
 
     public function logout(Request $request)
     {
@@ -300,5 +317,70 @@ class HomeController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('sign-in');
+    }
+
+    public function register_business_page(Request $request)
+    {
+        $config = Config::with('media')->first();
+        if (!$config->super_admin ==1) {
+            return redirect()->route('home');
+        }
+        return view('front.business_register', compact('config'));
+    }
+
+
+    public function register_business(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:business_clients',
+            'password' => 'required|string|min:8|confirmed',
+            'business_name' => 'required|string|max:255',
+            'phone' => 'required|string|max:15',
+            'address' => 'required|string|max:255',
+        ]);
+
+        $user =  BusinessClient::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'business_name' => $request->business_name,
+            'phone' => $request->phone,
+            'address' => $request->address,
+        ]);
+
+        BusinessClientWallet::create([
+            'business_client_id' => $user->id,
+            'balance' => 0,
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Registration successful']);
+    }
+
+    public function login_business_page(Request $request)
+    {
+        $config = Config::with('media')->first();
+        if (!$config->super_admin ==1) {
+            return redirect()->route('home');
+        }
+        return view('front.business_login', compact('config'));
+    }
+
+
+    public function login_business(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string|min:8',
+        ]);
+
+        $credentials = $request->only('email', 'password');
+
+        if (Auth::guard('business_client')->attempt($credentials)) {
+            // Authentication passed
+            return response()->json(['success' => true, 'message' => 'Login successful']);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Invalid credentials'], 401);
+        }
     }
 }

@@ -30,16 +30,8 @@
             </div>
             <div>
                 <div class="form-login">
-                    <div class="form-login__social">
-                        <ul class="social">
-                            <li><a href="http://www.google.com"><img src="{{ asset('assets/img/google.svg') }}" alt="google"></a></li>
-                            <li><a href="http://www.facebook.com"><img src="{{ asset('assets/img/facebook.svg') }}" alt="facebook"></a></li>
-                            <li><a href="http://www.twitter.com"><img src="{{ asset('assets/img/twitter.svg') }}" alt="twitter"></a></li>
-                        </ul>
-                    </div>
                     <div class="form-login__box">
-                        <div class="uk-heading-line uk-text-center"><span>or with Email</span></div>
-                        <form id="registrationForm" action="{{ route('register') }}" method="POST">
+                        <form id="registrationForm" action="{{ route('register_business') }}" method="POST">
                             @csrf
                             <div class="uk-margin">
                                 <input class="uk-input" type="email" name="email" placeholder="Email">
@@ -58,11 +50,23 @@
                                 <div class="uk-text-danger" id="error-password_confirmation"></div>
                             </div>
                             <div class="uk-margin">
+                                <input class="uk-input" type="text" name="business_name" placeholder="Business Name">
+                                <div class="uk-text-danger" id="error-business_name"></div>
+                            </div>
+                            <div class="uk-margin">
+                                <input class="uk-input" type="text" name="phone" placeholder="Phone">
+                                <div class="uk-text-danger" id="error-phone"></div>
+                            </div>
+                            <div class="uk-margin">
+                                <input class="uk-input" type="text" name="address" placeholder="Address">
+                                <div class="uk-text-danger" id="error-address"></div>
+                            </div>
+                            <div class="uk-margin">
                                 <button class="uk-button uk-button-danger uk-width-1-1" type="submit">Register</button>
                             </div>
                             <div class="uk-text-center">
                                 <span>Already have an account?</span>
-                                <a class="uk-margin-small-left" href="{{ route('login') }}">Log In</a>
+                                <a class="uk-margin-small-left" href="{{ route('business-sign-in') }}">Log In</a>
                             </div>
                         </form>
                     </div>

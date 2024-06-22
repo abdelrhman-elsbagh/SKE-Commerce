@@ -29,7 +29,7 @@ class PurchaseController extends Controller
             $purchaseRequest->payment_method_id = $request->payment_method_id;
 
             if ($request->hasFile('image')) {
-                $purchaseRequest->addMedia($request->file('image'))->toMediaCollection('purchase_requests');
+                $purchaseRequest->addMedia($request->file('image'))->toMediaCollection('purchase_documents');
             }
 
             $purchaseRequest->save();

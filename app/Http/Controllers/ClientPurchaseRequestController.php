@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\PurchaseRequest;
 use App\Models\User;
 use App\Models\PaymentMethod;
+use App\Models\UserWallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -73,6 +74,8 @@ class ClientPurchaseRequestController extends Controller
         ]);
 
         $purchaseRequest = PurchaseRequest::findOrFail($id);
+        $oldStatus = $purchaseRequest->status;
+
         $purchaseRequest->update([
             'user_id' => $request->user_id,
             'notes' => $request->notes,
@@ -81,13 +84,29 @@ class ClientPurchaseRequestController extends Controller
             'payment_method_id' => $request->payment_method_id,
         ]);
 
-        if ($request->hasFile('document')) {
+        if ($request->hasFile('purchase_documents')) {
             $purchaseRequest->clearMediaCollection('purchase_documents');
-            $purchaseRequest->addMedia($request->file('document'))->toMediaCollection('purchase_documents');
+            $purchaseRequest->addMedia($request->file('purchase_documents'))->toMediaCollection('purchase_documents');
+        }
+
+        // Check if the old status was not "Approved" and the new status is "Approved"
+        if ($oldStatus !== 'approved' && $request->status === 'approved') {
+            $wallet = UserWallet::where('user_id', $request->user_id)->first();
+            if ($wallet) {
+                $wallet->balance += $request->amount;
+                $wallet->save();
+            } else {
+                // Create a new wallet entry if it doesn't exist
+                UserWallet::create([
+                    'user_id' => $request->user_id,
+                    'balance' => $request->amount,
+                ]);
+            }
         }
 
         return redirect()->route('purchase-requests.index')->with('success', 'Purchase request updated successfully.');
     }
+
 
     public function destroy($id)
     {

@@ -45,16 +45,10 @@
             </div>
             <div>
                 <div class="form-login">
-                    <div class="form-login__social">
-                        <ul class="social">
-                            <li><a href="http://www.google.com"><img src="{{ asset('assets/img/google.svg') }}" alt="google"></a></li>
-                            <li><a href="http://www.facebook.com"><img src="{{ asset('assets/img/facebook.svg') }}" alt="facebook"></a></li>
-                            <li><a href="http://www.twitter.com"><img src="{{ asset('assets/img/twitter.svg') }}" alt="twitter"></a></li>
-                        </ul>
-                    </div>
+
+
                     <div class="form-login__box">
-                        <div class="uk-heading-line uk-text-center"><span>or with Email</span></div>
-                        <form action="{{ route('login') }}" method="POST">
+                        <form action="{{ route('business-login') }}" method="POST">
                             @csrf
                             <div class="uk-margin">
                                 <input class="uk-input" type="text" name="email" placeholder="Email" value="{{ old('email') }}">
@@ -74,7 +68,7 @@
                             <hr>
                             <div class="uk-text-center">
                                 <span>Don’t have an account?</span>
-                                <a class="uk-margin-small-left" href="{{ route('register-page') }}">Register</a>
+                                <a class="uk-margin-small-left" href="{{ route('register-business') }}">Register</a>
                             </div>
                         </form>
                     </div>

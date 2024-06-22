@@ -25,8 +25,7 @@ class FavoriteController extends Controller
         // Prevent adding the same favorite multiple times
         $exists = Favorite::where('user_id', $user->id)
             ->where(function($query) use ($request) {
-                $query->where('item_id', $request->input('item_id'))
-                    ->orWhere('sub_item_id', $request->input('sub_item_id'));
+                $query->where('sub_item_id', $request->input('sub_item_id'));
             })
             ->exists();
 
@@ -34,6 +33,10 @@ class FavoriteController extends Controller
             return response()->json(['success' => false, 'message' => 'This item is already in your favorites.']);
         }
 
+        $favorite->save();
+        if(!empty($request->input('sub_item_id'))){
+            $favorite->item_id = $favorite->subItem->item->id;
+        }
         $favorite->save();
 
         return response()->json(['success' => true, 'message' => 'Item added to favorites successfully.']);

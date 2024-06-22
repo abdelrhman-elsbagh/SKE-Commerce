@@ -1,23 +1,50 @@
 <!-- ========== Left Sidebar Start ========== -->
+@php
+    $config = \App\Models\Config::first();
+@endphp
 <div class="leftside-menu">
 
     <!-- Brand Logo Light -->
     <a href="{{ route('any', 'index') }}" class="logo logo-light nav-link">
         <span class="logo-lg">
-            <img src="/images/logo.png" alt="logo">
+            @if($config->getFirstMediaUrl('logos'))
+                <span style="font-weight: bold;color: #FFFFFF;font-size: 16px">{{ $config->name ?? "SKE APP"}}</span>
+                <img src="{{ $config->getFirstMediaUrl('logos') }}" alt="logo">
+            @else
+                <span style="font-weight: bold;color: #FFFFFF;font-size: 16px">{{ $config->name ?? "SKE APP"}}</span>
+                <img src="{{ asset('assets/img/logo.png')}}" alt="logo">
+            @endif
         </span>
         <span class="logo-sm">
-            <img src="/images/logo-sm.png" alt="small logo">
+            @if($config->getFirstMediaUrl('logos'))
+                <span style="font-weight: bold;color: #FFFFFF;font-size: 16px">{{ $config->name ?? "SKE APP"}}</span>
+                <img src="{{ $config->getFirstMediaUrl('logos') }}" alt="logo">
+            @else
+                <span style="font-weight: bold;color: #FFFFFF;font-size: 16px">{{ $config->name ?? "SKE APP"}}</span>
+                <img src="{{ asset('assets/img/logo.png')}}" alt="logo">
+            @endif
         </span>
     </a>
 
     <!-- Brand Logo Dark -->
     <a href="{{ route('any', 'index') }}" class="logo logo-dark nav-link">
-        <span class="logo-lg">
-            <img src="/images/logo-dark.png" alt="logo">
+         <span class="logo-lg">
+            @if($config->getFirstMediaUrl('logos'))
+                 <span style="font-weight: bold;color: #FFFFFF;font-size: 16px">{{ $config->name ?? "SKE APP"}}</span>
+                 <img src="{{ $config->getFirstMediaUrl('logos') }}" alt="logo">
+             @else
+                 <span style="font-weight: bold;color: #FFFFFF;font-size: 16px">{{ $config->name ?? "SKE APP"}}</span>
+                 <img src="{{ asset('assets/img/logo.png')}}" alt="logo">
+             @endif
         </span>
         <span class="logo-sm">
-            <img src="/images/logo-sm.png" alt="small logo">
+            @if($config->getFirstMediaUrl('logos'))
+                <span style="font-weight: bold;color: #FFFFFF;font-size: 16px">{{ $config->name ?? "SKE APP"}}</span>
+                <img src="{{ $config->getFirstMediaUrl('logos') }}" alt="logo">
+            @else
+                <span style="font-weight: bold;color: #FFFFFF;font-size: 16px">{{ $config->name ?? "SKE APP"}}</span>
+                <img src="{{ asset('assets/img/logo.png')}}" alt="logo">
+            @endif
         </span>
     </a>
 

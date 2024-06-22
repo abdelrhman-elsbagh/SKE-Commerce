@@ -290,7 +290,7 @@
                         });
 
                         // Optionally, reset the form fields
-                        // $('#create-edit-item-form')[0].reset();
+                        $('#create-edit-item-form')[0].reset();
                         // $('#image-preview').html('');
                         // $('#sub-items-table-body').html('');
                     },

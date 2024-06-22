@@ -26,7 +26,10 @@ require __DIR__ . '/auth.php';
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('registration', [HomeController::class, 'register_page'])->name('register-page');
+Route::get('register-business', [HomeController::class, 'register_business_page'])->name('register-business');
 Route::get('sign-in', [HomeController::class, 'login_page'])->name('sign-in');
+Route::get('business-sign-in', [HomeController::class, 'login_business_page'])->name('business-sign-in');
+Route::get('business-login', [HomeController::class, 'login_business'])->name('business-login');
 Route::get('profile', [HomeController::class, 'profile'])->name('profile');
 Route::get('favourites', [HomeController::class, 'favourites'])->name('favourites');
 Route::get('wallet', [HomeController::class, 'wallet'])->name('wallet');
@@ -37,11 +40,11 @@ Route::post('purchase', [HomeController::class, 'purchase'])->name('purchase');
 Route::post('purchase_order', [HomeController::class, 'purchase_order'])->name('purchase_order');
 Route::post('login', [HomeController::class, 'login']);
 Route::post('register', [HomeController::class, 'register'])->name('register');
+Route::post('register_business', [HomeController::class, 'register_business'])->name('register_business');
 Route::post('/purchase-request', [PurchaseController::class, 'request'])->name('purchase.request');
 Route::post('/favorites/add', [FavoriteController::class, 'add'])->name('favorites.add');
 
 Route::post('logout', [HomeController::class, 'logout'])->name('logout');
-
 
 
 Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {

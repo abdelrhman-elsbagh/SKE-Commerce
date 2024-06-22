@@ -3871,6 +3871,15 @@ a:hover {
     white-space: nowrap;
 }
 
+.activities-item__status {
+    color: #27ae60;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 1.36;
+    white-space: nowrap;
+}
+
 .price-range {
     -webkit-box-align: center;
     -ms-flex-align: center;
@@ -5802,4 +5811,14 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
 .youzify-group-avatar {
     border: 8px solid transparent;
     background-color: rgba(255, 255, 255, .35);
+}
+
+.item-crd{
+    padding: 18px 30px !important;
+}
+
+@media (min-width: 1200px) {
+    .item-crd {
+        padding: 18px 30px;
+    }
 }

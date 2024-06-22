@@ -1,3 +1,4 @@
+@php use Illuminate\Support\Facades\Auth; @endphp
 @extends('front.layout')
 
 @section('title', 'Ske E-Commerce')
@@ -15,33 +16,39 @@
                             <form id="subItemForm" method="POST" action="{{ route('purchase') }}">
                                 @csrf
                                 <input class="uk-input" id="service_id" name="service_id" type="text" placeholder="Enter service ID" style="position: absolute;bottom: -80px;left: 0;background: #FFF;">
-                                <div class="uk-grid uk-child-width-1-3@s uk-grid-small" data-uk-grid>
+                                <div class="uk-grid uk-child-width-1-5@s uk-grid-small" data-uk-grid>
                                     @foreach($item->subItems as $subItem)
                                         @php
-                                            $isFavorited = Auth::user()->favorites()->where('sub_item_id', $subItem->id)->exists();
+                                                $isFavorited = false;
+                                                if(Auth::user()){
+
+                                                $isFavorited = Auth::user()->favorites()->where('sub_item_id', $subItem->id)->exists();
+                                                }
                                         @endphp
                                         <div>
                                             <div class="uk-card uk-card-default uk-card-hover uk-margin selectable-card"
                                                  style="cursor: pointer; position: relative;border-radius: 7px;"
                                                  data-id="{{ $subItem->id }}"
                                                  data-price="{{ number_format($subItem->price, 2) }}">
-                                                <div class="uk-card-header">
+                                                <div class="uk-card-header item-crd">
                                                     <div class="uk-grid-small uk-flex-middle" data-uk-grid>
                                                         <div class="uk-width-expand">
-                                                            <h3 class="uk-card-title uk-margin-remove-bottom" style="text-align: center;font-size: 20px"> <span class="" style="margin: 0;font-size: 20px"></span> {{ $subItem->amount }} {{ $subItem->name }} </h3>
+                                                            <h3 class="uk-card-title uk-margin-remove-bottom" style="text-align: center;font-size: 16px"> <span class="" style="margin: 0;font-size: 20px"></span> {{ $subItem->amount }} {{ $subItem->name }} </h3>
+                                                            <p class="uk-card-title uk-margin-remove-bottom" style="text-align: center;font-size: 15px; margin-top: 5px">{{ $subItem->description ?? "" }}</p>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="uk-card-body" style="padding: 10px;text-align: center">
-                                                    @if($subItem->getFirstMediaUrl('images'))
-                                                        <img src="{{ $subItem->getFirstMediaUrl('images') }}" alt="{{ $subItem->name }}" class="uk-width-1-1"
-                                                             style="height: 150px">
-                                                    @else
-                                                        <img src="{{ asset('assets/img/default-image.jpg') }}" alt="Default Image" class="uk-width-1-1">
-                                                    @endif
-                                                </div>
-                                                <div class="uk-card-footer">
-                                                    <span class="uk-text-bold">${{ number_format($subItem->price, 2) }}</span>
+                                                @if($subItem->getFirstMediaUrl('images'))
+                                                    <div class="uk-card-body" style="padding: 10px;text-align: center">
+
+                                                            <img src="{{ $subItem->getFirstMediaUrl('images') }}" alt="{{ $subItem->name }}" class="uk-width-1-1"
+                                                                 style="height: 150px">
+                                                    </div>
+                                                @endif
+                                                <div class="uk-card-footer" style="text-align: center; ">
+                                                    <span class="uk-text-bold" style="color: #F46119; font-size: 18px;">
+                                                        {{ number_format($subItem->price + ($subItem->price * $config->fee / 100), 2) }} USD
+                                                    </span>
                                                     <i class="fas fa-heart fa-1x heart-icon" style="color: {{ $isFavorited ? '#f46119' : '#ccc' }}; position: absolute; top: 10px; left: 10px;"></i>
                                                 </div>
                                                 <div class="selected-icon" style="display: none; position: absolute; top: 10px; right: 10px; color: #f46119;">
@@ -107,6 +114,24 @@
 
     <script src="{{ asset('assets/js/libs.js') }}"></script>
     <script src="{{ asset('assets/js/main.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            // Find all elements with class 'item-crd'
+            var maxHeight = 0;
+
+            $('.item-crd').each(function() {
+                // Update maxHeight to the tallest element
+                var currentHeight = $(this).height();
+                if (currentHeight > maxHeight) {
+                    maxHeight = currentHeight;
+                }
+            });
+
+            // Set all elements to the maxHeight
+            $('.item-crd').height(maxHeight);
+        });
+
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const cards = document.querySelectorAll('.selectable-card');

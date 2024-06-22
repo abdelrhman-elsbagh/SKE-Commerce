@@ -87,6 +87,11 @@ class ItemController extends Controller
         $item = Item::findOrFail($id);
         $item->update($request->all());
 
+        if ($request->hasFile('image')) {
+            $item->clearMediaCollection('images');
+            $item->addMedia($request->file('image'))->toMediaCollection('images');
+        }
+
         if ($request->has('tags')) {
             $item->tags()->sync($request->tags);
         }
