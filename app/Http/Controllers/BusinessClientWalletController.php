@@ -11,7 +11,7 @@ class BusinessClientWalletController extends Controller
 {
     public function index()
     {
-        $wallets = BusinessClientWallet::where('business_client_id', Auth::id())->get();
+        $wallets = BusinessClientWallet::with('businessClient')->get();
         return view('admin.client_wallets.index', compact('wallets'));
     }
 
@@ -31,18 +31,18 @@ class BusinessClientWalletController extends Controller
     public function store(Request $request)
     {
         $wallet = BusinessClientWallet::create([
-            'business_client_id' => Auth::id(),
+            'business_client_id' =>  $request->input('business_client_id'),
             'balance' => $request->input('balance', 0.00),
         ]);
 
-        return redirect()->route('client-wallets.index')->with('success', 'Wallet created successfully.');
+        return redirect()->route('business-client-wallets.index')->with('success', 'Wallet created successfully.');
     }
 
     public function edit($id)
     {
         $wallet = BusinessClientWallet::findOrFail($id);
         $businessClients = BusinessClient::all();
-        return view('admin.client_wallets.business_client.edit', compact('wallet', 'businessClients'));
+        return view('admin.client_wallets.edit', compact('wallet', 'businessClients'));
     }
 
     public function update(Request $request, $id)
@@ -50,7 +50,7 @@ class BusinessClientWalletController extends Controller
         $wallet = BusinessClientWallet::findOrFail($id);
         $wallet->update($request->all());
 
-        return redirect()->route('client-wallets.index')->with('success', 'Wallet updated successfully.');
+        return redirect()->route('business-client-wallets.index')->with('success', 'Wallet updated successfully.');
     }
 
     public function destroy($id)

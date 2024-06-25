@@ -54,9 +54,12 @@
                                             </a>
                                         </div>
                                         <div class="game-card__info">
-                                            <a class="game-card__title" href="10_game-profile.html">{{ $item->name }}</a>
+                                            <a class="game-card__title" href="{{ $item->status == 'active' ? route('item.show', ['id' => $item->id]) : '#' }}">{{ $item->name }}</a>
+                                            @if($item->title_type != 'default')
+                                                <div class="card-tag {{ $item->title_type == 'discount' ? 'card-tag-discount' : ($item->title_type == 'new' ? 'card-tag-new' : '') }}">{{ $item->title }}</div>
+                                            @endif
                                             @foreach($item->tags as $tag)
-                                                <span class="game-card__genre">{{ $tag->name }}</span>
+                                                <span class="game-card__genre">{{ $tag->name }}{{ !$loop->last ? ' - ' : '' }}</span>
                                             @endforeach
                                         </div>
                                     </div>
@@ -75,4 +78,32 @@
             </script>
         @endpush
     @endif
+
+    <style>
+        .card-tag {
+            text-align: center;
+            width: 110px;
+            rotate: -45deg;
+            position: absolute;
+            top: 12px;
+            left: -20px;
+            padding: 9px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            border-radius: 2px;
+            max-height: 47px;
+        }
+        .card-tag-discount {
+            background-color: red;
+        }
+        .card-tag-new {
+            background-color: yellow;
+            color: #2d2d2d;
+        }
+        .game-card__box {
+            position: relative;
+            overflow: hidden;
+        }
+    </style>
 @endsection

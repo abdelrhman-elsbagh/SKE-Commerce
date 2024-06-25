@@ -156,17 +156,38 @@
         <aside class="sidebar is-show" id="sidebar">
             <div class="sidebar-box">
                 <ul class="uk-nav">
-                    @guest
+                    @if(Auth::guard('web')->guest() && Auth::guard('business_client')->guest())
                         <li><a href="{{ route('sign-in') }}"><i class="fas fa-sign-in-alt"></i><span>Login</span></a></li>
                         <li><a href="{{ route('register-page') }}"><i class="fas fa-user-plus"></i><span>Register</span></a></li>
-                    @else
-                        <li class="uk-active"><a href="{{route('home')}}"><i class="ico_store"></i><span>Home</span></a></li>
-                        <li><a href="{{route('profile')}}"><i class="ico_profile"></i><span>Profile</span></a></li>
-                        <li><a href="{{route('favourites')}}"><i class="ico_favourites"></i><span>Favourites</span><span class="count">{{$favoritesCount}}</span></a></li>
-                        <li><a href="{{route('wallet')}}"><i class="ico_wallet"></i><span>Wallet</span></a></li>
-                        <li><a href="{{ route('plans-page') }}"><i class="fas fa-box-open"></i><span>Plans</span></a></li>
-                        <li><a href="#modal-purchase-request" data-uk-toggle><i class="fas fa-money-bill-wave" style="font-size: 16px;"></i><span>Purchase Request</span></a></li>
-                        <li><a href="{{ route('payments-page') }}"><i class="fas fa-credit-card"></i><span>Payment Methods</span></a></li>
+
+                        <li><a href="{{ route('business-sign-in') }}"><i class="fas fa-sign-in-alt"></i><span>Admin Login</span></a></li>
+                        <li><a href="{{ route('register-business') }}"><i class="fas fa-user-plus"></i><span>Register as Admin</span></a></li>
+                    @endif
+
+                    @auth('business_client')
+                        <li><a href="{{route('business-wallet')}}"><i class="ico_wallet"></i><span>Wallet</span></a></li>
+                        <li><a href="{{route('business-profile')}}"><i class="ico_profile"></i><span>Profile</span></a></li>
+                        <li>
+                            <a href="{{ route('logout') }}"
+                               onclick="event.preventDefault(); document.getElementById('logout-form-business').submit();">
+                                <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+                            </a>
+                            <form id="logout-form-business" action="{{ route('business-logout') }}" method="POST" style="display: none;">
+                                @csrf
+                            </form>
+                        </li>
+                    @elseauth('web')
+                        @if(Auth::user()->hasRole('Admin'))
+                            <li><a href="{{route('dashboard')}}"><i class="ico_profile"></i><span>Admin Dashboard</span></a></li>
+                            @else
+                            <li class="uk-active"><a href="{{route('home')}}"><i class="ico_store"></i><span>Home</span></a></li>
+                            <li><a href="{{route('profile')}}"><i class="ico_profile"></i><span>Profile</span></a></li>
+                            <li><a href="{{route('favourites')}}"><i class="ico_favourites"></i><span>Favourites</span><span class="count">{{$favoritesCount}}</span></a></li>
+                            <li><a href="{{route('wallet')}}"><i class="ico_wallet"></i><span>Wallet</span></a></li>
+                            <li><a href="{{ route('plans-page') }}"><i class="fas fa-box-open"></i><span>Plans</span></a></li>
+                            <li><a href="#modal-purchase-request" data-uk-toggle><i class="fas fa-money-bill-wave" style="font-size: 16px;"></i><span>Purchase Request</span></a></li>
+                            <li><a href="{{ route('payments-page') }}"><i class="fas fa-credit-card"></i><span>Payment Methods</span></a></li>
+                        @endif
                         <li>
                             <a href="{{ route('logout') }}"
                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
@@ -187,10 +208,8 @@
                                 <i class="fab fa-facebook" style="font-size: 22px; color: #1877F2;"></i>
                             </a>
                         </li>
-                    @endguest
+                    @endauth
                 </ul>
-
-
 
             </div>
         </aside>

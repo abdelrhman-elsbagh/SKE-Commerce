@@ -22,4 +22,9 @@ class Order extends Model
     {
         return $this->hasMany(OrderSubItem::class);
     }
+
+    public function items()
+    {
+        return $this->belongsToMany(Item::class)->withPivot('quantity'); // Adjust if necessary
+    }
 }

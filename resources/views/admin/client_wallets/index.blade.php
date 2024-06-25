@@ -20,6 +20,7 @@
                             <thead>
                             <tr>
                                 <th>ID</th>
+                                <th>User</th>
                                 <th>Balance</th>
                                 <th>Actions</th>
                             </tr>
@@ -28,6 +29,7 @@
                             @foreach($wallets as $wallet)
                                 <tr id="wallet-{{ $wallet->id }}">
                                     <td>{{ $wallet->id }}</td>
+                                    <td>{{ $wallet->businessClient->name }}</td>
                                     <td>{{ $wallet->balance }}</td>
                                     <td>
                                         <a href="{{ route('business-client-wallets.show', $wallet->id) }}" class="btn btn-info">Show</a>

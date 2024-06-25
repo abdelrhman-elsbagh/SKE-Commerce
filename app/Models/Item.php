@@ -38,4 +38,14 @@ class Item extends Model implements HasMedia
     {
         $this->addMediaCollection('images');
     }
+
+    public function orders()
+    {
+        return $this->belongsToMany(Order::class)->withPivot('quantity'); // Adjust if necessary
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
 }

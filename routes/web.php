@@ -5,6 +5,7 @@ use App\Http\Controllers\BusinessClientWalletController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ClientPurchaseRequestController;
 use App\Http\Controllers\ConfigController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DiamondRatesController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\HomeController;
@@ -29,10 +30,12 @@ Route::get('registration', [HomeController::class, 'register_page'])->name('regi
 Route::get('register-business', [HomeController::class, 'register_business_page'])->name('register-business');
 Route::get('sign-in', [HomeController::class, 'login_page'])->name('sign-in');
 Route::get('business-sign-in', [HomeController::class, 'login_business_page'])->name('business-sign-in');
-Route::get('business-login', [HomeController::class, 'login_business'])->name('business-login');
+Route::post('business-login', [HomeController::class, 'login_business'])->name('business-login');
 Route::get('profile', [HomeController::class, 'profile'])->name('profile');
+Route::get('business-profile', [HomeController::class, 'business_profile'])->name('business-profile');
 Route::get('favourites', [HomeController::class, 'favourites'])->name('favourites');
 Route::get('wallet', [HomeController::class, 'wallet'])->name('wallet');
+Route::get('business-wallet', [HomeController::class, 'business_wallet'])->name('business-wallet');
 Route::get('plans', [HomeController::class, 'plans'])->name('plans-page');
 Route::get('payment-methods', [HomeController::class, 'payment_methods'])->name('payments-page');
 Route::get('/item/{id}', [HomeController::class, 'item'])->name('item.show');
@@ -45,11 +48,17 @@ Route::post('/purchase-request', [PurchaseController::class, 'request'])->name('
 Route::post('/favorites/add', [FavoriteController::class, 'add'])->name('favorites.add');
 
 Route::post('logout', [HomeController::class, 'logout'])->name('logout');
+Route::post('business-logout', [HomeController::class, 'business_logout'])->name('business-logout');
 
 
 Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
     // Define the admin home route
-    Route::get('/home', [RoutingController::class, 'index'])->name('admin.home');
+
+    Route::get('', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('index', [DashboardController::class, 'index'])->name('dashboard');
+
+//    Route::get('', [RoutingController::class, 'index'])->name('admin.home');
+//    Route::get('/home', [RoutingController::class, 'index'])->name('admin.home');
 
     Route::resource('purchase-requests', ClientPurchaseRequestController::class);
 

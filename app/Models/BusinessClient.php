@@ -33,4 +33,14 @@ class BusinessClient extends Authenticatable
         return $this->hasOne(BusinessClientWallet::class);
     }
 
+    public function businessPaymentMethods()
+    {
+        return $this->hasMany(BusinessPaymentMethod::class);
+    }
+
+    public function businessPurchaseRequests()
+    {
+        return $this->hasMany(BusinessPurchaseRequest::class);
+    }
+
 }

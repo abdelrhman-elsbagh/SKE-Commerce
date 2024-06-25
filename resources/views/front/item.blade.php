@@ -39,10 +39,10 @@
                                                     </div>
                                                 </div>
                                                 @if($subItem->getFirstMediaUrl('images'))
-                                                    <div class="uk-card-body" style="padding: 10px;text-align: center">
+                                                    <div class="uk-card-body" style="padding: 0;text-align: center">
 
                                                             <img src="{{ $subItem->getFirstMediaUrl('images') }}" alt="{{ $subItem->name }}" class="uk-width-1-1"
-                                                                 style="height: 150px">
+                                                                 style="height: 50px; width: 50px">
                                                     </div>
                                                 @endif
                                                 <div class="uk-card-footer" style="text-align: center; ">

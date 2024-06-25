@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Models\BusinessClient;
 use App\Models\BusinessClientWallet;
+use App\Models\BusinessPaymentMethod;
 use App\Models\Config;
 use App\Models\Item;
 use App\Models\Order;
@@ -31,11 +32,15 @@ class HomeController extends Controller
         $sliders = Slider::with('media')->get();
         $config = Config::with('media')->first();
         $items = Item::with('category', 'media')->get();
-        $user = Auth::user();
+
+        $user = Auth::guard('web')->user();
+        if (!$user) {
+            $user = Auth::guard('business_client')->user();
+        }
 
         $favoritesCount = 0;
-        if ($user) {
-            $favoritesCount = $user->favorites()->count();
+        if (Auth::guard('web')->user()) {
+            $favoritesCount = $user->favorites()->count() ?? 0; // Assuming both users and business clients have a favorites relationship
         }
 
         $paymentMethods = PaymentMethod::where('status', 'active')->get();
@@ -51,10 +56,10 @@ class HomeController extends Controller
             'categorizedItems' => $categorizedItems,
             'sliders' => $sliders,
             'config' => $config,
-            'paymentMethods' => $paymentMethods
+            'paymentMethods' => $paymentMethods,
+            'user' => $user
         ]);
     }
-
 
     public function wallet(Request $request)
     {
@@ -83,7 +88,28 @@ class HomeController extends Controller
             'paymentMethods' => $paymentMethods]);
     }
 
+    public function business_wallet(Request $request)
+    {
+        $config = Config::with('media')->first();
+        View::share('config', $config);
 
+        $businessClient = Auth::guard('business_client')->user();
+        if (!$businessClient) {
+            return redirect()->route('business-sign-in');
+        }
+
+        $wallet = BusinessClientWallet::where('business_client_id', $businessClient->id)->firstOrFail();
+        $subscriptions = $businessClient->subscriptions()->with('plan')->get();
+        $purchaseRequests = $businessClient->businessPurchaseRequests()->latest()->take(5)->get();
+        $paymentMethods = $businessClient->businessPaymentMethods()->where('status', 'active')->get();
+
+        return view('front.business_wallet', [
+            'wallet' => $wallet,
+            'subscriptions' => $subscriptions,
+            'purchaseRequests' => $purchaseRequests,
+            'paymentMethods' => $paymentMethods
+        ]);
+    }
 
 
     public function register_page(Request $request)
@@ -183,6 +209,25 @@ class HomeController extends Controller
         $paymentMethods = PaymentMethod::where('status', 'active')->get();
 
         return view('front.profile', compact('user', 'orders', 'purchaseRequests', 'paymentMethods'));
+    }
+    public function business_profile(Request $request)
+    {
+        $config = Config::with('media')->first();
+        View::share('config', $config);
+
+        $businessClient = Auth::guard('business_client')->user();
+        if (!$businessClient) {
+            return redirect()->route('business-sign-in');
+        }
+
+        $favoritesCount = 0;
+        $paymentMethods = BusinessPaymentMethod::where('status', 'active')->get();
+        View::share('favoritesCount', $favoritesCount);
+
+        $subscriptions = $businessClient->subscriptions()->with('plan.media')->get();
+        $purchaseRequests = $businessClient->businessPurchaseRequests()->with('media')->get();
+
+        return view('front.business_profile', compact('businessClient', 'subscriptions', 'purchaseRequests', 'paymentMethods'));
     }
 
     public function favourites(Request $request)
@@ -319,6 +364,17 @@ class HomeController extends Controller
         return redirect()->route('sign-in');
     }
 
+    public function business_logout(Request $request)
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken();
+
+        return redirect()->route('sign-in');
+    }
+
     public function register_business_page(Request $request)
     {
         $config = Config::with('media')->first();
@@ -377,8 +433,7 @@ class HomeController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::guard('business_client')->attempt($credentials)) {
-            // Authentication passed
-            return response()->json(['success' => true, 'message' => 'Login successful']);
+            return redirect()->route('home');
         } else {
             return response()->json(['success' => false, 'message' => 'Invalid credentials'], 401);
         }

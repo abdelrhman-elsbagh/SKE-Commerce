@@ -292,7 +292,7 @@
                         // Optionally, reset the form fields
                         $('#create-edit-item-form')[0].reset();
                         // $('#image-preview').html('');
-                        // $('#sub-items-table-body').html('');
+                        $('#sub-items-table-body').html('');
                     },
                     error: function(response) {
                         $.toast().reset('all'); // Reset previous toasts

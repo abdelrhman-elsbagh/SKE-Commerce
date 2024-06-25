@@ -73,22 +73,12 @@
 
             <li class="side-nav-title">Navigation</li>
 
+
             <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarDashboards" aria-expanded="false" aria-controls="sidebarDashboards" class="side-nav-link nav-link">
+                <a href="{{ route('dashboard') }}" class="side-nav-link">
                     <i class="ri-home-4-line"></i>
-                    <span class="badge bg-success float-end">2</span>
                     <span> Dashboards </span>
                 </a>
-                <div class="collapse" id="sidebarDashboards">
-                    <ul class="side-nav-second-level">
-{{--                        <li>--}}
-{{--                            <a href="{{ route('any', 'analytics') }}" class="nav-link">Analytics</a>--}}
-{{--                        </li>--}}
-                        <li>
-                            <a href="{{ route('any', 'index') }}" class="nav-link">Statistics</a>
-                        </li>
-                    </ul>
-                </div>
             </li>
 
 {{--            <li class="side-nav-title">Apps</li>--}}
