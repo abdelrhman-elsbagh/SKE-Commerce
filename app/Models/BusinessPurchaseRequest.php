@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class BusinessPurchaseRequest extends Model
+class BusinessPurchaseRequest extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory, InteractsWithMedia;
 
     protected $fillable = [
         'business_client_id',
@@ -21,9 +23,8 @@ class BusinessPurchaseRequest extends Model
         return $this->belongsTo(BusinessClient::class);
     }
 
-    public function getFirstMediaUrl($collectionName = 'default', $conversionName = '')
+    public function registerMediaCollections(): void
     {
-        // Assuming you are using a media library like Spatie Media Library, otherwise implement accordingly.
-        return $this->getFirstMediaUrl($collectionName, $conversionName);
+        $this->addMediaCollection('business_purchase_documents')->singleFile();
     }
 }

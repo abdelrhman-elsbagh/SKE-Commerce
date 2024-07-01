@@ -6,6 +6,7 @@ use App\Models\BusinessClientWallet;
 use App\Models\BusinessPaymentMethod;
 use App\Models\Config;
 use App\Models\Item;
+use App\Models\News;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderSubItem;
@@ -32,6 +33,7 @@ class HomeController extends Controller
         $sliders = Slider::with('media')->get();
         $config = Config::with('media')->first();
         $items = Item::with('category', 'media')->get();
+        $news = News::first();
 
         $user = Auth::guard('web')->user();
         if (!$user) {
@@ -40,7 +42,8 @@ class HomeController extends Controller
 
         $favoritesCount = 0;
         if (Auth::guard('web')->user()) {
-            $favoritesCount = $user->favorites()->count() ?? 0; // Assuming both users and business clients have a favorites relationship
+            $favoritesCount = $user->favorites()->count() ?? 0;
+            $config->fee = $user->fee;
         }
 
         $paymentMethods = PaymentMethod::where('status', 'active')->get();
@@ -57,7 +60,8 @@ class HomeController extends Controller
             'sliders' => $sliders,
             'config' => $config,
             'paymentMethods' => $paymentMethods,
-            'user' => $user
+            'user' => $user,
+            'news' => $news,
         ]);
     }
 
@@ -114,11 +118,12 @@ class HomeController extends Controller
 
     public function register_page(Request $request)
     {
+        $config = Config::with('media')->first();
         /*$user = Auth::user();
         if (!$user) {
             return redirect()->route('login'); // Redirect to login if not authenticated
         }*/
-        return view('front.register');
+        return view('front.register', compact('config'));
     }
 
     public function register(Request $request)
@@ -330,18 +335,21 @@ class HomeController extends Controller
         View::share('favoritesCount', $favoritesCount);
 
         $paymentMethods = PaymentMethod::with('media')->get();
-        return view('front.payment-methods', ['paymentMethods' => $paymentMethods]);
+        return view('front.payment-methods', ['paymentMethods' => $paymentMethods, 'user' => $user]);
     }
 
     public function item(Request $request, $id)
     {
+        $config = Config::with('media')->first();
         $user = Auth::user();
         $favoritesCount = 0;
         if ($user) {
             $favoritesCount = $user->favorites()->count();
+            $config->fee = $user->fee;
         }
         View::share('favoritesCount', $favoritesCount);
-        $config = Config::with('media')->first();
+
+
         $item = Item::with(['subItems', 'subItems.media', 'media', 'tags'])->findOrFail($id);
         $userFavorites = [];
         if(Auth::user()){

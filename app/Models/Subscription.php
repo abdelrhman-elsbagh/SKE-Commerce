@@ -9,11 +9,11 @@ class Subscription extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'plan_id', 'start_date', 'end_date'];
+    protected $fillable = ['business_client_id', 'plan_id', 'start_date', 'end_date'];
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(BusinessClient::class);
     }
 
     public function plan()

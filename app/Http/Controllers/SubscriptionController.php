@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BusinessClient;
+use App\Models\Plan;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
 
@@ -9,37 +11,67 @@ class SubscriptionController extends Controller
 {
     public function index()
     {
-        return Subscription::with('plan', 'user')->get();
+        $subscriptions = Subscription::all();
+        return view('admin.subscriptions.index', compact('subscriptions'));
     }
 
-    public function show($id)
+    public function create()
     {
-        return Subscription::with('plan', 'user')->findOrFail($id);
+        $businessClients = BusinessClient::all();
+        $plans = Plan::all();
+        return view('admin.subscriptions.create', compact('businessClients', 'plans'));
     }
 
     public function store(Request $request)
     {
-        $subscription = Subscription::create([
-            'user_id' => $request->user_id,
-            'plan_id' => $request->plan_id,
-            'start_date' => now(),
-            'end_date' => now()->addDays(Plan::findOrFail($request->plan_id)->duration),
+        $request->validate([
+            'business_client_id' => 'required',
+            'plan_id' => 'required',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
+            'status' => 'required|string',
         ]);
 
-        return $subscription->load('plan', 'user');
+        Subscription::create($request->all());
+
+        return redirect()->route('subscriptions.index')
+            ->with('success', 'Subscription created successfully.');
     }
 
-    public function update(Request $request, $id)
+    public function show(Subscription $subscription)
     {
-        $subscription = Subscription::findOrFail($id);
+        return view('admin.subscriptions.show', compact('subscription'));
+    }
+
+    public function edit(Subscription $subscription)
+    {
+        $businessClients = BusinessClient::all();
+        $plans = Plan::all();
+        return view('admin.subscriptions.edit', compact('subscription', 'businessClients', 'plans'));
+    }
+
+    public function update(Request $request, Subscription $subscription)
+    {
+        $request->validate([
+            'business_client_id' => 'required',
+            'plan_id' => 'required',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
+            'status' => 'required|string',
+        ]);
+
         $subscription->update($request->all());
-        return $subscription->load('plan', 'user');
+
+        return redirect()->route('subscriptions.index')
+            ->with('success', 'Subscription updated successfully.');
     }
 
-    public function destroy($id)
+    public function destroy(Subscription $subscription)
     {
-        Subscription::findOrFail($id)->delete();
-        return response()->noContent();
+        $subscription->delete();
+
+        return redirect()->route('subscriptions.index')
+            ->with('success', 'Subscription deleted successfully.');
     }
 }
 

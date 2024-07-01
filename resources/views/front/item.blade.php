@@ -15,7 +15,7 @@
                         <div class="widjet__body" style="position: relative">
                             <form id="subItemForm" method="POST" action="{{ route('purchase') }}">
                                 @csrf
-                                <input class="uk-input" id="service_id" name="service_id" type="text" placeholder="Enter service ID" style="position: absolute;bottom: -80px;left: 0;background: #FFF;">
+                                <input class="uk-input light-border" id="service_id" name="service_id" type="text" placeholder="Enter service ID" style="position: absolute;bottom: -80px;left: 0;background: #FFF;">
                                 <div class="uk-grid uk-child-width-1-5@s uk-grid-small" data-uk-grid>
                                     @foreach($item->subItems as $subItem)
                                         @php
@@ -29,7 +29,7 @@
                                             <div class="uk-card uk-card-default uk-card-hover uk-margin selectable-card"
                                                  style="cursor: pointer; position: relative;border-radius: 7px;"
                                                  data-id="{{ $subItem->id }}"
-                                                 data-price="{{ number_format($subItem->price, 2) }}">
+                                                 data-price="{{ number_format($subItem->price + ($subItem->price * $config->fee / 100), 2) }}">
                                                 <div class="uk-card-header item-crd">
                                                     <div class="uk-grid-small uk-flex-middle" data-uk-grid>
                                                         <div class="uk-width-expand">
@@ -62,6 +62,11 @@
                             </form>
                         </div>
                     </div>
+                    <div class="game-profile-price" style="margin-top: 110px">
+                        <div class="game-profile-price__value">$0.00 USD</div>
+                        <button id="buyNowButton" class="uk-button uk-button-danger uk-width-1-1" type="button"><span class="ico_shopping-cart"></span><span>Buy Now</span></button>
+                        <button id="addToFavouritesButton" class="uk-button uk-button-primary uk-width-1-1" type="button"><span class="ico_add-square"></span><span>Add to Favourites</span></button>
+                    </div>
                 </div>
             @else
                 <p>No items found.</p>
@@ -77,22 +82,21 @@
                         <span>{{$item->description}}</span>
                     </div>
                     <ul class="game-profile-card__list">
+{{--                        <li>--}}
+{{--                            <div>Sell Count:</div>--}}
+{{--                            <div class="game-card__rating"><span>15</span></div>--}}
+{{--                        </li>--}}
                         <li>
-                            <div>Sell Count:</div>
-                            <div class="game-card__rating"><span>15</span></div>
-                        </li>
-                        <li>
-                            <div>Tags:</div>
                             @foreach($item->tags as $tag)
                                 <span class="" style="background: #F46119;margin-right: 5px;color: #FFF;padding: 5px;border-radius: 7px;font-size: 12px;font-weight: 900;">{{ $tag->name }}</span>
                             @endforeach
                         </li>
                     </ul>
-                    <ul class="game-profile-card__type">
-                        @foreach($item->tags as $tag)
-                            <li><span>{{ $tag->name }}</span></li>
-                        @endforeach
-                    </ul>
+{{--                    <ul class="game-profile-card__type">--}}
+{{--                        @foreach($item->tags as $tag)--}}
+{{--                            <li><span>{{ $tag->name }}</span></li>--}}
+{{--                        @endforeach--}}
+{{--                    </ul>--}}
                 </div>
 
                 <div class="game-profile-card__intro"  style="border-radius: 5px;background: #fff;padding: 10px;">
@@ -103,11 +107,7 @@
                     </ul>
                     <span>Your payment security is our top priority. We use advanced encryption to protect your data, ensuring all transactions are processed safely through trusted gateways. Shop confidently with our secure payment system.</span>
                 </div>
-                <div class="game-profile-price" style="margin-top: 20px">
-                    <div class="game-profile-price__value">$0.00 USD</div>
-                    <button id="buyNowButton" class="uk-button uk-button-danger uk-width-1-1" type="button"><span class="ico_shopping-cart"></span><span>Buy Now</span></button>
-                    <button id="addToFavouritesButton" class="uk-button uk-button-primary uk-width-1-1" type="button"><span class="ico_add-square"></span><span>Add to Favourites</span></button>
-                </div>
+
             </div>
         </div>
     </main>

@@ -14,7 +14,7 @@
             <div class="col-12">
                 <div class="page-title-box d-flex align-items-center justify-content-between">
                     <h4 class="page-title">Purchase Requests</h4>
-                    <a href="{{ route('purchase-requests.create') }}" class="btn btn-primary">Create Purchase Request</a>
+                    <a href="{{ route('business-purchase-requests.create') }}" class="btn btn-primary">Create Purchase Request</a>
                 </div>
             </div>
         </div>
@@ -38,13 +38,13 @@
                             @foreach($purchaseRequests as $purchaseRequest)
                                 <tr id="purchase-request-{{ $purchaseRequest->id }}">
                                     <td>{{ $purchaseRequest->id }}</td>
-                                    <td>{{ $purchaseRequest->user->name }}</td>
+                                    <td>{{ $purchaseRequest->businessClient->name }}</td>
                                     <td>{{ $purchaseRequest->amount }}</td>
                                     <td style="color: @if($purchaseRequest->status == 'canceled' || $purchaseRequest->status == 'rejected') #F00 @elseif($purchaseRequest->status == 'approved') #1abc9c @endif;">{{ ucfirst($purchaseRequest->status) }}</td>
                                     <td>{{ $purchaseRequest->paymentMethod->gateway ?? "" }}</td>
                                     <td>
-                                        <a href="{{ route('purchase-requests.show', $purchaseRequest->id) }}" class="btn btn-info">Show</a>
-                                        <a href="{{ route('purchase-requests.edit', $purchaseRequest->id) }}" class="btn btn-warning">Edit</a>
+                                        <a href="{{ route('business-purchase-requests.show', $purchaseRequest->id) }}" class="btn btn-info">Show</a>
+                                        <a href="{{ route('business-purchase-requests.edit', $purchaseRequest->id) }}" class="btn btn-warning">Edit</a>
                                         <button type="button" class="btn btn-danger btn-delete" data-id="{{ $purchaseRequest->id }}">Delete</button>
                                     </td>
                                 </tr>
@@ -96,7 +96,7 @@
             // Confirm delete
             $('#confirmDelete').on('click', function() {
                 $.ajax({
-                    url: '{{ route('purchase-requests.index') }}/' + purchaseRequestIdToDelete,
+                    url: '{{ route('business-purchase-requests.index') }}/' + purchaseRequestIdToDelete,
                     type: 'POST',
                     data: {
                         _method: 'DELETE',

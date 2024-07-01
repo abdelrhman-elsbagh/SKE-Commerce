@@ -27,6 +27,9 @@
                             <tr>
                                 <th>ID</th>
                                 <th>User</th>
+                                <th>Order Type</th>
+                                <th>Created At</th>
+                                <th>Updated At</th>
                                 <th>Total</th>
                                 <th>Status</th>
                                 <th>Actions</th>
@@ -37,10 +40,14 @@
                                 <tr id="order-{{ $order->id }}">
                                     <td>{{ $order->id }}</td>
                                     <td>{{ $order->user->name }}</td>
+                                    <td>{{ $order->order_type }}</td>
+                                    <td>{{ $order->created_at }}</td>
+                                    <td>{{ $order->updated_at }}</td>
                                     <td>{{ $order->total }}</td>
-                                    <td>{{ ucfirst($order->status) }}</td>
+                                    <td style="color: @if($order->status == 'canceled' || $order->status == 'refunded') #F00 @elseif($order->status == 'active') #1abc9c @endif;">{{ ucfirst($order->status) }}</td>
                                     <td>
                                         <a href="{{ route('orders.show', $order->id) }}" class="btn btn-info">Show</a>
+                                        <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-warning">Edit</a>
                                         <button class="btn btn-danger btn-delete" data-id="{{ $order->id }}">Delete</button>
                                     </td>
                                 </tr>

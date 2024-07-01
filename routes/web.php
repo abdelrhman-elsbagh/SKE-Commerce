@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BusinessClientWalletController;
+use App\Http\Controllers\BusinessPurchaseRequestController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ClientPurchaseRequestController;
 use App\Http\Controllers\ConfigController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\DiamondRatesController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\NewsController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\PlanController;
@@ -50,6 +52,7 @@ Route::post('/favorites/add', [FavoriteController::class, 'add'])->name('favorit
 Route::post('logout', [HomeController::class, 'logout'])->name('logout');
 Route::post('business-logout', [HomeController::class, 'business_logout'])->name('business-logout');
 
+Route::put('users/{id}', [UserController::class, 'profile_update'])->name('profile-update');
 
 Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
     // Define the admin home route
@@ -61,6 +64,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
 //    Route::get('/home', [RoutingController::class, 'index'])->name('admin.home');
 
     Route::resource('purchase-requests', ClientPurchaseRequestController::class);
+    Route::resource('business-purchase-requests', BusinessPurchaseRequestController::class);
 
     Route::resource('user-wallets', UserWalletController::class);
     Route::resource('users', UserController::class);
@@ -76,6 +80,9 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
     Route::resource('payment-methods', PaymentMethodController::class);
     Route::resource('subscriptions', SubscriptionController::class);
     Route::resource('tags', TagController::class);
+
+    Route::get('news/edit', [NewsController::class, 'edit'])->name('news.edit');
+    Route::put('news/{id}', [NewsController::class, 'update'])->name('news.update');
 
     // Generic wildcard routes
     Route::get('{first}/{second}/{third}', [RoutingController::class, 'thirdLevel'])->name('third');

@@ -56,6 +56,41 @@ class UserController extends Controller
         return redirect()->route('users.index')->with('success', 'User created successfully.');
     }
 
+    public function profile_update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $id,
+            'password' => 'nullable|string|min:8|confirmed',
+            'bio' => 'nullable|string',
+            'address' => 'nullable|string',
+            'date_of_birth' => 'nullable|date',
+            'avatar' => 'nullable|image',
+        ]);
+
+        $user = User::findOrFail($id);
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'bio' => $request->bio,
+            'address' => $request->address,
+            'date_of_birth' => $request->date_of_birth,
+        ]);
+
+        if ($request->filled('password')) {
+            $user->update([
+                'password' => Hash::make($request->password),
+            ]);
+        }
+
+        if ($request->hasFile('avatar')) {
+            $user->clearMediaCollection('avatars');
+            $user->addMedia($request->file('avatar'))->toMediaCollection('avatars');
+        }
+
+        return redirect()->back()->with('success', 'Your profile updated successfully.');
+    }
+
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -68,7 +103,8 @@ class UserController extends Controller
             'status' => 'nullable|string',
             'avatar' => 'nullable|image',
             'role' => 'required|exists:roles,id',
-        ]);
+            'fee' => 'required|numeric|min:0',
+            ]);
 
         $user = User::findOrFail($id);
         $user->update([
@@ -78,6 +114,7 @@ class UserController extends Controller
             'address' => $request->address,
             'date_of_birth' => $request->date_of_birth,
             'status' => $request->status,
+            'fee' => $request->fee,
         ]);
 
         if ($request->filled('password')) {
@@ -106,7 +143,7 @@ class UserController extends Controller
 
     public function edit($id)
     {
-        $user = User::with('roles', 'media')->findOrFail($id);
+        $user = User::with('roles', 'media', 'specialUserFeeDiscounts')->findOrFail($id);
         $roles = Role::all();
         return view('admin.users.edit', compact('user', 'roles'));
     }

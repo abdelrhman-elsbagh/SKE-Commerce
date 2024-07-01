@@ -2,8 +2,18 @@
 
 @section('css')
     @vite([
-        'node_modules/jquery-toast-plugin/dist/jquery.toast.min.css'
+        'node_modules/jquery-toast-plugin/dist/jquery.toast.min.css',
+        'node_modules/quill/dist/quill.snow.css'
     ])
+    <style>
+        .uk-card-body {
+            display: flex;
+            flex-direction: column;
+        }
+        .description {
+            flex: 1;
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -29,7 +39,8 @@
                             </div>
                             <div class="mb-3">
                                 <label for="description" class="form-label">Description</label>
-                                <textarea class="form-control" id="description" name="description">{{ $paymentMethod->description }}</textarea>
+                                <div id="snow-editor" style="height: 300px;">{!! $paymentMethod->description !!}</div>
+                                <input type="hidden" name="description" id="description">
                             </div>
                             <div class="mb-3">
                                 <label for="image" class="form-label">Image</label>
@@ -51,11 +62,16 @@
 
 @section('script')
     @vite([
-        'node_modules/jquery-toast-plugin/dist/jquery.toast.min.js'
+        'node_modules/jquery-toast-plugin/dist/jquery.toast.min.js',
+        'node_modules/quill/dist/quill.min.js'
     ])
 
     <script>
         $(document).ready(function() {
+            var quill = new Quill('#snow-editor', {
+                theme: 'snow'
+            });
+
             $('#image').change(function() {
                 let reader = new FileReader();
                 reader.onload = function(e) {
@@ -66,6 +82,9 @@
 
             $('#edit-payment-method-form').on('submit', function(e) {
                 e.preventDefault();
+
+                // Set the description content from the Quill editor to the hidden input field
+                $('#description').val(quill.root.innerHTML);
 
                 var formData = new FormData(this);
 

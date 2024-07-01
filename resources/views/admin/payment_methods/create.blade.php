@@ -2,7 +2,8 @@
 
 @section('css')
     @vite([
-        'node_modules/jquery-toast-plugin/dist/jquery.toast.min.css'
+        'node_modules/jquery-toast-plugin/dist/jquery.toast.min.css',
+        'node_modules/quill/dist/quill.snow.css'
     ])
 @endsection
 
@@ -28,8 +29,10 @@
                             </div>
                             <div class="mb-3">
                                 <label for="description" class="form-label">Description</label>
-                                <textarea class="form-control" id="description" name="description"></textarea>
+                                <div id="snow-editor" style="height: 300px;"></div>
+                                <input type="hidden" name="description" id="description">
                             </div>
+
                             <div class="mb-3">
                                 <label for="image" class="form-label">Image</label>
                                 <input type="file" class="form-control" id="image" name="image" accept="image/*">
@@ -46,11 +49,16 @@
 
 @section('script')
     @vite([
-        'node_modules/jquery-toast-plugin/dist/jquery.toast.min.js'
+        'node_modules/jquery-toast-plugin/dist/jquery.toast.min.js',
+        'node_modules/quill/dist/quill.min.js'
     ])
 
     <script>
         $(document).ready(function() {
+            var quill = new Quill('#snow-editor', {
+                theme: 'snow'
+            });
+
             $('#image').change(function() {
                 let reader = new FileReader();
                 reader.onload = function(e) {
@@ -61,6 +69,9 @@
 
             $('#create-payment-method-form').on('submit', function(e) {
                 e.preventDefault();
+
+                // Set the description content from the Quill editor to the hidden input field
+                $('#description').val(quill.root.innerHTML);
 
                 var formData = new FormData(this);
 
@@ -80,6 +91,10 @@
                             position: 'top-right',
                             hideAfter: 3000
                         });
+
+                        $('#create-payment-method-form')[0].reset();
+                        $('#image-preview').html('');
+                        quill.root.innerHTML = '';
                     },
                     error: function(response) {
                         $.toast({

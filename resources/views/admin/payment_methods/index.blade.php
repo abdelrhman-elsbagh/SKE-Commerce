@@ -4,8 +4,15 @@
     @vite([
         'node_modules/datatables.net-bs5/css/dataTables.bootstrap5.min.css',
         'node_modules/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css',
-        'node_modules/jquery-toast-plugin/dist/jquery.toast.min.css'
+        'node_modules/jquery-toast-plugin/dist/jquery.toast.min.css',
+        'node_modules/quill/dist/quill.snow.css'
     ])
+    <style>
+        .description {
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -37,7 +44,7 @@
                                 <tr id="payment-method-{{ $paymentMethod->id }}">
                                     <td>{{ $paymentMethod->id }}</td>
                                     <td>{{ $paymentMethod->gateway }}</td>
-                                    <td>{{ \Illuminate\Support\Str::limit($paymentMethod->description, 100, '...') }}</td>
+                                    <td><div class="description">{!! \Illuminate\Support\Str::limit($paymentMethod->description, 100, '...') !!}</div></td>
                                     <td>
                                         <a href="{{ route('payment-methods.show', $paymentMethod->id) }}" class="btn btn-info">Show</a>
                                         <a href="{{ route('payment-methods.edit', $paymentMethod->id) }}" class="btn btn-warning">Edit</a>
@@ -78,7 +85,8 @@
 @section('script')
     @vite([
         'resources/js/pages/demo.datatable-init.js',
-        'node_modules/jquery-toast-plugin/dist/jquery.toast.min.js'
+        'node_modules/jquery-toast-plugin/dist/jquery.toast.min.js',
+        'node_modules/quill/dist/quill.min.js'
     ])
 
     <script>

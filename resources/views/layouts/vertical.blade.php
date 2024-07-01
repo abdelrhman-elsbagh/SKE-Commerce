@@ -10,6 +10,10 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     @vite(['resources/js/head.js'])
+    @vite(['node_modules/quill/dist/quill.core.css', 'node_modules/quill/dist/quill.snow.css', 'node_modules/quill/dist/quill.bubble.css'])
+    @vite(['resources/js/pages/demo.quilljs.js'])
+
+
 </head>
 
 <body>

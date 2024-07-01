@@ -90,12 +90,12 @@
 {{--                </a>--}}
 {{--            </li>--}}
 
-            <li class="side-nav-item">
-                <a href="{{ route('second', ['apps', 'chat']) }}" class="side-nav-link nav-link">
-                    <i class="ri-message-3-line"></i>
-                    <span> Chat </span>
-                </a>
-            </li>
+{{--            <li class="side-nav-item">--}}
+{{--                <a href="{{ route('second', ['apps', 'chat']) }}" class="side-nav-link nav-link">--}}
+{{--                    <i class="ri-message-3-line"></i>--}}
+{{--                    <span> Chat </span>--}}
+{{--                </a>--}}
+{{--            </li>--}}
 
 {{--            <li class="side-nav-item">--}}
 {{--                <a data-bs-toggle="collapse" href="#sidebarEmail" aria-expanded="false" aria-controls="sidebarEmail" class="side-nav-link nav-link">--}}
@@ -428,37 +428,20 @@
 {{--                </div>--}}
 {{--            </li>--}}
 
-            <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarCategories" aria-expanded="false" aria-controls="sidebarCategories" class="side-nav-link nav-link">
-                    <i class="ri-folder-line"></i>
-                    <span> Categories </span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="sidebarCategories">
-                    <ul class="side-nav-second-level">
-                        <li>
-                            <a href="{{ route('categories.index') }}" class="nav-link">All Categories</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('categories.create') }}" class="nav-link">Create Category</a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
 
             <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarItems" aria-expanded="false" aria-controls="sidebarItems" class="side-nav-link nav-link">
-                    <i class="ri-file-list-line"></i>
-                    <span> Items </span>
+                <a data-bs-toggle="collapse" href="#sidebarPlans" aria-expanded="false" aria-controls="sidebarPlans" class="side-nav-link nav-link">
+                    <i class="ri-calendar-check-line"></i>
+                    <span> Plans </span>
                     <span class="menu-arrow"></span>
                 </a>
-                <div class="collapse" id="sidebarItems">
+                <div class="collapse" id="sidebarPlans">
                     <ul class="side-nav-second-level">
                         <li>
-                            <a href="{{ route('items.index') }}" class="nav-link">All Items</a>
+                            <a href="{{ route('plans.index') }}" class="nav-link">All Plans</a>
                         </li>
                         <li>
-                            <a href="{{ route('items.create') }}" class="nav-link">Create Item</a>
+                            <a href="{{ route('plans.create') }}" class="nav-link">Create Plan</a>
                         </li>
                     </ul>
                 </div>
@@ -482,59 +465,25 @@
                 </div>
             </li>
 
-
             <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarPlans" aria-expanded="false" aria-controls="sidebarPlans" class="side-nav-link nav-link">
-                    <i class="ri-calendar-check-line"></i>
-                    <span> Plans </span>
-                    <span class="menu-arrow"></span>
+                <a href="{{ route('orders.index') }}" class="side-nav-link">
+                    <i class="ri-shopping-cart-line"></i>
+                    <span> Orders </span>
                 </a>
-                <div class="collapse" id="sidebarPlans">
-                    <ul class="side-nav-second-level">
-                        <li>
-                            <a href="{{ route('plans.index') }}" class="nav-link">All Plans</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('plans.create') }}" class="nav-link">Create Plan</a>
-                        </li>
-                    </ul>
-                </div>
             </li>
 
             <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarSubscriptions" aria-expanded="false" aria-controls="sidebarSubscriptions" class="side-nav-link nav-link">
-                    <i class="ri-coin-line"></i>
-                    <span> Subscriptions </span>
-                    <span class="menu-arrow"></span>
+                <a href="{{ route('purchase-requests.index') }}" class="side-nav-link">
+                    <i class="ri-file-list-line"></i>
+                    <span> Purchase Requests </span>
                 </a>
-                <div class="collapse" id="sidebarSubscriptions">
-                    <ul class="side-nav-second-level">
-                        <li>
-                            <a href="{{ route('subscriptions.index') }}" class="nav-link">All Subscriptions</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('subscriptions.create') }}" class="nav-link">Create Subscription</a>
-                        </li>
-                    </ul>
-                </div>
             </li>
 
             <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarTags" aria-expanded="false" aria-controls="sidebarTags" class="side-nav-link nav-link">
-                    <i class="ri-price-tag-3-line"></i>
-                    <span> Tags </span>
-                    <span class="menu-arrow"></span>
+                <a href="{{ route('business-purchase-requests.index') }}" class="side-nav-link">
+                    <i class="ri-file-list-line"></i>
+                    <span> B.Purchase Requests </span>
                 </a>
-                <div class="collapse" id="sidebarTags">
-                    <ul class="side-nav-second-level">
-                        <li>
-                            <a href="{{ route('tags.index') }}" class="nav-link">All Tags</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('tags.create') }}" class="nav-link">Create Tag</a>
-                        </li>
-                    </ul>
-                </div>
             </li>
 
             <li class="side-nav-item">
@@ -574,9 +523,108 @@
             </li>
 
             <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarPaymentMethods" aria-expanded="false" aria-controls="sidebarPaymentMethods" class="side-nav-link nav-link">
+                    <i class="ri-money-dollar-box-line"></i>
+                    <span> Payment Methods </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarPaymentMethods">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('payment-methods.index') }}" class="nav-link">All Payment Methods</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('payment-methods.create') }}" class="nav-link">Create Payment Method</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarCategories" aria-expanded="false" aria-controls="sidebarCategories" class="side-nav-link nav-link">
+                    <i class="ri-folder-line"></i>
+                    <span> Categories </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarCategories">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('categories.index') }}" class="nav-link">All Categories</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('categories.create') }}" class="nav-link">Create Category</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarItems" aria-expanded="false" aria-controls="sidebarItems" class="side-nav-link nav-link">
+                    <i class="ri-file-list-line"></i>
+                    <span> Items </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarItems">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('items.index') }}" class="nav-link">All Items</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('items.create') }}" class="nav-link">Create Item</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarSubscriptions" aria-expanded="false" aria-controls="sidebarSubscriptions" class="side-nav-link nav-link">
+                    <i class="ri-coin-line"></i>
+                    <span> Subscriptions </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarSubscriptions">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('subscriptions.index') }}" class="nav-link">All Subscriptions</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('subscriptions.create') }}" class="nav-link">Create Subscription</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarTags" aria-expanded="false" aria-controls="sidebarTags" class="side-nav-link nav-link">
+                    <i class="ri-price-tag-3-line"></i>
+                    <span> Tags </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarTags">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('tags.index') }}" class="nav-link">All Tags</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('tags.create') }}" class="nav-link">Create Tag</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+
+            <li class="side-nav-item">
                 <a href="{{ route('sliders.index') }}" class="side-nav-link nav-link">
                     <i class="ri-slideshow-line"></i>
                     <span> Sliders </span>
+                </a>
+            </li>
+
+            <li class="side-nav-item">
+                <a href="{{ route('news.edit') }}" class="side-nav-link nav-link">
+                    <i class="ri-survey-line"></i>
+                    <span> News </span>
                 </a>
             </li>
 
@@ -599,37 +647,6 @@
 {{--                </div>--}}
 {{--            </li>--}}
 
-            <li class="side-nav-item">
-                <a href="{{ route('purchase-requests.index') }}" class="side-nav-link">
-                    <i class="ri-file-list-line"></i>
-                    <span> Purchase Requests </span>
-                </a>
-            </li>
-
-            <li class="side-nav-item">
-                <a href="{{ route('orders.index') }}" class="side-nav-link">
-                    <i class="ri-shopping-cart-line"></i>
-                    <span> Orders </span>
-                </a>
-            </li>
-
-            <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarPaymentMethods" aria-expanded="false" aria-controls="sidebarPaymentMethods" class="side-nav-link nav-link">
-                    <i class="ri-money-dollar-box-line"></i>
-                    <span> Payment Methods </span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="sidebarPaymentMethods">
-                    <ul class="side-nav-second-level">
-                        <li>
-                            <a href="{{ route('payment-methods.index') }}" class="nav-link">All Payment Methods</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('payment-methods.create') }}" class="nav-link">Create Payment Method</a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
 
 
 

@@ -52,6 +52,10 @@
                                 <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" value="{{ \Carbon\Carbon::parse($user->date_of_birth)->format('Y-m-d') }}">
                             </div>
                             <div class="mb-3">
+                                <label for="fee" class="form-label">Fee (%)</label>
+                                <input type="number" step="0.01" class="form-control" id="fee" name="fee" value="{{ $user->fee }}" required>
+                            </div>
+                            <div class="mb-3">
                                 <label for="status" class="form-label">Status</label>
                                 <select class="form-control" id="status" name="status">
                                     <option value="active" {{ $user->status == 'active' ? 'selected' : '' }}>Active</option>

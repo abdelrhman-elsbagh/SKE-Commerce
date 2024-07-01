@@ -49,11 +49,26 @@
 
 <input id="toggle" type="checkbox">
 <script type="text/javascript">
-    document.getElementById("toggle").addEventListener("click", function() {
-        document.getElementsByTagName('body')[0].classList.toggle("dark-theme");
-    });
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if the cookie exists and set the checkbox state and theme accordingly
+        const darkThemeCookie = document.cookie.split('; ').find(row => row.startsWith('darkTheme='));
+        if (darkThemeCookie && darkThemeCookie.split('=')[1] === 'true') {
+            document.getElementById("toggle").checked = true;
+            document.getElementsByTagName('body')[0].classList.add("dark-theme");
+        }
 
+        document.getElementById("toggle").addEventListener("change", function() {
+            if (this.checked) {
+                document.getElementsByTagName('body')[0].classList.add("dark-theme");
+                document.cookie = "darkTheme=true; path=/; max-age=" + 60 * 60 * 24 * 365;
+            } else {
+                document.getElementsByTagName('body')[0].classList.remove("dark-theme");
+                document.cookie = "darkTheme=false; path=/; max-age=" + 60 * 60 * 24 * 365;
+            }
+        });
+    });
 </script>
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -150,6 +165,29 @@
                     </a>
                 </div>
             </div>
+            <div class="page-header__content">
+                <div class="page-header__search1">
+
+                </div>
+                <div class="page-header__action">
+                    @auth('business_client')
+                        <a class="profile" href="{{route('business-wallet')}}" style="margin-right: 40px;"><div class="activities-item__price"><i class="fa fa-coins"></i>
+                                {{\Illuminate\Support\Facades\Auth::user()->wallet->balance}}  USD</div></a>
+                        <a class="profile" href="{{route('business-profile')}}" style="margin-right: 40px;"><img src="{{ asset('assets/img/profile.png')}}" alt="profile"></a>
+                    @elseauth('web')
+                        <a class="profile" href="{{route('wallet')}}" style="margin-right: 40px;"><div class="activities-item__price"><i class="fa fa-coins"></i>
+                            {{\Illuminate\Support\Facades\Auth::user()->wallet->balance}}  USD</div></a>
+                        <a class="profile" href="{{route('profile')}}" >
+                            @if(\Illuminate\Support\Facades\Auth::user()->getFirstMediaUrl('avatars'))
+                                <img src="{{ \Illuminate\Support\Facades\Auth::user()->getFirstMediaUrl('avatars') }}" alt="profile" style="margin-left: 50px; border-radius: 50%">
+                            @else
+                                <img src="{{ asset('assets/img/profile.png') }}" alt="profile" style="margin-left: 50px;">
+                            @endif
+                        </a>
+                    @endauth
+
+                </div>
+            </div>
         </div>
     </header>
     <div class="page-content">
@@ -166,7 +204,11 @@
 
                     @auth('business_client')
                         <li><a href="{{route('business-wallet')}}"><i class="ico_wallet"></i><span>Wallet</span></a></li>
+                            <hr class="mt8"/>
                         <li><a href="{{route('business-profile')}}"><i class="ico_profile"></i><span>Profile</span></a></li>
+                            <hr class="mt8"/>
+                        <li><a href="{{ route('plans-page') }}"><i class="fas fa-box-open"></i><span>Plans</span></a></li>
+                            <hr class="mt8"/>
                         <li>
                             <a href="{{ route('logout') }}"
                                onclick="event.preventDefault(); document.getElementById('logout-form-business').submit();">
@@ -179,14 +221,20 @@
                     @elseauth('web')
                         @if(Auth::user()->hasRole('Admin'))
                             <li><a href="{{route('dashboard')}}"><i class="ico_profile"></i><span>Admin Dashboard</span></a></li>
+                                <hr class="mt8"/>
                             @else
                             <li class="uk-active"><a href="{{route('home')}}"><i class="ico_store"></i><span>Home</span></a></li>
+                            <hr class="mt8"/>
                             <li><a href="{{route('profile')}}"><i class="ico_profile"></i><span>Profile</span></a></li>
+                                <hr class="mt8"/>
                             <li><a href="{{route('favourites')}}"><i class="ico_favourites"></i><span>Favourites</span><span class="count">{{$favoritesCount}}</span></a></li>
+                                <hr class="mt8"/>
                             <li><a href="{{route('wallet')}}"><i class="ico_wallet"></i><span>Wallet</span></a></li>
-                            <li><a href="{{ route('plans-page') }}"><i class="fas fa-box-open"></i><span>Plans</span></a></li>
+                                <hr class="mt8"/>
                             <li><a href="#modal-purchase-request" data-uk-toggle><i class="fas fa-money-bill-wave" style="font-size: 16px;"></i><span>Purchase Request</span></a></li>
+                                <hr class="mt8"/>
                             <li><a href="{{ route('payments-page') }}"><i class="fas fa-credit-card"></i><span>Payment Methods</span></a></li>
+                                <hr class="mt8"/>
                         @endif
                         <li>
                             <a href="{{ route('logout') }}"
@@ -291,6 +339,7 @@
 <script src="{{ asset('assets/js/libs.js')}}"></script>
 <script src="{{ asset('assets/js/main.js')}}"></script>
 
+@yield('scripts')
 
 </body>
 

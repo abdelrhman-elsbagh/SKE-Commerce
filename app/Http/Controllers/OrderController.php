@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -17,6 +18,24 @@ class OrderController extends Controller
     {
         $order = Order::with(['user', 'subItems.subItem'])->findOrFail($id);
         return view('admin.orders.show', compact('order'));
+    }
+
+    public function edit($id)
+    {
+        $order = Order::findOrFail($id);
+        $users = User::whereHas('roles', function($query) {
+            $query->where('name', 'User');
+        })->get();
+
+        return view('admin.orders.edit', compact('order', 'users'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $order = Order::findOrFail($id);
+        $order->update($request->all());
+
+        return response()->json(['message' => 'Order updated successfully.']);
     }
 
     public function destroy($id)

@@ -30,6 +30,18 @@
                                 <td>{{ $order->user->name }}</td>
                             </tr>
                             <tr>
+                                <th>Order Type</th>
+                                <td>{{ $order->order_type }}</td>
+                            </tr>
+                            <tr>
+                                <th>Created At</th>
+                                <td>{{ $order->created_at }}</td>
+                            </tr>
+                            <tr>
+                                <th>Updated At</th>
+                                <td>{{ $order->updated_at }}</td>
+                            </tr>
+                            <tr>
                                 <th>Total</th>
                                 <td>{{ $order->total }}</td>
                             </tr>

@@ -2,8 +2,15 @@
 
 @section('css')
     @vite([
-        'node_modules/jquery-toast-plugin/dist/jquery.toast.min.css'
+        'node_modules/jquery-toast-plugin/dist/jquery.toast.min.css',
+        'node_modules/quill/dist/quill.snow.css'
     ])
+    <style>
+        .description {
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -31,7 +38,9 @@
                             </tr>
                             <tr>
                                 <th>Description</th>
-                                <td>{{ $paymentMethod->description }}</td>
+                                <td>
+                                    <div class="description">{!! $paymentMethod->description !!}</div>
+                                </td>
                             </tr>
                             <tr>
                                 <th>Image</th>

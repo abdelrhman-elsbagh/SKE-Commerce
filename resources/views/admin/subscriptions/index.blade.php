@@ -1,4 +1,4 @@
-@extends('layouts.vertical', ['page_title' => 'Purchase Requests'])
+@extends('layouts.vertical', ['page_title' => 'Subscriptions'])
 
 @section('css')
     @vite([
@@ -12,40 +12,34 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-                <div class="page-title-box d-flex align-items-center justify-content-between">
-                    <h4 class="page-title">Purchase Requests</h4>
-                    <a href="{{ route('purchase-requests.create') }}" class="btn btn-primary">Create Purchase Request</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
+                        <h4 class="header-title">Subscriptions</h4>
                         <table id="basic-datatable" class="table table-striped table-bordered dt-responsive nowrap">
                             <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>User</th>
-                                <th>Amount</th>
+                                <th>Business Client ID</th>
+                                <th>Plan ID</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
                                 <th>Status</th>
-                                <th>Payment Method</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach($purchaseRequests as $purchaseRequest)
-                                <tr id="purchase-request-{{ $purchaseRequest->id }}">
-                                    <td>{{ $purchaseRequest->id }}</td>
-                                    <td>{{ $purchaseRequest->user->name }}</td>
-                                    <td>{{ $purchaseRequest->amount }}</td>
-                                    <td style="color: @if($purchaseRequest->status == 'canceled' || $purchaseRequest->status == 'rejected') #F00 @elseif($purchaseRequest->status == 'approved') #1abc9c @endif;">{{ ucfirst($purchaseRequest->status) }}</td>
-                                    <td>{{ $purchaseRequest->paymentMethod->gateway ?? "" }}</td>
+                            @foreach($subscriptions as $subscription)
+                                <tr id="subscription-{{ $subscription->id }}">
+                                    <td>{{ $subscription->id }}</td>
+                                    <td>{{ $subscription->business_client_id }}</td>
+                                    <td>{{ $subscription->plan_id }}</td>
+                                    <td>{{ $subscription->start_date }}</td>
+                                    <td>{{ $subscription->end_date }}</td>
+                                    <td>{{ $subscription->status }}</td>
                                     <td>
-                                        <a href="{{ route('purchase-requests.show', $purchaseRequest->id) }}" class="btn btn-info">Show</a>
-                                        <a href="{{ route('purchase-requests.edit', $purchaseRequest->id) }}" class="btn btn-warning">Edit</a>
-                                        <button type="button" class="btn btn-danger btn-delete" data-id="{{ $purchaseRequest->id }}">Delete</button>
+                                        <a href="{{ route('subscriptions.show', $subscription->id) }}" class="btn btn-info">Show</a>
+                                        <a href="{{ route('subscriptions.edit', $subscription->id) }}" class="btn btn-warning">Edit</a>
+                                        <button class="btn btn-danger btn-delete" data-id="{{ $subscription->id }}">Delete</button>
                                     </td>
                                 </tr>
                             @endforeach
@@ -63,10 +57,12 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 <div class="modal-body">
-                    Are you sure you want to delete this purchase request?
+                    Are you sure you want to delete this subscription?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -82,21 +78,22 @@
         'resources/js/pages/demo.datatable-init.js',
         'node_modules/jquery-toast-plugin/dist/jquery.toast.min.js'
     ])
+@endsection
 
+@section('admin-script')
     <script>
         $(document).ready(function() {
-            var purchaseRequestIdToDelete;
+            var subscriptionIdToDelete;
 
-            // Open delete confirmation modal
+            // Ensure click event handler is attached only once using event delegation
             $(document).on('click', '.btn-delete', function() {
-                purchaseRequestIdToDelete = $(this).data('id');
+                subscriptionIdToDelete = $(this).data('id');
                 $('#deleteModal').modal('show');
             });
 
-            // Confirm delete
             $('#confirmDelete').on('click', function() {
                 $.ajax({
-                    url: '{{ route('purchase-requests.index') }}/' + purchaseRequestIdToDelete,
+                    url: '{{ route('subscriptions.index') }}/' + subscriptionIdToDelete,
                     type: 'POST',
                     data: {
                         _method: 'DELETE',
@@ -104,10 +101,12 @@
                     },
                     success: function(result) {
                         $('#deleteModal').modal('hide');
-                        $('#purchase-request-' + purchaseRequestIdToDelete).remove();
+                        $('#subscription-' + subscriptionIdToDelete).remove();
+                        // Show success message
+                        $.toast().reset('all'); // Reset previous toasts
                         $.toast({
                             heading: 'Success',
-                            text: 'Purchase request deleted successfully.',
+                            text: 'Subscription deleted successfully.',
                             icon: 'success',
                             loader: true,
                             loaderBg: '#f96868',
@@ -115,10 +114,12 @@
                             hideAfter: 3000
                         });
                     },
-                    error: function(xhr) {
+                    error: function(err) {
+                        // Show error message
+                        $.toast().reset('all'); // Reset previous toasts
                         $.toast({
                             heading: 'Error',
-                            text: 'An error occurred while deleting the purchase request.',
+                            text: 'An error occurred while deleting the subscription.',
                             icon: 'error',
                             loader: true,
                             loaderBg: '#f96868',
@@ -129,5 +130,6 @@
                 });
             });
         });
+
     </script>
 @endsection

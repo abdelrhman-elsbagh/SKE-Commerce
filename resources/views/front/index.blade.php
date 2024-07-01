@@ -5,7 +5,7 @@
 @section('content')
     <main class="page-main">
         <div class="uk-width-4-5@l uk-width-3-3@m uk-width-3-3@s uk-margin-auto">
-            <h3 class="uk-text-lead">Recommended & Featured</h3>
+{{--            <h3 class="uk-text-lead">Recommended & Featured</h3>--}}
             <div class="js-recommend">
                 <div class="swiper">
                     <div class="swiper-wrapper">
@@ -35,6 +35,10 @@
 
         </div>
 
+        <div class="news-bar">
+            <span class="rotated">{{ $news->news ?? ""  }}</span>
+        </div>
+
         <div class="uk-grid uk-child-width-1-6@xl uk-child-width-1-5@m uk-child-width-1-3@s uk-grid-small" data-uk-grid>
             @foreach ($categorizedItems as $categoryName => $items)
                 <div class="uk-width-1-1">
@@ -52,15 +56,19 @@
                                                     <img src="{{ asset('assets/img/default-game.jpg') }}" alt="Default Image">
                                                 @endif
                                             </a>
+                                            @if($item->status == 'inactive')
+                                                <div class="card-tag card-tag-inactive">inactive</div>
+                                            @endif
+
                                         </div>
                                         <div class="game-card__info">
-                                            <a class="game-card__title" href="{{ $item->status == 'active' ? route('item.show', ['id' => $item->id]) : '#' }}">{{ $item->name }}</a>
-                                            @if($item->title_type != 'default')
+                                            <a class="game-card__title" style="padding-bottom: 0; margin-bottom: 0;" href="{{ $item->status == 'active' ? route('item.show', ['id' => $item->id]) : '#' }}">{{ $item->name }}</a>
+                                            @if(!empty($item->title) && ( $item->title_type == 'default' || $item->title_type == 'new'))
                                                 <div class="card-tag {{ $item->title_type == 'discount' ? 'card-tag-discount' : ($item->title_type == 'new' ? 'card-tag-new' : '') }}">{{ $item->title }}</div>
                                             @endif
-                                            @foreach($item->tags as $tag)
-                                                <span class="game-card__genre">{{ $tag->name }}{{ !$loop->last ? ' - ' : '' }}</span>
-                                            @endforeach
+{{--                                            @foreach($item->tags as $tag)--}}
+{{--                                                <span class="game-card__genre">{{ $tag->name }}{{ !$loop->last ? ' - ' : '' }}</span>--}}
+{{--                                            @endforeach--}}
                                         </div>
                                     </div>
                                 </div>
@@ -95,6 +103,9 @@
             max-height: 47px;
         }
         .card-tag-discount {
+            background-color: red;
+        }
+        .card-tag-inactive {
             background-color: red;
         }
         .card-tag-new {

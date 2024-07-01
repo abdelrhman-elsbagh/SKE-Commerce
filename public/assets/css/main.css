@@ -1117,7 +1117,6 @@ a:hover {
 }
 
 .uk-button-danger:hover,
-.uk-button-danger:focus,
 .uk-button-danger:active,
 .uk-button-danger.nice-select.open {
     background: #F46119;
@@ -3872,7 +3871,6 @@ a:hover {
 }
 
 .activities-item__status {
-    color: #27ae60;
     font-size: 14px;
     font-style: normal;
     font-weight: 700;
@@ -5493,6 +5491,7 @@ html body.dark-theme #youzify-groups-list .action {
 
 html body.dark-theme .uk-button-danger {
     background: #F46119;
+    color: #FFF;
 }
 
 
@@ -5821,4 +5820,57 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
     .item-crd {
         padding: 18px 30px;
     }
+}
+
+/**** abdel changes ****/
+.news-bar {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    background-color: #f46119;
+    overflow: hidden;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-family: Arial, sans-serif;
+    margin-bottom: 50px;
+    margin-top: 50px;
+    opacity: 0.9;
+}
+.news-bar span {
+    display: inline-block;
+    white-space: nowrap;
+    animation: move 20s linear infinite;
+}
+@keyframes move {
+    0% {
+        transform: translateX(100%);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+.rotated {
+    display: inline-block;
+    transform: rotate(10deg);
+}
+
+.mt8{
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+.light-border{
+    border: 1px solid #F2C9B5;
+}
+
+#search-orders{
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background: #FFF;
+    height: 50px;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
 }

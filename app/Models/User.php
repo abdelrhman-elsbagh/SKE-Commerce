@@ -28,6 +28,7 @@ class User extends Authenticatable implements HasMedia
         'address',
         'date_of_birth',
         'status',
+        'fee',
     ];
 
     /**
@@ -64,6 +65,12 @@ class User extends Authenticatable implements HasMedia
     public function wallet()
     {
         return $this->hasOne(UserWallet::class);
+    }
+
+
+    public function specialUserFeeDiscounts()
+    {
+        return $this->hasMany(SpecialUserFeeDiscount::class);
     }
 
     /**

@@ -9,6 +9,8 @@ class SpecialUserFeeDiscount extends Model
 {
     use HasFactory;
 
+    protected $table = 'special_user_fees_discounts';
+
     protected $fillable = [
         'user_id',
         'fee',
