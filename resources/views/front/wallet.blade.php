@@ -21,10 +21,12 @@
                     <div class="widjet__head">
                         <h3 class="uk-text-lead">Recent Purchase Requests</h3>
                     </div>
+                    <input type="text" id="search-purchase-requests" class="form-control uk-input"
+                           placeholder="Search purchase requests by ID or notes...">
                     <div class="widjet__body" style="padding: 0;">
-                        <ul class="activities-list" style="max-height: 600px;overflow: scroll;">
+                        <ul class="activities-list" id="purchase-requests-list" style="max-height: 600px; overflow: scroll;">
                             @foreach($purchaseRequests as $request)
-                                <li class="activities-item" style="padding: 20px 30px">
+                                <li class="activities-item" style="padding: 20px 30px" data-id="{{ $request->id }}" data-notes="{{ $request->notes }}">
                                     <div class="activities-item__logo">
                                         <img src="{{ $request->getFirstMediaUrl('purchase_documents') ?? asset('assets/img/default-image.jpg') }}" alt="image">
                                     </div>
@@ -70,7 +72,7 @@
                     <input type="text" id="search-orders" class="form-control uk-input"
                            placeholder="Search orders by ID or name...">
                     <div class="widjet__body">
-                        <ul class="activities-list" id="orders-list" style="max-height: 400px;overflow: scroll;">
+                        <ul class="activities-list" id="orders-list" style="max-height: 400px; overflow: scroll;">
                             @foreach($orders as $order)
                                 @foreach($order->subItems as $orderSubItem)
                                     @php
@@ -92,6 +94,7 @@
                                                 {{ $item->name }}
                                             </a>
                                             <div class="activities-item__date">Order ID: #{{ $order->id }}</div>
+                                            <div class="activities-item__date">Service ID: #{{ $orderSubItem->service_id }}</div> <!-- Display the service_id -->
                                             <div class="activities-item__date">{{ $order->created_at->format('d M, Y') }}</div>
                                             <div class="activities-item__status">{{ $order->status }}</div>
                                         </div>
@@ -110,12 +113,24 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
+            // Search functionality for orders
             $('#search-orders').on('keyup', function() {
                 var query = $(this).val().toLowerCase();
                 $('#orders-list .activities-item').filter(function() {
                     $(this).toggle(
                         $(this).data('id').toString().toLowerCase().includes(query) ||
                         $(this).data('name').toString().toLowerCase().includes(query)
+                    );
+                });
+            });
+
+            // Search functionality for purchase requests
+            $('#search-purchase-requests').on('keyup', function() {
+                var query = $(this).val().toLowerCase();
+                $('#purchase-requests-list .activities-item').filter(function() {
+                    $(this).toggle(
+                        $(this).data('id').toString().toLowerCase().includes(query) ||
+                        $(this).data('notes').toString().toLowerCase().includes(query)
                     );
                 });
             });

@@ -5846,7 +5846,7 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
 }
 @keyframes move {
     0% {
-        transform: translateX(100%);
+        transform: translateX(70%);
     }
     100% {
         transform: translateX(-100%);
@@ -5865,7 +5865,8 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
     border: 1px solid #F2C9B5;
 }
 
-#search-orders{
+#search-orders,
+#search-purchase-requests{
     display: block;
     width: 100%;
     padding: 10px;
@@ -5873,4 +5874,12 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
     height: 50px;
     border: 1px solid #ddd;
     margin-bottom: 10px;
+    color: #0d0c22;
+    font-weight: 600;
+}
+.pr8{
+    padding-right: 15px;
+}
+#buyNowButton:disabled:hover {
+    background-color: #FFF; /* Ensure the hover state doesn't change the color */
 }

@@ -36,7 +36,7 @@
                                 <p class="text-muted fs-14">Snow is a clean, flat toolbar theme.</p>
 
                                 <div id="snow-editor" style="height: 300px;">
-                                    <h3><span class="ql-size-large">Hello World!</span></h3>
+                                    <h3><span class="ql-size-large">Hello World!11</span></h3>
                                     <p><br></p>
                                     <h3>This is an simple editable area.</h3>
                                     <p><br></p>

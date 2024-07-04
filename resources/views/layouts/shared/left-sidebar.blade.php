@@ -71,7 +71,7 @@
         <!--- Sidemenu -->
         <ul class="side-nav">
 
-            <li class="side-nav-title">Navigation</li>
+            <li class="side-nav-title">Admin</li>
 
 
             <li class="side-nav-item">
@@ -628,6 +628,8 @@
                 </a>
             </li>
 
+            <li class="side-nav-title">Business</li>
+
 
 {{--            <li class="side-nav-item">--}}
 {{--                <a data-bs-toggle="collapse" href="#sidebarIcons" aria-expanded="false" aria-controls="sidebarIcons" class="side-nav-link nav-link">--}}
@@ -752,71 +754,71 @@
 {{--                </div>--}}
 {{--            </li>--}}
 
-{{--            <li class="side-nav-item">--}}
-{{--                <a data-bs-toggle="collapse" href="#sidebarForms" aria-expanded="false" aria-controls="sidebarForms" class="side-nav-link nav-link">--}}
-{{--                    <i class="ri-survey-line"></i>--}}
-{{--                    <span> Forms </span>--}}
-{{--                    <span class="menu-arrow"></span>--}}
-{{--                </a>--}}
-{{--                <div class="collapse" id="sidebarForms">--}}
-{{--                    <ul class="side-nav-second-level">--}}
-{{--                        <li>--}}
-{{--                            <a href="{{ route('second', ['forms', 'elements']) }}" class="nav-link">Basic Elements</a>--}}
-{{--                        </li>--}}
-{{--                        <li>--}}
-{{--                            <a href="{{ route('second', ['forms', 'advanced']) }}" class="nav-link">Form Advanced</a>--}}
-{{--                        </li>--}}
-{{--                        <li>--}}
-{{--                            <a href="{{ route('second', ['forms', 'validation']) }}" class="nav-link">Validation</a>--}}
-{{--                        </li>--}}
-{{--                        <li>--}}
-{{--                            <a href="{{ route('second', ['forms', 'wizard']) }}" class="nav-link">Wizard</a>--}}
-{{--                        </li>--}}
-{{--                        <li>--}}
-{{--                            <a href="{{ route('second', ['forms', 'fileuploads']) }}" class="nav-link">File Uploads</a>--}}
-{{--                        </li>--}}
-{{--                        <li>--}}
-{{--                            <a href="{{ route('second', ['forms', 'editors']) }}" class="nav-link">Editors</a>--}}
-{{--                        </li>--}}
-{{--                    </ul>--}}
-{{--                </div>--}}
-{{--            </li>--}}
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarForms" aria-expanded="false" aria-controls="sidebarForms" class="side-nav-link nav-link">
+                    <i class="ri-survey-line"></i>
+                    <span> Forms </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarForms">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('second', ['forms', 'elements']) }}" class="nav-link">Basic Elements</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('second', ['forms', 'advanced']) }}" class="nav-link">Form Advanced</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('second', ['forms', 'validation']) }}" class="nav-link">Validation</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('second', ['forms', 'wizard']) }}" class="nav-link">Wizard</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('second', ['forms', 'fileuploads']) }}" class="nav-link">File Uploads</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('second', ['forms', 'editors']) }}" class="nav-link">Editors</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
 
-{{--            <li class="side-nav-item">--}}
-{{--                <a data-bs-toggle="collapse" href="#sidebarTables" aria-expanded="false" aria-controls="sidebarTables" class="side-nav-link nav-link">--}}
-{{--                    <i class="ri-table-line"></i>--}}
-{{--                    <span> Tables </span>--}}
-{{--                    <span class="menu-arrow"></span>--}}
-{{--                </a>--}}
-{{--                <div class="collapse" id="sidebarTables">--}}
-{{--                    <ul class="side-nav-second-level">--}}
-{{--                        <li>--}}
-{{--                            <a href="{{ route('second', ['tables', 'basic']) }}" class="nav-link">Basic Tables</a>--}}
-{{--                        </li>--}}
-{{--                        <li>--}}
-{{--                            <a href="{{ route('second', ['tables', 'datatable']) }}" class="nav-link">Data Tables</a>--}}
-{{--                        </li>--}}
-{{--                    </ul>--}}
-{{--                </div>--}}
-{{--            </li>--}}
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarTables" aria-expanded="false" aria-controls="sidebarTables" class="side-nav-link nav-link">
+                    <i class="ri-table-line"></i>
+                    <span> Tables </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarTables">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('second', ['tables', 'basic']) }}" class="nav-link">Basic Tables</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('second', ['tables', 'datatable']) }}" class="nav-link">Data Tables</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
 
-{{--            <li class="side-nav-item">--}}
-{{--                <a data-bs-toggle="collapse" href="#sidebarMaps" aria-expanded="false" aria-controls="sidebarMaps" class="side-nav-link nav-link">--}}
-{{--                    <i class="ri-treasure-map-line"></i>--}}
-{{--                    <span> Maps </span>--}}
-{{--                    <span class="menu-arrow"></span>--}}
-{{--                </a>--}}
-{{--                <div class="collapse" id="sidebarMaps">--}}
-{{--                    <ul class="side-nav-second-level">--}}
-{{--                        <li>--}}
-{{--                            <a href="{{ route('second', ['maps', 'google']) }}" class="nav-link">Google Maps</a>--}}
-{{--                        </li>--}}
-{{--                        <li>--}}
-{{--                            <a href="{{ route('second', ['maps', 'vector']) }}" class="nav-link">Vector Maps</a>--}}
-{{--                        </li>--}}
-{{--                    </ul>--}}
-{{--                </div>--}}
-{{--            </li>--}}
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarMaps" aria-expanded="false" aria-controls="sidebarMaps" class="side-nav-link nav-link">
+                    <i class="ri-treasure-map-line"></i>
+                    <span> Maps </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarMaps">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('second', ['maps', 'google']) }}" class="nav-link">Google Maps</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('second', ['maps', 'vector']) }}" class="nav-link">Vector Maps</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
 
 {{--            <li class="side-nav-item">--}}
 {{--                <a data-bs-toggle="collapse" href="#sidebarMultiLevel" aria-expanded="false" aria-controls="sidebarMultiLevel" class="side-nav-link nav-link">--}}

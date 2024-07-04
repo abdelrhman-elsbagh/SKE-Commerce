@@ -19,40 +19,40 @@
                                 <div class="uk-grid uk-child-width-1-5@s uk-grid-small" data-uk-grid>
                                     @foreach($item->subItems as $subItem)
                                         @php
-                                                $isFavorited = false;
-                                                if(Auth::user()){
+                                            $isFavorited = false;
+                                            if(Auth::user()){
 
-                                                $isFavorited = Auth::user()->favorites()->where('sub_item_id', $subItem->id)->exists();
-                                                }
+                                            $isFavorited = Auth::user()->favorites()->where('sub_item_id', $subItem->id)->exists();
+                                            }
                                         @endphp
                                         <div>
                                             <div class="uk-card uk-card-default uk-card-hover uk-margin selectable-card"
                                                  style="cursor: pointer; position: relative;border-radius: 7px;"
                                                  data-id="{{ $subItem->id }}"
                                                  data-price="{{ number_format($subItem->price + ($subItem->price * $config->fee / 100), 2) }}">
-                                                <div class="uk-card-header item-crd">
+                                                <div class="uk-card-header item-crd" style="padding: 10px !important;">
                                                     <div class="uk-grid-small uk-flex-middle" data-uk-grid>
                                                         <div class="uk-width-expand">
-                                                            <h3 class="uk-card-title uk-margin-remove-bottom" style="text-align: center;font-size: 16px"> <span class="" style="margin: 0;font-size: 20px"></span> {{ $subItem->amount }} {{ $subItem->name }} </h3>
-                                                            <p class="uk-card-title uk-margin-remove-bottom" style="text-align: center;font-size: 15px; margin-top: 5px">{{ $subItem->description ?? "" }}</p>
+                                                            <h3 class="uk-card-title uk-margin-remove-bottom" style="text-align: center;font-size: 14px;padding-left: 15px;">
+                                                                {{ $subItem->amount }} {{ $subItem->name }}
+                                                                @if($subItem->getFirstMediaUrl('images'))
+
+                                                                    <img src="{{ $subItem->getFirstMediaUrl('images') }}" alt="{{ $subItem->name }}" class="uk-width-1-1"
+                                                                         style="height: 20px; width: 20px">
+                                                                @endif
+                                                            </h3>
+                                                            <p class="uk-card-title uk-margin-remove-bottom" style="text-align: center;font-size: 14px; margin-top: 5px">{{ $subItem->description ?? "" }}</p>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                @if($subItem->getFirstMediaUrl('images'))
-                                                    <div class="uk-card-body" style="padding: 0;text-align: center">
-
-                                                            <img src="{{ $subItem->getFirstMediaUrl('images') }}" alt="{{ $subItem->name }}" class="uk-width-1-1"
-                                                                 style="height: 50px; width: 50px">
-                                                    </div>
-                                                @endif
-                                                <div class="uk-card-footer" style="text-align: center; ">
+                                                <div class="uk-card-footer" style="text-align: center;border-top: 0;padding: 10px 20px; ">
                                                     <span class="uk-text-bold" style="color: #F46119; font-size: 18px;">
                                                         {{ number_format($subItem->price + ($subItem->price * $config->fee / 100), 2) }} USD
                                                     </span>
                                                     <i class="fas fa-heart fa-1x heart-icon" style="color: {{ $isFavorited ? '#f46119' : '#ccc' }}; position: absolute; top: 10px; left: 10px;"></i>
                                                 </div>
                                                 <div class="selected-icon" style="display: none; position: absolute; top: 10px; right: 10px; color: #f46119;">
-                                                    <i class="fas fa-check-circle fa-2x"></i>
+                                                    <i class="fas fa-check-circle fa-1x"></i>
                                                 </div>
                                             </div>
                                         </div>
@@ -82,21 +82,21 @@
                         <span>{{$item->description}}</span>
                     </div>
                     <ul class="game-profile-card__list">
-{{--                        <li>--}}
-{{--                            <div>Sell Count:</div>--}}
-{{--                            <div class="game-card__rating"><span>15</span></div>--}}
-{{--                        </li>--}}
+                        {{--                        <li>--}}
+                        {{--                            <div>Sell Count:</div>--}}
+                        {{--                            <div class="game-card__rating"><span>15</span></div>--}}
+                        {{--                        </li>--}}
                         <li>
                             @foreach($item->tags as $tag)
                                 <span class="" style="background: #F46119;margin-right: 5px;color: #FFF;padding: 5px;border-radius: 7px;font-size: 12px;font-weight: 900;">{{ $tag->name }}</span>
                             @endforeach
                         </li>
                     </ul>
-{{--                    <ul class="game-profile-card__type">--}}
-{{--                        @foreach($item->tags as $tag)--}}
-{{--                            <li><span>{{ $tag->name }}</span></li>--}}
-{{--                        @endforeach--}}
-{{--                    </ul>--}}
+                    {{--                    <ul class="game-profile-card__type">--}}
+                    {{--                        @foreach($item->tags as $tag)--}}
+                    {{--                            <li><span>{{ $tag->name }}</span></li>--}}
+                    {{--                        @endforeach--}}
+                    {{--                    </ul>--}}
                 </div>
 
                 <div class="game-profile-card__intro"  style="border-radius: 5px;background: #fff;padding: 10px;">
@@ -134,6 +134,7 @@
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            console.log("Abdelrahman")
             const cards = document.querySelectorAll('.selectable-card');
             const priceElement = document.querySelector('.game-profile-price__value');
             const serviceIdInput = document.getElementById('service_id');
@@ -164,6 +165,10 @@
                     return;
                 }
 
+                const buyNowButton = this;
+                buyNowButton.disabled = true; // Disable the button
+
+
                 const formData = new FormData();
                 formData.append('sub_item_id', selectedSubItemId);
                 formData.append('service_id', serviceIdInput.value);
@@ -174,8 +179,17 @@
                     body: formData
                 }).then(response => response.json())
                     .then(data => {
+                        setTimeout(function () {
+                            buyNowButton.disabled = false;
+                        }, 5000);
+
                         if (data.success) {
-                            toastr.success(data.message);
+                            setTimeout(function () {
+                                toastr.success(data.message);
+                                setTimeout(function () {
+                                    window.location.href = "{{ route('home') }}";
+                                }, 5000);
+                            }, 100); // Wait for 5 seconds before showing the success toast and redirecting
                         } else {
                             toastr.error(data.message);
                         }
@@ -183,6 +197,7 @@
                     .catch(error => {
                         console.error('Error:', error);
                         toastr.error('There was an error processing your request.');
+                        buyNowButton.disabled = false;
                     });
             });
 

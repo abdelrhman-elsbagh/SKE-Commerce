@@ -86,7 +86,7 @@
     @vite([
         'resources/js/pages/demo.datatable-init.js',
         'node_modules/jquery-toast-plugin/dist/jquery.toast.min.js',
-        'node_modules/quill/dist/quill.min.js'
+//        'node_modules/quill/dist/quill.min.js'
     ])
 
     <script>

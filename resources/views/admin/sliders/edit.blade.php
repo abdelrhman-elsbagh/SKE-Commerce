@@ -1,4 +1,4 @@
-@extends('layouts.vertical', ['page_title' => 'Edit Slider'])
+-@extends('layouts.vertical', ['page_title' => 'Edit Slider'])
 
 @section('css')
     @vite([
@@ -78,7 +78,10 @@
                             loader: true,
                             loaderBg: '#f96868',
                             position: 'top-right',
-                            hideAfter: 3000
+                            hideAfter: 3000,
+                            afterHidden: function () {
+                                window.location.href = "{{ route('sliders.index') }}";
+                            }
                         });
                     },
                     error: function(response) {

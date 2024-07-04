@@ -273,6 +273,7 @@ class HomeController extends Controller
 
         // Retrieve the fee percentage from the config
         $config = Config::first(); // Assuming you have a Config model to fetch the fee percentage
+        $config->fee = $user->fee;
         $feePercentage = $config->fee;
 
         // Calculate the total price including the fee
@@ -287,6 +288,7 @@ class HomeController extends Controller
         $wallet->balance -= $totalPrice;
         $wallet->save();
 
+
         // Create the order
         $order = Order::create([
             'user_id' => $user->id,
@@ -294,11 +296,14 @@ class HomeController extends Controller
             'status' => 'active',
         ]);
 
+
+
         // Create the order sub item
-        OrderSubItem::create([
+        $order_sub_item = OrderSubItem::create([
             'order_id' => $order->id,
             'sub_item_id' => $subItem->id,
-            'price' => $subItem->price,
+            'price' => $subItem->price + ($subItem->price * $feePercentage / 100),
+            'service_id' => $request->service_id ?? null,
         ]);
 
         return response()->json(['success' => true, 'message' => 'Purchase successful', 'order' => $order], 200);
@@ -350,7 +355,8 @@ class HomeController extends Controller
         View::share('favoritesCount', $favoritesCount);
 
 
-        $item = Item::with(['subItems', 'subItems.media', 'media', 'tags'])->findOrFail($id);
+//        $item = Item::with(['subItems', 'subItems.media', 'media', 'tags', 'orderSubItem'])->findOrFail($id);
+        $item = Item::with(['subItems.orderSubItem', 'subItems.media', 'media', 'tags'])->findOrFail($id);
         $userFavorites = [];
         if(Auth::user()){
 

@@ -11,13 +11,22 @@ class SubItem extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia;
 
-    protected $fillable = ['item_id', 'name', 'description', 'amount', 'price'];
+    protected $fillable = ['item_id', 'name', 'description', 'amount', 'price', 'service_id'];
 
     public function item()
     {
         return $this->belongsTo(Item::class);
     }
 
+    public function orderSubItem()
+    {
+        return $this->hasOne(OrderSubItem::class, 'sub_item_id');
+    }
+
+    public function orderSubItems()
+    {
+        return $this->hasMany(OrderSubItem::class, 'sub_item_id');
+    }
 
     public function registerMediaCollections(): void
     {

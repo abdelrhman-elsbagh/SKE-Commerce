@@ -15,7 +15,6 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="header-title">User Wallets</h4>
-                        <a href="{{ route('user-wallets.create') }}" class="btn btn-primary mb-3">Create New Wallet</a>
                         <table id="basic-datatable" class="table table-striped table-bordered dt-responsive nowrap">
                             <thead>
                             <tr>
@@ -34,7 +33,6 @@
                                     <td>
                                         <a href="{{ route('user-wallets.show', $wallet->id) }}" class="btn btn-info">Show</a>
                                         <a href="{{ route('user-wallets.edit', $wallet->id) }}" class="btn btn-warning">Edit</a>
-                                        <button class="btn btn-danger btn-delete" data-id="{{ $wallet->id }}">Delete</button>
                                     </td>
                                 </tr>
                             @endforeach

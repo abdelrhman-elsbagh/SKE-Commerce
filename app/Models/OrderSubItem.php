@@ -9,8 +9,10 @@ class OrderSubItem extends Model
 {
     use HasFactory;
 
+    protected $table = 'order_sub_items';
+
     protected $fillable = [
-        'order_id', 'sub_item_id', 'price',
+        'order_id', 'sub_item_id', 'price', 'service_id'
     ];
 
     public function order()

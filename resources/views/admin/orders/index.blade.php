@@ -48,7 +48,6 @@
                                     <td>
                                         <a href="{{ route('orders.show', $order->id) }}" class="btn btn-info">Show</a>
                                         <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-warning">Edit</a>
-                                        <button class="btn btn-danger btn-delete" data-id="{{ $order->id }}">Delete</button>
                                     </td>
                                 </tr>
                             @endforeach

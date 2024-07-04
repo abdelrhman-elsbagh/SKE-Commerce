@@ -281,12 +281,15 @@
                         $.toast().reset('all'); // Reset previous toasts
                         $.toast({
                             heading: 'Success',
-                            text: 'Item created/updated successfully.',
+                            text: 'Item updated successfully.',
                             icon: 'success',
                             loader: true,
                             loaderBg: '#f96868',
                             position: 'top-right',
-                            hideAfter: 3000
+                            hideAfter: 3000,
+                            afterHidden: function () {
+                                window.location.href = "{{ route('items.index') }}";
+                            }
                         });
 
                         // Optionally, reset the form fields

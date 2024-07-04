@@ -36,7 +36,7 @@
         </div>
 
         <div class="news-bar">
-            <span class="rotated">{{ $news->news ?? ""  }}</span>
+            <span class="rotated" id="news-text">{{ $news->news ?? ""  }}</span>
         </div>
 
         <div class="uk-grid uk-child-width-1-6@xl uk-child-width-1-5@m uk-child-width-1-3@s uk-grid-small" data-uk-grid>
@@ -87,6 +87,19 @@
         @endpush
     @endif
 
+    @section('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const newsText = document.getElementById('news-text');
+                const textLength = newsText.offsetWidth; // Get the width of the text
+                const containerWidth = newsText.parentElement.offsetWidth; // Get the width of the container
+                const duration = (textLength / containerWidth) * 30; // Adjust the multiplier as needed
+
+                // Set the animation duration
+                newsText.style.animationDuration = `${duration}s`;
+            });
+        </script>
+    @endsection
     <style>
         .card-tag {
             text-align: center;

@@ -10,7 +10,7 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $orders = Order::with(['user', 'subItems.subItem'])->get();
+        $orders = Order::with(['user', 'subItems.subItem'])->orderBy('id', 'DESC')->get();
         return view('admin.orders.index', compact('orders'));
     }
 
@@ -33,11 +33,26 @@ class OrderController extends Controller
     public function update(Request $request, $id)
     {
         $order = Order::findOrFail($id);
+        $originalStatus = $order->status;
+
         $order->update($request->all());
+
+        // Check if status was changed from 'active' to 'refunded'
+        if ($originalStatus === 'active' && $order->status === 'refunded') {
+            $this->refundOrderAmount($order);
+        }
 
         return response()->json(['message' => 'Order updated successfully.']);
     }
 
+    protected function refundOrderAmount($order)
+    {
+        $user = $order->user; // Assuming the Order model has a relationship with the User model
+
+        $userWallet = $user->wallet; // Assuming the User model has a relationship with the Wallet model
+        $userWallet->balance += $order->total;
+        $userWallet->save();
+    }
     public function destroy($id)
     {
         try {

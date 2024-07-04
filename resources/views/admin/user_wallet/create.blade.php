@@ -69,7 +69,10 @@
                             loader: true,
                             loaderBg: '#f96868',
                             position: 'top-right',
-                            hideAfter: 3000
+                            hideAfter: 3000,
+                            afterHidden: function () {
+                                window.location.href = "{{ route('user-wallets.index') }}";
+                            }
                         });
 
                         // Optionally, reset the form fields

@@ -281,7 +281,7 @@
                         $.toast().reset('all'); // Reset previous toasts
                         $.toast({
                             heading: 'Success',
-                            text: 'Item created/updated successfully.',
+                            text: 'Item created successfully.',
                             icon: 'success',
                             loader: true,
                             loaderBg: '#f96868',

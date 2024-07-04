@@ -12,6 +12,7 @@ class BusinessClientWallet extends Model
     protected $fillable = [
         'business_client_id',
         'balance',
+        'increase_status'
     ];
 
     public function businessClient()

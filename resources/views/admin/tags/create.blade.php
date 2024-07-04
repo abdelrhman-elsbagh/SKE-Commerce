@@ -58,7 +58,10 @@
                             loader: true,
                             loaderBg: '#f96868',
                             position: 'top-right',
-                            hideAfter: 3000
+                            hideAfter: 3000,
+                            afterHidden: function () {
+                                window.location.href = "{{ route('tags.index') }}";
+                            }
                         });
                         // Optionally, reset the form fields
                         $('#create-tag-form')[0].reset();

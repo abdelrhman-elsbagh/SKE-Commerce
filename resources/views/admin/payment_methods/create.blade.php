@@ -3,6 +3,7 @@
 @section('css')
     @vite([
         'node_modules/jquery-toast-plugin/dist/jquery.toast.min.css',
+        'node_modules/quill/dist/quill.core.css',
         'node_modules/quill/dist/quill.snow.css'
     ])
 @endsection
@@ -55,8 +56,14 @@
 
     <script>
         $(document).ready(function() {
+            // Initialize Quill editor
             var quill = new Quill('#snow-editor', {
                 theme: 'snow'
+            });
+
+            // Update hidden input field whenever content changes
+            quill.on('text-change', function() {
+                $('#description').val(quill.root.innerHTML);
             });
 
             $('#image').change(function() {
@@ -89,7 +96,10 @@
                             loader: true,
                             loaderBg: '#f96868',
                             position: 'top-right',
-                            hideAfter: 3000
+                            hideAfter: 3000,
+                            afterHidden: function () {
+                                window.location.href = "{{ route('items.index') }}";
+                            }
                         });
 
                         $('#create-payment-method-form')[0].reset();

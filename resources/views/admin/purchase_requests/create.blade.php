@@ -94,7 +94,10 @@
                             loader: true,
                             loaderBg: '#f96868',
                             position: 'top-right',
-                            hideAfter: 3000
+                            hideAfter: 3000,
+                            afterHidden: function () {
+                                window.location.href = "{{ route('purchase-requests.index') }}";
+                            }
                         });
 
                         $('#create-purchase-request-form')[0].reset();
