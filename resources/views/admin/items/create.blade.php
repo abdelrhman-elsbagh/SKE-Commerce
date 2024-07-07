@@ -78,6 +78,16 @@
                                 </div>
                             </div>
 
+                            <div class="mb-3">
+                                <label for="front_image" class="form-label">Front Image</label>
+                                <input type="file" class="form-control" id="front_image" name="front_image" accept="image/*">
+                                <div class="mt-2" id="front_image-preview">
+                                    @if(isset($item) && $item->getFirstMediaUrl('images'))
+                                        <img src="{{ $item->getFirstMediaUrl('images') }}" alt="Image Preview" style="max-width: 200px;">
+                                    @endif
+                                </div>
+                            </div>
+
                             <div id="sub-items-container">
                                 <h5>Sub Items</h5>
                                 <button type="button" class="btn btn-secondary mb-3" data-bs-toggle="modal" data-bs-target="#subItemModal">Add Sub Item</button>
@@ -190,6 +200,14 @@
                 reader.readAsDataURL(this.files[0]);
             });
 
+            $('#front_image').change(function() {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#front_image-preview').html('<img src="' + e.target.result + '" alt="Image Preview" style="max-width: 200px;">');
+                }
+                reader.readAsDataURL(this.files[0]);
+            });
+
             $('#sub_item_image_modal').change(function() {
                 let reader = new FileReader();
                 reader.onload = function(e) {
@@ -286,13 +304,16 @@
                             loader: true,
                             loaderBg: '#f96868',
                             position: 'top-right',
-                            hideAfter: 3000
+                            hideAfter: 3000,
+                            afterHidden: function () {
+                                window.location.href = "{{ route('items.index') }}";
+                            }
                         });
 
                         // Optionally, reset the form fields
                         $('#create-edit-item-form')[0].reset();
-                        $('#image-preview').html('');
-                        $('#sub-items-table-body').html('');
+                        // $('#image-preview').html('');
+                        // $('#sub-items-table-body').html('');
                     },
                     error: function(response) {
                         $.toast().reset('all'); // Reset previous toasts

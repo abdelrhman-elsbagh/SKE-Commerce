@@ -16,6 +16,7 @@ $(document).ready(function () {
 
   new DataTable('#basic-datatable', {
     keys: true,
+      order: [[4, 'desc']],
     language: {
       "paginate": {
         "previous": "<i class='ri-arrow-left-s-line'>",

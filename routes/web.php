@@ -9,6 +9,7 @@ use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DiamondRatesController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\FeeGroupController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\NewsController;
@@ -19,6 +20,7 @@ use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SliderController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\TermsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserWalletController;
 use Illuminate\Support\Facades\Route;
@@ -40,6 +42,7 @@ Route::get('wallet', [HomeController::class, 'wallet'])->name('wallet');
 Route::get('business-wallet', [HomeController::class, 'business_wallet'])->name('business-wallet');
 Route::get('plans', [HomeController::class, 'plans'])->name('plans-page');
 Route::get('payment-methods', [HomeController::class, 'payment_methods'])->name('payments-page');
+Route::get('terms-conditions', [HomeController::class, 'terms_page'])->name('terms-page');
 Route::get('/item/{id}', [HomeController::class, 'item'])->name('item.show');
 Route::post('purchase', [HomeController::class, 'purchase'])->name('purchase');
 Route::post('purchase_order', [HomeController::class, 'purchase_order'])->name('purchase_order');
@@ -48,6 +51,9 @@ Route::post('register', [HomeController::class, 'register'])->name('register');
 Route::post('register_business', [HomeController::class, 'register_business'])->name('register_business');
 Route::post('/purchase-request', [PurchaseController::class, 'request'])->name('purchase.request');
 Route::post('/favorites/add', [FavoriteController::class, 'add'])->name('favorites.add');
+
+Route::post('/favorites/remove', [FavoriteController::class, 'remove'])->name('favorites.remove');
+
 
 Route::post('logout', [HomeController::class, 'logout'])->name('logout');
 Route::post('business-logout', [HomeController::class, 'business_logout'])->name('business-logout');
@@ -72,6 +78,8 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
     Route::resource('orders', OrderController::class);
     Route::get('configs/edit', [ConfigController::class, 'edit'])->name('configs.edit');
     Route::put('configs/{id}', [ConfigController::class, 'update'])->name('configs.update');
+    Route::get('terms/edit', [TermsController::class, 'edit'])->name('terms.edit');
+    Route::put('terms/{id}', [TermsController::class, 'update'])->name('terms.update');
     Route::resource('business-client-wallets', BusinessClientWalletController::class)->names('business-client-wallets');
     Route::resource('categories', CategoryController::class);
     Route::resource('diamond-rates', DiamondRatesController::class)->names('diamond_rates');
@@ -80,6 +88,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
     Route::resource('payment-methods', PaymentMethodController::class);
     Route::resource('subscriptions', SubscriptionController::class);
     Route::resource('tags', TagController::class);
+    Route::resource('fee-groups', FeeGroupController::class)->names('fee_groups');
 
     Route::get('news/edit', [NewsController::class, 'edit'])->name('news.edit');
     Route::put('news/{id}', [NewsController::class, 'update'])->name('news.update');

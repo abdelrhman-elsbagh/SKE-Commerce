@@ -6,23 +6,32 @@
     <main class="page-main">
         <div class="uk-grid" data-uk-grid>
             <div class="uk-width-2-3@l">
-                <div class="widjet --wallet">
-                    <div class="widjet__head">
-                        <h3 class="uk-text-lead">Wallet</h3>
+                <div class="uk-grid uk-child-width-1-3@m uk-grid-small" data-uk-grid>
+                    <div class="card-height">
+                        <div class="uk-card uk-card-default uk-card-body" style="background-color: #1abc9c; text-align: center;">
+                            <h3 class="uk-card-title">Wallet Balance</h3>
+                            <p class="wallet-value">{{ number_format($wallet->balance, 2) }} USD</p>
+                        </div>
                     </div>
-                    <div class="widjet__body">
-                        <div class="wallet-info">
-                            <div class="wallet-value">{{ number_format($wallet->balance, 2) }} USD</div>
-                            <div class="wallet-label">Available</div>
+                    <div class="card-height">
+                        <div class="uk-card uk-card-default uk-card-body" style="background-color: #3498db; text-align: center;">
+                            <h3 class="uk-card-title">Total Order Money</h3>
+                            <p class="wallet-value">{{ number_format($totalOrderMoney, 2) }} USD</p>
+                        </div>
+                    </div>
+                    <div class="card-height">
+                        <div class="uk-card uk-card-default uk-card-body" style="background-color: #fc5c65; text-align: center;">
+                            <h3 class="uk-card-title">Total Purchase Requests</h3>
+                            <p class="wallet-value">{{ number_format($totalPurchaseRequestAmount, 2) }} USD</p>
                         </div>
                     </div>
                 </div>
-                <div class="widjet --purchase-requests">
+
+                <div class="widjet --purchase-requests" style="margin-top: 20px;">
                     <div class="widjet__head">
                         <h3 class="uk-text-lead">Recent Purchase Requests</h3>
                     </div>
-                    <input type="text" id="search-purchase-requests" class="form-control uk-input"
-                           placeholder="Search purchase requests by ID or notes...">
+                    <input type="text" id="search-purchase-requests" class="form-control uk-input" placeholder="Search purchase requests by ID or notes...">
                     <div class="widjet__body" style="padding: 0;">
                         <ul class="activities-list" id="purchase-requests-list" style="max-height: 600px; overflow: scroll;">
                             @foreach($purchaseRequests as $request)
@@ -33,9 +42,16 @@
                                     <div class="activities-item__info">
                                         <div class="activities-item__title">Request ID: #{{ $request->id }}</div>
                                         <div class="activities-item__title">Notes: {{ $request->notes }}</div>
-                                        <div class="activities-item__date" style="font-weight: 900">Requested on: {{ $request->created_at->format('d M, Y') }}</div>
-                                        <div class="activities-item__status" style="color: {{ $request->status == 'approved' ? '#27ae60' : ($request->status == 'rejected' ? 'red' : 'black') }};">
-                                            Status: {{ ucfirst($request->status) }}
+                                        <div class="activities-item__date" style="font-weight: 900">Requested on: {{ $request->created_at->format('d M, Y - H:i') }}</div>
+
+                                        <div class="activities-item__status">
+                                            @if($request->status == 'canceled' || $request->status == 'refunded')
+                                                <span class="badge bg-danger-subtle text-danger rounded-pill item__status">{{ ucfirst($request->status) }}</span>
+                                            @elseif($request->status == 'approved')
+                                                <span class="badge bg-success-subtle text-success rounded-pill item__status">{{ ucfirst($request->status) }}</span>
+                                            @else
+                                                <span class="badge bg-warning-subtle text-secondary rounded-pill item__status">{{ ucfirst($request->status) }}</span>
+                                            @endif
                                         </div>
                                     </div>
                                     <div class="activities-item__price">{{ number_format($request->amount, 2) }} USD</div>
@@ -69,8 +85,7 @@
                     <div class="widjet__head">
                         <h3 class="uk-text-lead">Recent Orders</h3>
                     </div>
-                    <input type="text" id="search-orders" class="form-control uk-input"
-                           placeholder="Search orders by ID or name...">
+                    <input type="text" id="search-orders" class="form-control uk-input" placeholder="Search orders by ID or name...">
                     <div class="widjet__body">
                         <ul class="activities-list" id="orders-list" style="max-height: 400px; overflow: scroll;">
                             @foreach($orders as $order)
@@ -95,8 +110,16 @@
                                             </a>
                                             <div class="activities-item__date">Order ID: #{{ $order->id }}</div>
                                             <div class="activities-item__date">Service ID: #{{ $orderSubItem->service_id }}</div> <!-- Display the service_id -->
-                                            <div class="activities-item__date">{{ $order->created_at->format('d M, Y') }}</div>
-                                            <div class="activities-item__status">{{ $order->status }}</div>
+                                            <div class="activities-item__date">{{ $order->created_at->format('d M, Y - H:i') }}</div>
+                                            <div class="activities-item__status">
+                                                @if($order->status == 'canceled' || $order->status == 'refunded')
+                                                    <span class="badge bg-danger-subtle text-danger rounded-pill item__status">{{ ucfirst($order->status) }}</span>
+                                                @elseif($order->status == 'active')
+                                                    <span class="badge bg-success-subtle text-success rounded-pill item__status">{{ ucfirst($order->status) }}</span>
+                                                @else
+                                                    <span class="badge bg-warning-subtle text-secondary rounded-pill item__status">{{ ucfirst($order->status) }}</span>
+                                                @endif
+                                            </div>
                                         </div>
                                         <div class="activities-item__price">{{ number_format($orderSubItem->price, 2) }} USD</div>
                                     </li>
@@ -113,6 +136,21 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
+            // Equal height for cards
+            function setEqualHeight() {
+                var maxHeight = 0;
+                $('.card-height .uk-card').each(function() {
+                    var height = $(this).height();
+                    if (height > maxHeight) {
+                        maxHeight = height;
+                    }
+                });
+                $('.card-height .uk-card').height(maxHeight);
+            }
+
+            setEqualHeight();
+            $(window).resize(setEqualHeight);
+
             // Search functionality for orders
             $('#search-orders').on('keyup', function() {
                 var query = $(this).val().toLowerCase();

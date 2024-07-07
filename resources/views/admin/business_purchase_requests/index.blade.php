@@ -43,9 +43,9 @@
                                     <td style="color: @if($purchaseRequest->status == 'canceled' || $purchaseRequest->status == 'rejected') #F00 @elseif($purchaseRequest->status == 'approved') #1abc9c @endif;">{{ ucfirst($purchaseRequest->status) }}</td>
                                     <td>{{ $purchaseRequest->paymentMethod->gateway ?? "" }}</td>
                                     <td>
-                                        <a href="{{ route('business-purchase-requests.show', $purchaseRequest->id) }}" class="btn btn-info">Show</a>
-                                        <a href="{{ route('business-purchase-requests.edit', $purchaseRequest->id) }}" class="btn btn-warning">Edit</a>
-                                        <button type="button" class="btn btn-danger btn-delete" data-id="{{ $purchaseRequest->id }}">Delete</button>
+                                        <a href="{{ route('business-purchase-requests.show', $purchaseRequest->id) }}" class="btn btn-info"><i class=" ri-eye-line"></i></a>
+                                        <a href="{{ route('business-purchase-requests.edit', $purchaseRequest->id) }}" class="btn btn-warning"><i class="ri-edit-box-fill"></i></a>
+                                        <button type="button" class="btn btn-danger btn-delete" data-id="{{ $purchaseRequest->id }}"><i class="ri-delete-bin-5-line"></i></button>
                                     </td>
                                 </tr>
                             @endforeach
@@ -70,7 +70,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+                    <button type="button" class="btn btn-danger" id="confirmDelete"><i class="ri-delete-bin-5-line"></i></button>
                 </div>
             </div>
         </div>

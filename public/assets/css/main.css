@@ -5187,7 +5187,7 @@ body.dark-theme #modal-help ul li {
 
 .animation-navspinv,
 .page-header__logo img {
-    animation: navspinv 2.4s infinite linear;
+    /*animation: navspinv 2.4s infinite linear;*/
 }
 
 
@@ -5827,7 +5827,7 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
     position: relative;
     width: 100%;
     height: 50px;
-    background-color: #f46119;
+    background-color: #ff7c3c;
     overflow: hidden;
     color: white;
     display: flex;
@@ -5835,9 +5835,10 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
     justify-content: center;
     font-size: 20px;
     font-family: Arial, sans-serif;
-    margin-bottom: 50px;
-    margin-top: 50px;
+    max-width: 80%;
+    margin: 50px auto;
     opacity: 0.9;
+    border-radius: 3px ;
 }
 .news-bar span {
     display: inline-block;
@@ -5882,4 +5883,56 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
 }
 #buyNowButton:disabled:hover {
     background-color: #FFF; /* Ensure the hover state doesn't change the color */
+}
+
+.main-logo{
+    height: 50px;
+    width: 50px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.card-height .uk-card{
+    border-radius: 5px !important;
+}
+
+.card-height h3, p{
+    color: #FFF !important;
+}
+
+.rounded-pill {
+    display: inline-block;
+    padding: 0.25em 0.6em; /* Adjust the padding as needed */
+    font-size: 0.875em; /* Adjust the font size as needed */
+    font-weight: 700; /* Bold font */
+    line-height: 1.2; /* Adjust the line height as needed */
+    color: #fff; /* Text color */
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    border-radius: 50rem; /* Large border radius to create the pill shape */
+}
+
+.bg-success-subtle {
+    background-color: #d4edda; /* Light green background */
+    color: #155724; /* Dark green text */
+}
+
+.bg-danger-subtle {
+    background-color: #f8d7da; /* Light red background */
+    color: #721c24; /* Dark red text */
+}
+
+.bg-secondary-subtle {
+    background-color: #e2e3e5; /* Light grey background */
+    color: #383d41; /* Dark grey text */
+}
+
+.bg-warning-subtle {
+    background-color: #fff3cd; /* Light yellow background */
+    color: #856404; /* Dark yellow text */
+}
+
+.item__status{
+    font-weight: 400 !important;
 }

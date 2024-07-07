@@ -46,9 +46,9 @@
                                     <td>{{ $paymentMethod->gateway }}</td>
                                     <td><div class="description">{!! \Illuminate\Support\Str::limit($paymentMethod->description, 100, '...') !!}</div></td>
                                     <td>
-                                        <a href="{{ route('payment-methods.show', $paymentMethod->id) }}" class="btn btn-info">Show</a>
-                                        <a href="{{ route('payment-methods.edit', $paymentMethod->id) }}" class="btn btn-warning">Edit</a>
-                                        <button class="btn btn-danger btn-delete" data-id="{{ $paymentMethod->id }}">Delete</button>
+                                        <a href="{{ route('payment-methods.show', $paymentMethod->id) }}" class="btn btn-info"><i class=" ri-eye-line"></i></a>
+                                        <a href="{{ route('payment-methods.edit', $paymentMethod->id) }}" class="btn btn-warning"><i class="ri-edit-box-fill"></i></a>
+                                        <button class="btn btn-danger btn-delete" data-id="{{ $paymentMethod->id }}"><i class="ri-delete-bin-5-line"></i></button>
                                     </td>
                                 </tr>
                             @endforeach
@@ -75,7 +75,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+                    <button type="button" class="btn btn-danger" id="confirmDelete"><i class="ri-delete-bin-5-line"></i></button>
                 </div>
             </div>
         </div>

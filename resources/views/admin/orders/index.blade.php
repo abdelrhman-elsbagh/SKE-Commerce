@@ -27,6 +27,7 @@
                             <tr>
                                 <th>ID</th>
                                 <th>User</th>
+                                <th>Service ID</th>
                                 <th>Order Type</th>
                                 <th>Created At</th>
                                 <th>Updated At</th>
@@ -40,14 +41,25 @@
                                 <tr id="order-{{ $order->id }}">
                                     <td>{{ $order->id }}</td>
                                     <td>{{ $order->user->name }}</td>
+                                    <td>{{ $order->subItems[0]->service_id ?? ""}}</td>
                                     <td>{{ $order->order_type }}</td>
                                     <td>{{ $order->created_at }}</td>
                                     <td>{{ $order->updated_at }}</td>
                                     <td>{{ $order->total }}</td>
-                                    <td style="color: @if($order->status == 'canceled' || $order->status == 'refunded') #F00 @elseif($order->status == 'active') #1abc9c @endif;">{{ ucfirst($order->status) }}</td>
+
                                     <td>
-                                        <a href="{{ route('orders.show', $order->id) }}" class="btn btn-info">Show</a>
-                                        <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-warning">Edit</a>
+                                        @if($order->status == 'canceled' || $order->status == 'refunded')
+                                            <span class="badge bg-danger-subtle text-danger rounded-pill">{{ ucfirst($order->status) }}</span>
+                                        @elseif($order->status == 'active')
+                                            <span class="badge bg-success-subtle text-success rounded-pill">{{ ucfirst($order->status) }}</span>
+                                        @else
+                                            <span class="badge bg-secondary-subtle text-warning rounded-pill">{{ ucfirst($order->status) }}</span>
+                                        @endif
+                                    </td>
+
+                                    <td>
+                                        <a href="{{ route('orders.show', $order->id) }}" class="btn btn-info"><i class=" ri-eye-line"></i></a>
+                                        <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-warning"><i class="ri-edit-box-fill"></i></a>
                                     </td>
                                 </tr>
                             @endforeach
@@ -74,7 +86,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+                    <button type="button" class="btn btn-danger" id="confirmDelete"><i class="ri-delete-bin-5-line"></i></button>
                 </div>
             </div>
         </div>
@@ -84,7 +96,7 @@
 @section('script')
     @vite([
         'resources/js/pages/demo.datatable-init.js',
-        'node_modules/jquery-toast-plugin/dist/jquery.toast.min.js'
+        'node_modules/jquery-toast-plugin/dist/jquery.toast.min.js',
     ])
 
     <script>

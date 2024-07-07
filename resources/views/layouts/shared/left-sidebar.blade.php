@@ -430,24 +430,6 @@
 
 
             <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarPlans" aria-expanded="false" aria-controls="sidebarPlans" class="side-nav-link nav-link">
-                    <i class="ri-calendar-check-line"></i>
-                    <span> Plans </span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="sidebarPlans">
-                    <ul class="side-nav-second-level">
-                        <li>
-                            <a href="{{ route('plans.index') }}" class="nav-link">All Plans</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('plans.create') }}" class="nav-link">Create Plan</a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-
-            <li class="side-nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarUsers" aria-expanded="false" aria-controls="sidebarUsers" class="side-nav-link nav-link">
                     <i class="ri-user-line"></i>
                     <span> Users </span>
@@ -480,13 +462,6 @@
             </li>
 
             <li class="side-nav-item">
-                <a href="{{ route('business-purchase-requests.index') }}" class="side-nav-link">
-                    <i class="ri-file-list-line"></i>
-                    <span> B.Purchase Requests </span>
-                </a>
-            </li>
-
-            <li class="side-nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarUserWallets" aria-expanded="false" aria-controls="sidebarUserWallets" class="side-nav-link nav-link">
                     <i class="ri-wallet-line"></i>
                     <span> User Wallets </span>
@@ -499,24 +474,6 @@
                         </li>
                         <li>
                             <a href="{{ route('user-wallets.create') }}" class="nav-link">Create New</a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-
-            <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarBusinessClientWallets" aria-expanded="false" aria-controls="sidebarBusinessClientWallets" class="side-nav-link nav-link">
-                    <i class="ri-wallet-3-line"></i>
-                    <span> Business Client Wallets </span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="sidebarBusinessClientWallets">
-                    <ul class="side-nav-second-level">
-                        <li>
-                            <a href="{{ route('business-client-wallets.index') }}" class="nav-link">View All</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('business-client-wallets.create') }}" class="nav-link">Create New</a>
                         </li>
                     </ul>
                 </div>
@@ -576,25 +533,6 @@
                 </div>
             </li>
 
-
-            <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarSubscriptions" aria-expanded="false" aria-controls="sidebarSubscriptions" class="side-nav-link nav-link">
-                    <i class="ri-coin-line"></i>
-                    <span> Subscriptions </span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="sidebarSubscriptions">
-                    <ul class="side-nav-second-level">
-                        <li>
-                            <a href="{{ route('subscriptions.index') }}" class="nav-link">All Subscriptions</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('subscriptions.create') }}" class="nav-link">Create Subscription</a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarTags" aria-expanded="false" aria-controls="sidebarTags" class="side-nav-link nav-link">
                     <i class="ri-price-tag-3-line"></i>
@@ -628,8 +566,6 @@
                 </a>
             </li>
 
-            <li class="side-nav-title">Business</li>
-
 
 {{--            <li class="side-nav-item">--}}
 {{--                <a data-bs-toggle="collapse" href="#sidebarIcons" aria-expanded="false" aria-controls="sidebarIcons" class="side-nav-link nav-link">--}}
@@ -650,7 +586,19 @@
 {{--            </li>--}}
 
 
+            <li class="side-nav-item">
+                <a href="{{ route('fee_groups.index') }}" class="side-nav-link">
+                    <i class="ri-settings-3-line"></i>
+                    <span> Fee Groups </span>
+                </a>
+            </li>
 
+            <li class="side-nav-item">
+                <a href="{{ route('terms.edit') }}" class="side-nav-link">
+                    <i class="ri-settings-3-line"></i>
+                    <span> Terms & Conditions </span>
+                </a>
+            </li>
 
             <li class="side-nav-item">
                 <a href="{{ route('configs.edit') }}" class="side-nav-link">
@@ -658,6 +606,9 @@
                     <span> Configuration </span>
                 </a>
             </li>
+
+
+
 
 {{--            <li class="side-nav-item">--}}
 {{--                <a data-bs-toggle="collapse" href="#sidebarCharts" aria-expanded="false" aria-controls="sidebarCharts" class="side-nav-link nav-link">--}}
@@ -754,71 +705,71 @@
 {{--                </div>--}}
 {{--            </li>--}}
 
-            <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarForms" aria-expanded="false" aria-controls="sidebarForms" class="side-nav-link nav-link">
-                    <i class="ri-survey-line"></i>
-                    <span> Forms </span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="sidebarForms">
-                    <ul class="side-nav-second-level">
-                        <li>
-                            <a href="{{ route('second', ['forms', 'elements']) }}" class="nav-link">Basic Elements</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('second', ['forms', 'advanced']) }}" class="nav-link">Form Advanced</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('second', ['forms', 'validation']) }}" class="nav-link">Validation</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('second', ['forms', 'wizard']) }}" class="nav-link">Wizard</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('second', ['forms', 'fileuploads']) }}" class="nav-link">File Uploads</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('second', ['forms', 'editors']) }}" class="nav-link">Editors</a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
+{{--            <li class="side-nav-item">--}}
+{{--                <a data-bs-toggle="collapse" href="#sidebarForms" aria-expanded="false" aria-controls="sidebarForms" class="side-nav-link nav-link">--}}
+{{--                    <i class="ri-survey-line"></i>--}}
+{{--                    <span> Forms </span>--}}
+{{--                    <span class="menu-arrow"></span>--}}
+{{--                </a>--}}
+{{--                <div class="collapse" id="sidebarForms">--}}
+{{--                    <ul class="side-nav-second-level">--}}
+{{--                        <li>--}}
+{{--                            <a href="{{ route('second', ['forms', 'elements']) }}" class="nav-link">Basic Elements</a>--}}
+{{--                        </li>--}}
+{{--                        <li>--}}
+{{--                            <a href="{{ route('second', ['forms', 'advanced']) }}" class="nav-link">Form Advanced</a>--}}
+{{--                        </li>--}}
+{{--                        <li>--}}
+{{--                            <a href="{{ route('second', ['forms', 'validation']) }}" class="nav-link">Validation</a>--}}
+{{--                        </li>--}}
+{{--                        <li>--}}
+{{--                            <a href="{{ route('second', ['forms', 'wizard']) }}" class="nav-link">Wizard</a>--}}
+{{--                        </li>--}}
+{{--                        <li>--}}
+{{--                            <a href="{{ route('second', ['forms', 'fileuploads']) }}" class="nav-link">File Uploads</a>--}}
+{{--                        </li>--}}
+{{--                        <li>--}}
+{{--                            <a href="{{ route('second', ['forms', 'editors']) }}" class="nav-link">Editors</a>--}}
+{{--                        </li>--}}
+{{--                    </ul>--}}
+{{--                </div>--}}
+{{--            </li>--}}
 
-            <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarTables" aria-expanded="false" aria-controls="sidebarTables" class="side-nav-link nav-link">
-                    <i class="ri-table-line"></i>
-                    <span> Tables </span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="sidebarTables">
-                    <ul class="side-nav-second-level">
-                        <li>
-                            <a href="{{ route('second', ['tables', 'basic']) }}" class="nav-link">Basic Tables</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('second', ['tables', 'datatable']) }}" class="nav-link">Data Tables</a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
+{{--            <li class="side-nav-item">--}}
+{{--                <a data-bs-toggle="collapse" href="#sidebarTables" aria-expanded="false" aria-controls="sidebarTables" class="side-nav-link nav-link">--}}
+{{--                    <i class="ri-table-line"></i>--}}
+{{--                    <span> Tables </span>--}}
+{{--                    <span class="menu-arrow"></span>--}}
+{{--                </a>--}}
+{{--                <div class="collapse" id="sidebarTables">--}}
+{{--                    <ul class="side-nav-second-level">--}}
+{{--                        <li>--}}
+{{--                            <a href="{{ route('second', ['tables', 'basic']) }}" class="nav-link">Basic Tables</a>--}}
+{{--                        </li>--}}
+{{--                        <li>--}}
+{{--                            <a href="{{ route('second', ['tables', 'datatable']) }}" class="nav-link">Data Tables</a>--}}
+{{--                        </li>--}}
+{{--                    </ul>--}}
+{{--                </div>--}}
+{{--            </li>--}}
 
-            <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarMaps" aria-expanded="false" aria-controls="sidebarMaps" class="side-nav-link nav-link">
-                    <i class="ri-treasure-map-line"></i>
-                    <span> Maps </span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="sidebarMaps">
-                    <ul class="side-nav-second-level">
-                        <li>
-                            <a href="{{ route('second', ['maps', 'google']) }}" class="nav-link">Google Maps</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('second', ['maps', 'vector']) }}" class="nav-link">Vector Maps</a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
+{{--            <li class="side-nav-item">--}}
+{{--                <a data-bs-toggle="collapse" href="#sidebarMaps" aria-expanded="false" aria-controls="sidebarMaps" class="side-nav-link nav-link">--}}
+{{--                    <i class="ri-treasure-map-line"></i>--}}
+{{--                    <span> Maps </span>--}}
+{{--                    <span class="menu-arrow"></span>--}}
+{{--                </a>--}}
+{{--                <div class="collapse" id="sidebarMaps">--}}
+{{--                    <ul class="side-nav-second-level">--}}
+{{--                        <li>--}}
+{{--                            <a href="{{ route('second', ['maps', 'google']) }}" class="nav-link">Google Maps</a>--}}
+{{--                        </li>--}}
+{{--                        <li>--}}
+{{--                            <a href="{{ route('second', ['maps', 'vector']) }}" class="nav-link">Vector Maps</a>--}}
+{{--                        </li>--}}
+{{--                    </ul>--}}
+{{--                </div>--}}
+{{--            </li>--}}
 
 {{--            <li class="side-nav-item">--}}
 {{--                <a data-bs-toggle="collapse" href="#sidebarMultiLevel" aria-expanded="false" aria-controls="sidebarMultiLevel" class="side-nav-link nav-link">--}}
@@ -876,6 +827,69 @@
 {{--                    </ul>--}}
 {{--                </div>--}}
 {{--            </li>--}}
+
+            <li class="side-nav-title">Business abdel</li>
+
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarPlans" aria-expanded="false" aria-controls="sidebarPlans" class="side-nav-link nav-link">
+                    <i class="ri-calendar-check-line"></i>
+                    <span> Plans </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarPlans">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('plans.index') }}" class="nav-link">All Plans</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('plans.create') }}" class="nav-link">Create Plan</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarSubscriptions" aria-expanded="false" aria-controls="sidebarSubscriptions" class="side-nav-link nav-link">
+                    <i class="ri-coin-line"></i>
+                    <span> Subscriptions </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarSubscriptions">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('subscriptions.index') }}" class="nav-link">All Subscriptions</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('subscriptions.create') }}" class="nav-link">Create Subscription</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+            <li class="side-nav-item">
+                <a href="{{ route('business-purchase-requests.index') }}" class="side-nav-link">
+                    <i class="ri-file-list-line"></i>
+                    <span> B.Purchase Requests </span>
+                </a>
+            </li>
+
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarBusinessClientWallets" aria-expanded="false" aria-controls="sidebarBusinessClientWallets" class="side-nav-link nav-link">
+                    <i class="ri-wallet-3-line"></i>
+                    <span> Business Client Wallets </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarBusinessClientWallets">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('business-client-wallets.index') }}" class="nav-link">View All</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('business-client-wallets.create') }}" class="nav-link">Create New</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
         </ul>
         <!--- End Sidemenu -->
 

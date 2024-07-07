@@ -70,6 +70,15 @@
                                     @endforeach
                                 </select>
                             </div>
+                            <div class="mb-3">
+                                <label for="fee_group" class="form-label">Fee Group</label>
+                                <select class="form-control" id="fee_group" name="fee_group_id">
+                                    <option value="">Select Fee Group</option>
+                                    @foreach($feeGroups as $group)
+                                        <option value="{{ $group->id }}">{{ $group->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </form>
                     </div>

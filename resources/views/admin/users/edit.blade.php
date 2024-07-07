@@ -52,10 +52,6 @@
                                 <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" value="{{ \Carbon\Carbon::parse($user->date_of_birth)->format('Y-m-d') }}">
                             </div>
                             <div class="mb-3">
-                                <label for="fee" class="form-label">Fee (%)</label>
-                                <input type="number" step="0.01" class="form-control" id="fee" name="fee" value="{{ $user->fee }}" required>
-                            </div>
-                            <div class="mb-3">
                                 <label for="status" class="form-label">Status</label>
                                 <select class="form-control" id="status" name="status">
                                     <option value="active" {{ $user->status == 'active' ? 'selected' : '' }}>Active</option>
@@ -76,6 +72,15 @@
                                 <select class="form-control" id="role" name="role" required>
                                     @foreach($roles as $role)
                                         <option value="{{ $role->id }}" {{ $user->roles->contains($role->id) ? 'selected' : '' }}>{{ $role->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="fee_group" class="form-label">Fee Group</label>
+                                <select class="form-control" id="fee_group" name="fee_group_id">
+                                    <option value="">Select Fee Group</option>
+                                    @foreach($feeGroups as $group)
+                                        <option value="{{ $group->id }}" {{ $user->fee_group_id == $group->id ? 'selected' : '' }}>{{ $group->name }}</option>
                                     @endforeach
                                 </select>
                             </div>

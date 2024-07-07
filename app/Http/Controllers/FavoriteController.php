@@ -41,4 +41,18 @@ class FavoriteController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Item added to favorites successfully.']);
     }
+
+    public function remove(Request $request)
+    {
+        $favoriteId = $request->input('id');
+        $favorite = Favorite::find($favoriteId);
+
+        if ($favorite && $favorite->user_id == Auth::id()) {
+            $favorite->delete();
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false]);
+    }
+
 }

@@ -235,6 +235,7 @@
                             <li><a href="#modal-purchase-request" data-uk-toggle><i class="fas fa-money-bill-wave pr8" style="font-size: 16px;"></i><span>Purchase Request</span></a></li>
 
                             <li><a href="{{ route('payments-page') }}"><i class="fas fa-credit-card pr8"></i><span>Payment Methods</span></a></li>
+                            <li><a href="{{ route('terms-page') }}"><i class="fas fa-file-contract pr8"></i><span>Terms & Conditions</span></a></li>
 
                         @endif
                         <li>

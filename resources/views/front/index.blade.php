@@ -5,7 +5,7 @@
 @section('content')
     <main class="page-main">
         <div class="uk-width-4-5@l uk-width-3-3@m uk-width-3-3@s uk-margin-auto">
-{{--            <h3 class="uk-text-lead">Recommended & Featured</h3>--}}
+            {{-- <h3 class="uk-text-lead">Recommended & Featured</h3> --}}
             <div class="js-recommend">
                 <div class="swiper">
                     <div class="swiper-wrapper">
@@ -32,26 +32,33 @@
                     <div class="swiper-pagination"></div>
                 </div>
             </div>
-
         </div>
 
         <div class="news-bar">
-            <span class="rotated" id="news-text">{{ $news->news ?? ""  }}</span>
+            <span class="rotated" id="news-text">{{ $news->news ?? "" }}</span>
         </div>
 
-        <div class="uk-grid uk-child-width-1-6@xl uk-child-width-1-5@m uk-child-width-1-3@s uk-grid-small" data-uk-grid>
+        <!-- Search Input Field -->
+        <div class="uk-width-4-5@l uk-width-3-3@m uk-width-3-3@s uk-margin-auto uk-margin-top">
+            <div class="search-container">
+                <input type="text" id="search-items" class="form-control uk-input" placeholder="Search items by name..." style="background: #FFF;color: #222;">
+                <i class="fa fa-search search-icon"></i>
+            </div>
+        </div>
+
+        <div class="uk-grid uk-child-width-1-6@xl uk-child-width-1-5@m uk-child-width-1-3@s uk-grid-small" data-uk-grid id="items-container">
             @foreach ($categorizedItems as $categoryName => $items)
                 <div class="uk-width-1-1">
                     <h3>{{ $categoryName }}</h3>
                     <div class="uk-grid uk-child-width-1-6@xl uk-child-width-1-5@m uk-child-width-1-3@s uk-grid-small">
                         @foreach ($items as $item)
-                            <div class="uk-width-1-6@xl uk-width-1-5@m uk-width-1-3@s" style="margin-top: 15px;">
+                            <div class="uk-width-1-6@xl uk-width-1-5@m uk-width-1-3@s item-card" data-name="{{ strtolower($item->name) }}" style="margin-top: 15px;">
                                 <div class="game-card {{ $item->status == 'inactive' ? 'inactive' : '' }}">
                                     <div class="game-card__box">
                                         <div class="game-card__media">
                                             <a href="{{ $item->status == 'active' ? route('item.show', ['id' => $item->id]) : '#' }}" class="{{ $item->status == 'inactive' ? 'disabled-link' : '' }}">
-                                                @if ($item->getFirstMediaUrl('images'))
-                                                    <img src="{{ $item->getFirstMediaUrl('images') }}" alt="{{ $item->name }}">
+                                                @if ($item->getFirstMediaUrl('front_image'))
+                                                    <img src="{{ $item->getFirstMediaUrl('front_image') }}" alt="{{ $item->name }}">
                                                 @else
                                                     <img src="{{ asset('assets/img/default-game.jpg') }}" alt="Default Image">
                                                 @endif
@@ -59,16 +66,12 @@
                                             @if($item->status == 'inactive')
                                                 <div class="card-tag card-tag-inactive">inactive</div>
                                             @endif
-
                                         </div>
                                         <div class="game-card__info">
                                             <a class="game-card__title" style="padding-bottom: 0; margin-bottom: 0;" href="{{ $item->status == 'active' ? route('item.show', ['id' => $item->id]) : '#' }}">{{ $item->name }}</a>
                                             @if(!empty($item->title) && ( $item->title_type == 'default' || $item->title_type == 'new'))
                                                 <div class="card-tag {{ $item->title_type == 'discount' ? 'card-tag-discount' : ($item->title_type == 'new' ? 'card-tag-new' : '') }}">{{ $item->title }}</div>
                                             @endif
-{{--                                            @foreach($item->tags as $tag)--}}
-{{--                                                <span class="game-card__genre">{{ $tag->name }}{{ !$loop->last ? ' - ' : '' }}</span>--}}
-{{--                                            @endforeach--}}
                                         </div>
                                     </div>
                                 </div>
@@ -97,10 +100,39 @@
 
                 // Set the animation duration
                 newsText.style.animationDuration = `${duration}s`;
+
+                // Search functionality
+                document.getElementById('search-items').addEventListener('keyup', function() {
+                    const query = this.value.toLowerCase();
+                    document.querySelectorAll('.item-card').forEach(function(itemCard) {
+                        const itemName = itemCard.getAttribute('data-name');
+                        if (itemName.includes(query)) {
+                            itemCard.style.display = 'block';
+                        } else {
+                            itemCard.style.display = 'none';
+                        }
+                    });
+                });
             });
         </script>
     @endsection
+
     <style>
+        .search-container {
+            position: relative;
+            width: 100%;
+        }
+        .search-container input {
+            width: 100%;
+            padding-right: 35px;
+        }
+        .search-icon {
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #f46119;
+        }
         .card-tag {
             text-align: center;
             width: 110px;

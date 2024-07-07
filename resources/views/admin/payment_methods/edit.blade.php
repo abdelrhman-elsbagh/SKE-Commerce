@@ -3,8 +3,8 @@
 @section('css')
     @vite([
         'node_modules/jquery-toast-plugin/dist/jquery.toast.min.css',
-        'node_modules/quill/dist/quill.core.css',
-        'node_modules/quill/dist/quill.snow.css'
+//        'node_modules/quill/dist/quill.core.css',
+//        'node_modules/quill/dist/quill.snow.css'
     ])
     <style>
         .uk-card-body {
@@ -64,7 +64,6 @@
 @section('script')
     @vite([
         'node_modules/jquery-toast-plugin/dist/jquery.toast.min.js',
-        'node_modules/quill/dist/quill.min.js'
     ])
 
     <script>

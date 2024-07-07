@@ -14,6 +14,7 @@ use App\Models\PaymentMethod;
 use App\Models\Plan;
 use App\Models\Slider;
 use App\Models\SubItem;
+use App\Models\TermsConditions;
 use App\Models\User;
 use App\Models\UserWallet;
 use App\Providers\RouteServiceProvider;
@@ -43,7 +44,11 @@ class HomeController extends Controller
         $favoritesCount = 0;
         if (Auth::guard('web')->user()) {
             $favoritesCount = $user->favorites()->count() ?? 0;
-            $config->fee = $user->fee;
+
+            if($user->feeGroup){
+                $config->fee = $user->feeGroup->fee;
+            }
+
         }
 
         $paymentMethods = PaymentMethod::where('status', 'active')->get();
@@ -71,28 +76,61 @@ class HomeController extends Controller
         View::share('config', $config);
 
         $user = Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        $favoritesCount = $user->favorites()->count();
+        View::share('favoritesCount', $favoritesCount);
+
+        $wallet = UserWallet::where('user_id', $user->id)->firstOrFail();
+        $orders = $user->orders()->with('subItems.subItem.item.media')->orderBy('created_at', 'DESC')->get();
+        $purchaseRequests = $user->purchaseRequests()->latest()->take(5)->get();
+
+        // Calculate total money of orders
+        $totalOrderMoney = $orders->sum('total');
+
+        // Calculate total amount of purchase requests
+        $totalPurchaseRequestAmount = $purchaseRequests->sum('amount');
+
+        $paymentMethods = PaymentMethod::where('status', 'active')->orderBy('created_at', 'DESC')->get();
+
+        return view('front.wallet', [
+            'wallet' => $wallet,
+            'orders' => $orders,
+            'purchaseRequests' => $purchaseRequests,
+            'paymentMethods' => $paymentMethods,
+            'totalOrderMoney' => $totalOrderMoney,
+            'totalPurchaseRequestAmount' => $totalPurchaseRequestAmount
+        ]);
+    }
+
+    public function terms_page(Request $request)
+    {
+        $config = Config::with('media')->first();
+        View::share('config', $config);
+
+        $user = Auth::guard('web')->user();
+        if (!$user) {
+            return redirect()->route('sign-in');
+        }
+
         $favoritesCount = 0;
         if ($user) {
             $favoritesCount = $user->favorites()->count();
         }
         View::share('favoritesCount', $favoritesCount);
-        View::share('config', $config);
 
-        $user = Auth::user();
-        if (!$user) {
-            return redirect()->route('login');
-        }
+        $terms = TermsConditions::firstOrFail();
 
-        $wallet = UserWallet::where('user_id', $user->id)->firstOrFail();
-        $orders = $user->orders()->with('subItems.subItem.item.media')->get();
-        $purchaseRequests = $user->purchaseRequests()->latest()->take(5)->get();
+        $paymentMethods = PaymentMethod::where('status', 'active')->orderBy('created_at', 'DESC')->get();
 
-        $paymentMethods = PaymentMethod::where('status', 'active')->get();
-        return view('front.wallet', ['wallet' => $wallet, 'orders' => $orders, 'purchaseRequests' => $purchaseRequests,
-            'paymentMethods' => $paymentMethods]);
+        return view('front.terms_conditions', [
+            'terms' => $terms,
+            'paymentMethods' => $paymentMethods,
+        ]);
     }
-
-    public function business_wallet(Request $request)
+        public function business_wallet(Request $request)
     {
         $config = Config::with('media')->first();
         View::share('config', $config);
@@ -213,7 +251,12 @@ class HomeController extends Controller
 
         $paymentMethods = PaymentMethod::where('status', 'active')->get();
 
-        return view('front.profile', compact('user', 'orders', 'purchaseRequests', 'paymentMethods'));
+        $feeGroup = null;
+        if($user->feeGroup) {
+            $feeGroup = $user->feeGroup;
+        }
+
+        return view('front.profile', compact('user', 'orders', 'purchaseRequests', 'paymentMethods', 'feeGroup'));
     }
     public function business_profile(Request $request)
     {
@@ -273,7 +316,10 @@ class HomeController extends Controller
 
         // Retrieve the fee percentage from the config
         $config = Config::first(); // Assuming you have a Config model to fetch the fee percentage
-        $config->fee = $user->fee;
+        if($user->feeGroup){
+            $config->fee = $user->feeGroup->fee;
+        }
+
         $feePercentage = $config->fee;
 
         // Calculate the total price including the fee
@@ -293,7 +339,7 @@ class HomeController extends Controller
         $order = Order::create([
             'user_id' => $user->id,
             'total' => $totalPrice,
-            'status' => 'active',
+            'status' => 'pending',
         ]);
 
 
@@ -355,7 +401,6 @@ class HomeController extends Controller
         View::share('favoritesCount', $favoritesCount);
 
 
-//        $item = Item::with(['subItems', 'subItems.media', 'media', 'tags', 'orderSubItem'])->findOrFail($id);
         $item = Item::with(['subItems.orderSubItem', 'subItems.media', 'media', 'tags'])->findOrFail($id);
         $userFavorites = [];
         if(Auth::user()){

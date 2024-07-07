@@ -48,6 +48,10 @@ class ItemController extends Controller
             $item->addMedia($request->file('image'))->toMediaCollection('images');
         }
 
+        if ($request->hasFile('front_image')) {
+            $item->addMedia($request->file('front_image'))->toMediaCollection('front_image');
+        }
+
         // Handle sub-items if provided
         if ($request->has('sub_items')) {
             foreach ($request->input('sub_items') as $index => $subItemData) {
@@ -90,6 +94,11 @@ class ItemController extends Controller
         if ($request->hasFile('image')) {
             $item->clearMediaCollection('images');
             $item->addMedia($request->file('image'))->toMediaCollection('images');
+        }
+
+        if ($request->hasFile('front_image')) {
+            $item->clearMediaCollection('front_image');
+            $item->addMedia($request->file('front_image'))->toMediaCollection('front_image');
         }
 
         if ($request->has('tags')) {

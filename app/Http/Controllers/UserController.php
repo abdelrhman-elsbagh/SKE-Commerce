@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FeeGroup;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -19,7 +20,8 @@ class UserController extends Controller
     public function create()
     {
         $roles = Role::all();
-        return view('admin.users.create', compact('roles'));
+        $feeGroups = FeeGroup::all();
+        return view('admin.users.create', compact('roles', 'feeGroups'));
     }
 
     public function store(Request $request)
@@ -29,6 +31,7 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'bio' => 'nullable|string',
+            'fee_group_id' => 'required|exists:fee_groups,id',
             'address' => 'nullable|string',
             'date_of_birth' => 'nullable|date',
             'status' => 'nullable|string',
@@ -44,6 +47,7 @@ class UserController extends Controller
             'address' => $request->address,
             'date_of_birth' => $request->date_of_birth,
             'status' => $request->status,
+            'fee_group_id' => $request->fee_group_id,
         ]);
 
         if ($request->hasFile('avatar')) {
@@ -103,7 +107,7 @@ class UserController extends Controller
             'status' => 'nullable|string',
             'avatar' => 'nullable|image',
             'role' => 'required|exists:roles,id',
-            'fee' => 'required|numeric|min:0',
+            'fee_group_id' => 'required|exists:fee_groups,id',
             ]);
 
         $user = User::findOrFail($id);
@@ -115,6 +119,7 @@ class UserController extends Controller
             'date_of_birth' => $request->date_of_birth,
             'status' => $request->status,
             'fee' => $request->fee,
+            'fee_group_id' => $request->fee_group_id,
         ]);
 
         if ($request->filled('password')) {
@@ -145,7 +150,8 @@ class UserController extends Controller
     {
         $user = User::with('roles', 'media', 'specialUserFeeDiscounts')->findOrFail($id);
         $roles = Role::all();
-        return view('admin.users.edit', compact('user', 'roles'));
+        $feeGroups = FeeGroup::all();
+        return view('admin.users.edit', compact('user', 'roles', 'feeGroups'));
     }
 
 

@@ -20,10 +20,19 @@
                                 @endif
                             </div>
                             <div class="user-info__box">
+                                <div class="user-info__title">#{{ $user->id }}</div>
                                 <div class="user-info__title">{{ $user->name }}</div>
                                 <div class="user-info__text">{{ $user->address }}, Member since {{ $user->created_at->format('F Y') }}</div>
                             </div>
                         </div>
+                        @if($feeGroup)
+                            <div class="fee-group-info" style="text-align: center">
+                                @if($feeGroup->getFirstMediaUrl('images'))
+                                    <img src="{{ $feeGroup->getFirstMediaUrl('images') }}" alt="Fee Group Image" style="max-width: 50px;">
+                                @endif
+                                <div class="fee-group-name">{{ $feeGroup->name }}</div>
+                            </div>
+                        @endif
                     </div>
                 </div>
                 <div class="widjet --bio">
@@ -94,7 +103,6 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
-            console.log("Abdo")
             $('#edit-icon').on('click', function() {
                 $('#update-info-form :input').prop('disabled', false);
                 $('#submit-button').prop('disabled', false);

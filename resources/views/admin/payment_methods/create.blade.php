@@ -51,7 +51,6 @@
 @section('script')
     @vite([
         'node_modules/jquery-toast-plugin/dist/jquery.toast.min.js',
-        'node_modules/quill/dist/quill.min.js'
     ])
 
     <script>

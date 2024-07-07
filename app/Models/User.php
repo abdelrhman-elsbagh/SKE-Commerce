@@ -29,6 +29,7 @@ class User extends Authenticatable implements HasMedia
         'date_of_birth',
         'status',
         'fee',
+        'fee_group_id',
     ];
 
     /**
@@ -96,5 +97,10 @@ class User extends Authenticatable implements HasMedia
     public function hasRole($role)
     {
         return $this->roles()->where('name', $role)->exists();
+    }
+
+    public function feeGroup()
+    {
+        return $this->belongsTo(FeeGroup::class);
     }
 }
