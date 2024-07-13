@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Currency;
 use App\Models\FeeGroup;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -108,6 +109,7 @@ class UserController extends Controller
             'avatar' => 'nullable|image',
             'role' => 'required|exists:roles,id',
             'fee_group_id' => 'required|exists:fee_groups,id',
+            'currency_id' => 'required|exists:currencies,id',
             ]);
 
         $user = User::findOrFail($id);
@@ -120,6 +122,7 @@ class UserController extends Controller
             'status' => $request->status,
             'fee' => $request->fee,
             'fee_group_id' => $request->fee_group_id,
+            'currency_id' => $request->currency_id,
         ]);
 
         if ($request->filled('password')) {
@@ -151,7 +154,8 @@ class UserController extends Controller
         $user = User::with('roles', 'media', 'specialUserFeeDiscounts')->findOrFail($id);
         $roles = Role::all();
         $feeGroups = FeeGroup::all();
-        return view('admin.users.edit', compact('user', 'roles', 'feeGroups'));
+        $currencies = Currency::all();
+        return view('admin.users.edit', compact('user', 'roles', 'feeGroups', 'currencies'));
     }
 
 

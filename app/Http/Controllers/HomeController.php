@@ -5,6 +5,7 @@ use App\Models\BusinessClient;
 use App\Models\BusinessClientWallet;
 use App\Models\BusinessPaymentMethod;
 use App\Models\Config;
+use App\Models\Currency;
 use App\Models\Item;
 use App\Models\News;
 use App\Models\Order;
@@ -12,6 +13,7 @@ use App\Models\OrderItem;
 use App\Models\OrderSubItem;
 use App\Models\PaymentMethod;
 use App\Models\Plan;
+use App\Models\Post;
 use App\Models\Slider;
 use App\Models\SubItem;
 use App\Models\TermsConditions;
@@ -85,15 +87,21 @@ class HomeController extends Controller
 
         $wallet = UserWallet::where('user_id', $user->id)->firstOrFail();
         $orders = $user->orders()->with('subItems.subItem.item.media')->orderBy('created_at', 'DESC')->get();
+        $activeOrders = $user->orders()->with('subItems.subItem.item.media')->where('status', 'active')->get();
         $purchaseRequests = $user->purchaseRequests()->latest()->take(5)->get();
 
         // Calculate total money of orders
-        $totalOrderMoney = $orders->sum('total');
+        $totalOrderMoney = $activeOrders->sum('total');
 
         // Calculate total amount of purchase requests
         $totalPurchaseRequestAmount = $purchaseRequests->sum('amount');
 
         $paymentMethods = PaymentMethod::where('status', 'active')->orderBy('created_at', 'DESC')->get();
+
+        $feeGroup = null;
+        if($user->feeGroup) {
+            $feeGroup = $user->feeGroup;
+        }
 
         return view('front.wallet', [
             'wallet' => $wallet,
@@ -101,7 +109,33 @@ class HomeController extends Controller
             'purchaseRequests' => $purchaseRequests,
             'paymentMethods' => $paymentMethods,
             'totalOrderMoney' => $totalOrderMoney,
-            'totalPurchaseRequestAmount' => $totalPurchaseRequestAmount
+            'totalPurchaseRequestAmount' => $totalPurchaseRequestAmount,
+            'user' => $user,
+            'feeGroup' => $feeGroup,
+
+        ]);
+    }
+    public function posts(Request $request)
+    {
+        $config = Config::with('media')->first();
+        View::share('config', $config);
+
+        $user = Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        $favoritesCount = $user->favorites()->count();
+        View::share('favoritesCount', $favoritesCount);
+
+        $posts = Post::orderBy('created_at', 'DESC')->get();
+        $paymentMethods = PaymentMethod::where('status', 'active')->orderBy('created_at', 'DESC')->get();
+
+        return view('front.posts', [
+            'posts' => $posts,
+            'paymentMethods' => $paymentMethods,
+            'user' => $user,
+
         ]);
     }
 
@@ -128,9 +162,11 @@ class HomeController extends Controller
         return view('front.terms_conditions', [
             'terms' => $terms,
             'paymentMethods' => $paymentMethods,
+            'user' => $user
         ]);
     }
-        public function business_wallet(Request $request)
+
+    public function business_wallet(Request $request)
     {
         $config = Config::with('media')->first();
         View::share('config', $config);
@@ -149,7 +185,7 @@ class HomeController extends Controller
             'wallet' => $wallet,
             'subscriptions' => $subscriptions,
             'purchaseRequests' => $purchaseRequests,
-            'paymentMethods' => $paymentMethods
+            'paymentMethods' => $paymentMethods,
         ]);
     }
 
@@ -161,7 +197,8 @@ class HomeController extends Controller
         if (!$user) {
             return redirect()->route('login'); // Redirect to login if not authenticated
         }*/
-        return view('front.register', compact('config'));
+        $currencies = Currency::all();
+        return view('front.register', compact('config', 'currencies'));
     }
 
     public function register(Request $request)
@@ -179,8 +216,11 @@ class HomeController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'currency_id' => $request->currency_id,
             'password' => Hash::make($request->password),
         ]);
+
+        $user->assignRole('User');
 
         Auth::login($user);
 
@@ -394,23 +434,33 @@ class HomeController extends Controller
         $config = Config::with('media')->first();
         $user = Auth::user();
         $favoritesCount = 0;
+
         if ($user) {
             $favoritesCount = $user->favorites()->count();
-            $config->fee = $user->fee;
+            if($user->feeGroup){
+                $config->fee = $user->feeGroup->fee;
+            }
         }
         View::share('favoritesCount', $favoritesCount);
 
-
         $item = Item::with(['subItems.orderSubItem', 'subItems.media', 'media', 'tags'])->findOrFail($id);
+        // Check if user has a currency and adjust sub_item prices accordingly
+        if ($user && $user->currency) {
+            $currencyPrice = $user->currency->price;
+            foreach ($item->subItems as $subItem) {
+                $subItem->price = $subItem->price * $currencyPrice;
+            }
+        }
         $userFavorites = [];
-        if(Auth::user()){
-
+        if (Auth::check()) {
             $userFavorites = Auth::user()->favorites->pluck('sub_item_id')->toArray();
         }
+
         $paymentMethods = PaymentMethod::where('status', 'active')->get();
 
-        return view('front.item', compact('item', 'config', 'userFavorites', 'paymentMethods'));
+        return view('front.item', compact('item', 'config', 'userFavorites', 'paymentMethods', 'user'));
     }
+
 
     public function logout(Request $request)
     {

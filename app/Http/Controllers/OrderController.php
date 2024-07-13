@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\OrdersExport;
 use App\Models\Order;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class OrderController extends Controller
 {
@@ -42,6 +44,10 @@ class OrderController extends Controller
             $this->refundOrderAmount($order);
         }
 
+        if ($originalStatus === 'pending' && $order->status === 'refunded') {
+            $this->refundOrderAmount($order);
+        }
+
         return response()->json(['message' => 'Order updated successfully.']);
     }
 
@@ -62,5 +68,10 @@ class OrderController extends Controller
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => 'An error occurred while deleting the order.']);
         }
+    }
+
+    public function export()
+    {
+        return Excel::download(new OrdersExport, 'orders.xlsx');
     }
 }

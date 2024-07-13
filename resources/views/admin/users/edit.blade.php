@@ -44,16 +44,19 @@
                                 <textarea class="form-control" id="bio" name="bio">{{ $user->bio }}</textarea>
                             </div>
                             <div class="mb-3">
-                                <label for="address" class="form-label">Address</label>
-                                <input type="text" class="form-control" id="address" name="address" value="{{ $user->address }}">
+                                <label for="address" class="form-label">Country</label>
+                                <select class="form-control" id="address" name="address">
+                                    <option value="">Select Country</option>
+                                    <!-- Countries will be loaded here by JavaScript -->
+                                </select>
                             </div>
                             <div class="mb-3">
                                 <label for="date_of_birth" class="form-label">Date of Birth</label>
                                 <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" value="{{ \Carbon\Carbon::parse($user->date_of_birth)->format('Y-m-d') }}">
                             </div>
                             <div class="mb-3">
-                                <label for="status" class="form-label">Status</label>
-                                <select class="form-control" id="status" name="status">
+                                <label for="user_status" class="form-label">Status</label>
+                                <select class="form-control" id="user_status" name="status">
                                     <option value="active" {{ $user->status == 'active' ? 'selected' : '' }}>Active</option>
                                     <option value="inactive" {{ $user->status == 'inactive' ? 'selected' : '' }}>Inactive</option>
                                 </select>
@@ -80,10 +83,21 @@
                                 <select class="form-control" id="fee_group" name="fee_group_id">
                                     <option value="">Select Fee Group</option>
                                     @foreach($feeGroups as $group)
-                                        <option value="{{ $group->id }}" {{ $user->fee_group_id == $group->id ? 'selected' : '' }}>{{ $group->name }}</option>
+                                        <option value="{{ $group->id }}" {{ $user->fee_group_id == $group->id ? 'selected' : '' }}>{{ $group->name }} ( {{ $group->fee  }} % )</option>
                                     @endforeach
                                 </select>
                             </div>
+
+                            <div class="mb-3">
+                                <label for="fee_group" class="form-label">Currency</label>
+                                <select class="form-control" id="currency_id" name="currency_id">
+                                    <option value="">Select Fee Group</option>
+                                    @foreach($currencies as $currency)
+                                        <option value="{{ $currency->id }}" {{ $user->currency_id == $currency->id ? 'selected' : '' }}>{{ $currency->currency }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </form>
                     </div>
@@ -100,6 +114,15 @@
 
     <script>
         $(document).ready(function() {
+            // Load countries from JSON file
+            $.getJSON('{{ asset("assets/countries.json") }}', function(data) {
+                var $countrySelect = $('#address');
+                $.each(data, function(key, entry) {
+                    $countrySelect.append($('<option></option>').attr('value', entry.name).text(entry.name));
+                });
+                $countrySelect.val('{{ $user->address }}');
+            });
+
             $('#avatar').change(function() {
                 let reader = new FileReader();
                 reader.onload = function(e) {

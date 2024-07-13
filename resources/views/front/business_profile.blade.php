@@ -45,7 +45,7 @@
                                 <div class="widjet-game__info">
                                     <a class="widjet-game__title" href="{{ route('plan.show', ['id' => $subscription->plan->id]) }}"> {{ $subscription->plan->name }}</a>
                                     <div class="widjet-game__record">Subscription ID: #{{ $subscription->id }}</div>
-                                    <div class="widjet-game__record">Price: {{ $subscription->plan->price }} USD</div>
+                                    <div class="widjet-game__record">Price: {{ $subscription->plan->price }} {{ $user->currency->currency ?? "USD" }}</div>
                                     <div class="widjet-game__last-played">Subscribed on {{ $subscription->start_date->format('d M, Y') }}</div>
                                     <div class="widjet-game__record">Ends on: {{ $subscription->end_date->format('d M, Y') }}</div>
                                 </div>
@@ -69,7 +69,7 @@
                                 </div>
                                 <div class="widjet-game__info">
                                     <div class="widjet-game__title">Request ID: {{ $request->id }}</div>
-                                    <div class="widjet-game__record">{{ $request->amount }} USD</div>
+                                    <div class="widjet-game__record">{{ $request->amount }} {{ $user->currency->currency ?? "USD" }}</div>
                                     <div class="widjet-game__last-played">Status: {{ ucfirst($request->status) }}</div>
                                     <div class="widjet-game__last-played">Requested on {{ $request->created_at->format('d M, Y') }}</div>
                                     <div class="widjet-game__description">{{ $request->notes }}</div>

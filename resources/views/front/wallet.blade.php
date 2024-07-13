@@ -8,21 +8,21 @@
             <div class="uk-width-2-3@l">
                 <div class="uk-grid uk-child-width-1-3@m uk-grid-small" data-uk-grid>
                     <div class="card-height">
-                        <div class="uk-card uk-card-default uk-card-body" style="background-color: #1abc9c; text-align: center;">
-                            <h3 class="uk-card-title">Wallet Balance</h3>
-                            <p class="wallet-value">{{ number_format($wallet->balance, 2) }} USD</p>
+                        <div class="uk-card uk-card-default uk-card-body" style="text-align: center;">
+                            <h3 class="uk-card-title static-head">Wallet Balance</h3>
+                            <p class="wallet-value">{{ number_format($wallet->balance, 2) }} {{ $user->currency->currency ?? "USD" }}</p>
                         </div>
                     </div>
                     <div class="card-height">
-                        <div class="uk-card uk-card-default uk-card-body" style="background-color: #3498db; text-align: center;">
-                            <h3 class="uk-card-title">Total Order Money</h3>
-                            <p class="wallet-value">{{ number_format($totalOrderMoney, 2) }} USD</p>
+                        <div class="uk-card uk-card-default uk-card-body" style="text-align: center;">
+                            <h3 class="uk-card-title static-head">Total Order Money</h3>
+                            <p class="wallet-value">{{ number_format($totalOrderMoney, 2) }} {{ $user->currency->currency ?? "USD" }}</p>
                         </div>
                     </div>
                     <div class="card-height">
-                        <div class="uk-card uk-card-default uk-card-body" style="background-color: #fc5c65; text-align: center;">
-                            <h3 class="uk-card-title">Total Purchase Requests</h3>
-                            <p class="wallet-value">{{ number_format($totalPurchaseRequestAmount, 2) }} USD</p>
+                        <div class="uk-card uk-card-default uk-card-body" style="text-align: center;">
+                            <h3 class="uk-card-title static-head">Total Purchase Requests</h3>
+                            <p class="wallet-value">{{ number_format($totalPurchaseRequestAmount, 2) }} {{ $user->currency->currency ?? "USD" }}</p>
                         </div>
                     </div>
                 </div>
@@ -33,7 +33,7 @@
                     </div>
                     <input type="text" id="search-purchase-requests" class="form-control uk-input" placeholder="Search purchase requests by ID or notes...">
                     <div class="widjet__body" style="padding: 0;">
-                        <ul class="activities-list" id="purchase-requests-list" style="max-height: 600px; overflow: scroll;">
+                        <ul class="activities-list" id="purchase-requests-list" style="">
                             @foreach($purchaseRequests as $request)
                                 <li class="activities-item" style="padding: 20px 30px" data-id="{{ $request->id }}" data-notes="{{ $request->notes }}">
                                     <div class="activities-item__logo">
@@ -54,35 +54,49 @@
                                             @endif
                                         </div>
                                     </div>
-                                    <div class="activities-item__price">{{ number_format($request->amount, 2) }} USD</div>
+                                    <div class="activities-item__price">{{ number_format($request->amount, 2) }} {{ $user->currency->currency ?? "USD" }}</div>
                                 </li>
-                                <li style="width: 100%; height: 10px; background: #F5F5F5"></li>
+{{--                                <li style="width: 100%; height: 10px; background: #F5F5F5"></li>--}}
                             @endforeach
                         </ul>
                     </div>
                 </div>
             </div>
             <div class="uk-width-1-3@l">
-                <div class="widjet --payment-method">
-                    <div class="widjet__head">
-                        <h3 class="uk-text-lead">Payment Method</h3>
-                    </div>
-                    <div class="widjet__body">
-                        <div class="payment-card">
-                            <div class="payment-card__head">
-                                <div class="payment-card__chip">
-                                    <img src="{{ asset('assets/img/payment-card-chip.svg') }}" alt="chip">
-                                </div>
-                                <div class="payment-card__logo">
-                                    <img src="{{ asset('assets/img/payment-card-logo.svg') }}" alt="logo">
-                                </div>
-                            </div>
-                            <div class="payment-card__number">Direct Payment</div>
+
+{{--                <div class="widjet --payment-method">--}}
+{{--                    <div class="widjet__head">--}}
+{{--                        <h3 class="uk-text-lead">Payment Method</h3>--}}
+{{--                    </div>--}}
+{{--                    <div class="widjet__body">--}}
+{{--                        <div class="payment-card">--}}
+{{--                            <div class="payment-card__head">--}}
+{{--                                <div class="payment-card__chip">--}}
+{{--                                    <img src="{{ asset('assets/img/payment-card-chip.svg') }}" alt="chip">--}}
+{{--                                </div>--}}
+{{--                                <div class="payment-card__logo">--}}
+{{--                                    <img src="{{ asset('assets/img/payment-card-logo.svg') }}" alt="logo">--}}
+{{--                                </div>--}}
+{{--                            </div>--}}
+{{--                            <div class="payment-card__number">Direct Payment</div>--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+                <div id="" style="">
+                    <div id="gateway-card" class="widjet__body uk-card">
+                        <h3 class="uk-text-lead">{{ $user->feeGroup->name ?? ""  }}</h3>
+                        <div class="">
+                            @if($feeGroup)
+                                @if($feeGroup->getFirstMediaUrl('images'))
+                                    <img src="{{ $feeGroup->getFirstMediaUrl('images') }}" alt="Fee Group Image" style="max-width: 150px;">
+                                @endif
+                            @endif
                         </div>
                     </div>
                 </div>
+
                 <div class="widjet --activities">
-                    <div class="widjet__head">
+                    <div class="widjet__head" style="margin-top: 20px">
                         <h3 class="uk-text-lead">Recent Orders</h3>
                     </div>
                     <input type="text" id="search-orders" class="form-control uk-input" placeholder="Search orders by ID or name...">
@@ -109,7 +123,9 @@
                                                 {{ $item->name }}
                                             </a>
                                             <div class="activities-item__date">Order ID: #{{ $order->id }}</div>
-                                            <div class="activities-item__date">Service ID: #{{ $orderSubItem->service_id }}</div> <!-- Display the service_id -->
+                                            <div class="activities-item__date">Price {{ $order->total ?? "0" }} {{ $user->currency->currency ?? "USD" }}</div>
+                                            <div class="activities-item__date">Service ID: #{{ $orderSubItem->service_id ?? "" }}</div> <!-- Display the service_id -->
+                                            <div class="activities-item__date">Amount: {{ $orderSubItem->subItem->amount ?? "" }}</div>
                                             <div class="activities-item__date">{{ $order->created_at->format('d M, Y - H:i') }}</div>
                                             <div class="activities-item__status">
                                                 @if($order->status == 'canceled' || $order->status == 'refunded')
@@ -121,7 +137,7 @@
                                                 @endif
                                             </div>
                                         </div>
-                                        <div class="activities-item__price">{{ number_format($orderSubItem->price, 2) }} USD</div>
+                                        <div class="activities-item__price">{{ number_format($orderSubItem->price, 2) }} {{ $user->currency->currency ?? "USD" }}</div>
                                     </li>
                                 @endforeach
                             @endforeach
@@ -146,6 +162,7 @@
                     }
                 });
                 $('.card-height .uk-card').height(maxHeight);
+                $('#gateway-card').height(maxHeight + 40);
             }
 
             setEqualHeight();

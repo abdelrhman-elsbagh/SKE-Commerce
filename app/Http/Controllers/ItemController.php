@@ -82,7 +82,6 @@ class ItemController extends Controller
         $item = Item::with(['subItems', 'subItems.media', 'media'])->findOrFail($id);
         $categories = Category::all();
         $tags = Tag::all();
-//        dd($item->subItems[3]);
         return view('admin.items.edit', compact('item', 'categories', 'tags'));
     }
 

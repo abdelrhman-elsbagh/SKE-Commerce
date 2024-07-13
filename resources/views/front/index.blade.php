@@ -49,12 +49,12 @@
         <div class="uk-grid uk-child-width-1-6@xl uk-child-width-1-5@m uk-child-width-1-3@s uk-grid-small" data-uk-grid id="items-container">
             @foreach ($categorizedItems as $categoryName => $items)
                 <div class="uk-width-1-1">
-                    <h3>{{ $categoryName }}</h3>
+                    <h3 class="category-title">{{ $categoryName }}</h3>
                     <div class="uk-grid uk-child-width-1-6@xl uk-child-width-1-5@m uk-child-width-1-3@s uk-grid-small">
                         @foreach ($items as $item)
                             <div class="uk-width-1-6@xl uk-width-1-5@m uk-width-1-3@s item-card" data-name="{{ strtolower($item->name) }}" style="margin-top: 15px;">
-                                <div class="game-card {{ $item->status == 'inactive' ? 'inactive' : '' }}">
-                                    <div class="game-card__box">
+                                <div class="game-card " style="overflow: hidden">
+                                    <div class="game-card__box game-card {{ $item->status == 'inactive' ? 'inactive' : '' }}">
                                         <div class="game-card__media">
                                             <a href="{{ $item->status == 'active' ? route('item.show', ['id' => $item->id]) : '#' }}" class="{{ $item->status == 'inactive' ? 'disabled-link' : '' }}">
                                                 @if ($item->getFirstMediaUrl('front_image'))
@@ -63,9 +63,6 @@
                                                     <img src="{{ asset('assets/img/default-game.jpg') }}" alt="Default Image">
                                                 @endif
                                             </a>
-                                            @if($item->status == 'inactive')
-                                                <div class="card-tag card-tag-inactive">inactive</div>
-                                            @endif
                                         </div>
                                         <div class="game-card__info">
                                             <a class="game-card__title" style="padding-bottom: 0; margin-bottom: 0;" href="{{ $item->status == 'active' ? route('item.show', ['id' => $item->id]) : '#' }}">{{ $item->name }}</a>
@@ -74,6 +71,9 @@
                                             @endif
                                         </div>
                                     </div>
+                                    @if($item->status == 'inactive')
+                                        <div class="card-tag card-tag-inactive">inactive</div>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach

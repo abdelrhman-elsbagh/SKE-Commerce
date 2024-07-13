@@ -5897,7 +5897,7 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
 }
 
 .card-height h3, p{
-    color: #FFF !important;
+    /*color: #FFF !important;*/
 }
 
 .rounded-pill {
@@ -5935,4 +5935,21 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
 
 .item__status{
     font-weight: 400 !important;
+}
+
+#purchase-requests-list{
+    max-height: 600px;
+    overflow: scroll;
+    background: #F5F5F5
+}
+.static-head{
+    font-size: 22px;
+    white-space: nowrap;
+    font-weight: 600;
+}
+
+.wallet-value{
+    font-size: 30px;
+    padding-top: 20px;
+    white-space: nowrap;
 }

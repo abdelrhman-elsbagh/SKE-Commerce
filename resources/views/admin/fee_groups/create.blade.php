@@ -26,15 +26,15 @@
                                 @method('PUT')
                             @endif
                             <div class="mb-3">
-                                <label for="fee" class="form-label">Fee</label>
+                                <label for="fee" class="form-label">Fee % </label>
                                 <input type="number" step="0.01" class="form-control" id="fee" name="fee" value="{{ $feeGroup->fee ?? '' }}" required>
                             </div>
                             <div class="mb-3">
                                 <label for="name" class="form-label">Name</label>
-                                <input type="text" class="form-control" id="name" name="name" value="{{ $feeGroup->name ?? '' }}" required>
+                                <input type="text" class="form-control" id="name" name="name" value="{{ $feeGroup->name ?? '' }}">
                             </div>
                             <div class="mb-3">
-                                <label for="image" class="form-label">Image</label>
+                                <label for="image" class="form-label">Cover Image</label>
                                 <input type="file" class="form-control" id="image" name="image" accept="image/*">
                                 <div class="mt-2" id="image-preview">
                                     @if(isset($feeGroup) && $feeGroup->getFirstMediaUrl('images'))

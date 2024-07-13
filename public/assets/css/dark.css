@@ -1,0 +1,24 @@
+.category-title{
+    color: #FFF;
+}
+.activities-item__price{
+    color: #FFF;
+}
+
+#buyNowButton:active,
+#buyNowButton:hover{
+    color: #F46119;
+    background: #FFF;
+}
+
+#purchase-requests-list{
+    background: #040615
+}
+
+.uk-heading-line{
+    color: #FFF;
+}
+
+#bio{
+    background: #F5F5F5;
+}

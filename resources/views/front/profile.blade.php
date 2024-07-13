@@ -28,7 +28,7 @@
                         @if($feeGroup)
                             <div class="fee-group-info" style="text-align: center">
                                 @if($feeGroup->getFirstMediaUrl('images'))
-                                    <img src="{{ $feeGroup->getFirstMediaUrl('images') }}" alt="Fee Group Image" style="max-width: 50px;">
+                                    <img src="{{ $feeGroup->getFirstMediaUrl('images') }}" alt="Fee Group Image" style="max-width: 50px;border-radius: 50%">
                                 @endif
                                 <div class="fee-group-name">{{ $feeGroup->name }}</div>
                             </div>
@@ -45,7 +45,7 @@
                     <div class="widjet__head" style="display: flex; justify-content: space-between; align-items: center;">
                         <h3 class="uk-text-lead">Update Your Information</h3>
                         <button id="edit-icon" class="btn btn-warning" style="border: none; background: none; padding: 0;">
-                            <i class="fas fa-edit fa-lg" style="color: #27ae60;"></i>
+                            <i class="fas fa-edit fa-lg" style="color: #f46119;"></i>
                         </button>
                     </div>
                     <div class="widjet__body">
@@ -73,8 +73,11 @@
                                 <textarea class="uk-textarea" id="bio" name="bio" disabled>{{ $user->bio }}</textarea>
                             </div>
                             <div class="uk-margin">
-                                <label for="address">Address</label>
-                                <input class="uk-input" id="address" name="address" type="text" value="{{ $user->address }}" disabled>
+                                <label for="address">Country</label>
+                                <select class="uk-select" id="address" name="address" disabled>
+                                    <option value="">Select Country</option>
+                                    <!-- Countries will be loaded here by JavaScript -->
+                                </select>
                             </div>
                             <div class="uk-margin">
                                 <label for="date_of_birth">Date of Birth</label>
@@ -82,7 +85,7 @@
                             </div>
                             <div class="uk-margin">
                                 <label for="image">Profile Image</label>
-                                <input class="uk-input" id="image" name="image" type="file" disabled>
+                                <input class="uk-input" id="image" name="avatar" type="file" disabled>
                             </div>
                             <div class="uk-margin">
                                 <button class="uk-button uk-button-primary" type="submit" id="submit-button" disabled>Update</button>
@@ -103,6 +106,15 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
+            // Load countries from JSON file
+            $.getJSON('{{ asset("assets/countries.json") }}', function(data) {
+                var $countrySelect = $('#address');
+                $.each(data, function(key, entry) {
+                    $countrySelect.append($('<option></option>').attr('value', entry.name).text(entry.name));
+                });
+                $countrySelect.val('{{ $user->address }}');
+            });
+
             $('#edit-icon').on('click', function() {
                 $('#update-info-form :input').prop('disabled', false);
                 $('#submit-button').prop('disabled', false);

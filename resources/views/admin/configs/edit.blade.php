@@ -52,6 +52,10 @@
                                 <input type="number" step="0.01" class="form-control" id="fee" name="fee" value="{{ $config->fee }}" required>
                             </div>
                             <div class="mb-3">
+                                <label for="fee" class="form-label">Currency</label>
+                                <input type="text" class="form-control" id="currency" name="currency" value="{{ $config->currency }}">
+                            </div>
+                            <div class="mb-3">
                                 <label for="logo" class="form-label">Logo</label>
                                 <input type="file" class="form-control" id="logo" name="logo" accept="image/*">
                                 <div class="mt-2" id="logo-preview">

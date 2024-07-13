@@ -79,7 +79,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="image" class="form-label">Front Image</label>
+                                <label for="front_image" class="form-label">Front Image</label>
                                 <input type="file" class="form-control" id="front_image" name="front_image" accept="image/*">
                                 <div class="mt-2" id="front_image-preview">
                                     @if(isset($item) && $item->getFirstMediaUrl('front_image'))
@@ -90,7 +90,7 @@
 
                             <div id="sub-items-container">
                                 <h5>Sub Items</h5>
-                                <button type="button" class="btn btn-secondary mb-3" data-bs-toggle="modal" data-bs-target="#subItemModal">Add Sub Item</button>
+                                <button type="button" class="btn btn-secondary mb-3" data-bs-toggle="modal" data-bs-target="#subItemModal">Add / Edit Sub Item</button>
                                 <table class="table table-bordered">
                                     <thead>
                                     <tr>
@@ -98,7 +98,7 @@
                                         <th>Description</th>
                                         <th>Amount</th>
                                         <th>Price</th>
-                                        <th>Image</th>
+                                        <th class="text-center">Image</th>
                                         <th>Actions</th>
                                     </tr>
                                     </thead>
@@ -109,27 +109,27 @@
                                                 <td>
                                                     <input type="hidden" name="sub_items[{{ $loop->index }}][id]" value="{{ $subItem->id }}">
                                                     <input type="hidden" name="sub_items[{{ $loop->index }}][name]" value="{{ $subItem->name }}">
-                                                    {{ $subItem->name }}
+                                                    <span>{{ $subItem->name }}</span>
                                                 </td>
                                                 <td>
                                                     <input type="hidden" name="sub_items[{{ $loop->index }}][description]" value="{{ $subItem->description }}">
-                                                    {{ $subItem->description }}
+                                                    <span>{{ $subItem->description }}</span>
                                                 </td>
                                                 <td>
                                                     <input type="hidden" name="sub_items[{{ $loop->index }}][amount]" value="{{ $subItem->amount }}">
-                                                    {{ $subItem->amount }}
+                                                    <span>{{ $subItem->amount }}</span>
                                                 </td>
                                                 <td>
                                                     <input type="hidden" name="sub_items[{{ $loop->index }}][price]" value="{{ $subItem->price }}">
-                                                    {{ $subItem->price }}
+                                                    <span>{{ $subItem->price }}</span>
                                                 </td>
-                                                <td>
-                                                    @if($subItem->getFirstMediaUrl('images'))
-                                                        <img src="{{ $subItem->getFirstMediaUrl('images') }}" alt="Sub Item Image" style="max-width: 100px;">
-                                                    @endif
+                                                <td style="text-align: center">
+                                                    <input type="file" name="sub_items[{{ $loop->index }}][image]" class="sub-item-image-file" data-index="{{ $loop->index }}" style="display: none;">
+                                                    <img src="{{ $subItem->getFirstMediaUrl('images') ?? '' }}" alt="Sub Item Image" class="sub-item-image-preview" style="max-width: 100px;border-radius: 10px;">
                                                 </td>
                                                 <td>
                                                     <button type="button" class="btn btn-danger remove-sub-item" data-id="{{ $subItem->id }}">Remove</button>
+                                                    <button type="button" class="btn btn-primary edit-sub-item" data-id="{{ $subItem->id }}">Edit</button>
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -156,9 +156,10 @@
                 </div>
                 <div class="modal-body">
                     <form id="create-sub-item-form">
+                        <input type="hidden" id="sub_item_index_modal">
                         <div class="mb-3">
                             <label for="sub_item_name_modal" class="form-label">Sub Item Name</label>
-                            <input type="text" class="form-control" id="sub_item_name_modal" name="sub_item_name_modal" required>
+                            <input type="text" class="form-control" id="sub_item_name_modal" name="sub_item_name_modal">
                         </div>
                         <div class="mb-3">
                             <label for="sub_item_description_modal" class="form-label">Sub Item Description</label>
@@ -170,14 +171,14 @@
                         </div>
                         <div class="mb-3">
                             <label for="sub_item_price_modal" class="form-label">Sub Item Price</label>
-                            <input type="number" step="0.01" class="form-control" id="sub_item_price_modal" name="sub_item_price_modal" required>
+                            <input type="number" step="0.5" class="form-control" id="sub_item_price_modal" name="sub_item_price_modal" required>
                         </div>
                         <div class="mb-3">
                             <label for="sub_item_image_modal" class="form-label">Sub Item Image</label>
                             <input type="file" class="form-control" id="sub_item_image_modal" name="sub_item_image_modal" accept="image/*">
                             <div class="mt-2" id="sub-item-image-preview-modal"></div>
                         </div>
-                        <button type="submit" class="btn btn-primary">Add Sub Item</button>
+                        <button type="submit" class="btn btn-primary">Save Sub Item</button>
                     </form>
                 </div>
             </div>
@@ -192,6 +193,7 @@
 
     <script>
         $(document).ready(function() {
+            // Image previews
             $('#image').change(function() {
                 let reader = new FileReader();
                 reader.onload = function(e) {
@@ -208,14 +210,24 @@
                 reader.readAsDataURL(this.files[0]);
             });
 
+            // Preview image when selected in the modal
             $('#sub_item_image_modal').change(function() {
                 let reader = new FileReader();
                 reader.onload = function(e) {
                     $('#sub-item-image-preview-modal').html('<img src="' + e.target.result + '" alt="Sub Item Image Preview" style="max-width: 200px;">');
+
+                    // Update the table image preview immediately
+                    if ($('#sub_item_index_modal').val()) {
+                        let subItemIndex = $('#sub_item_index_modal').val();
+                        let subItemRow = $('#sub-items-table-body').find('tr[data-id="' + subItemIndex + '"]');
+                        subItemRow.find('.sub-item-image-preview').attr('src', e.target.result);
+                        subItemRow.find('input[name^="sub_items"][name$="[image_url]"]').val(e.target.result);
+                    }
                 }
                 reader.readAsDataURL(this.files[0]);
             });
 
+            // Handle sub-item form submission
             $('#create-sub-item-form').on('submit', function(e) {
                 e.preventDefault();
 
@@ -224,55 +236,85 @@
                 let subItemAmount = $('#sub_item_amount_modal').val();
                 let subItemPrice = $('#sub_item_price_modal').val();
                 let subItemImage = $('#sub_item_image_modal')[0].files[0];
+                let subItemIndex = $('#sub_item_index_modal').val();
 
-                let subItemCount = $('#sub-items-table-body tr').length;
+                let reader = new FileReader();
+                reader.onload = function(event) {
+                    let imageSrc = event.target.result;
 
-                let subItemRow = `
-            <tr data-temp-id="${subItemCount}">
-                <td>
-                    <input type="hidden" name="sub_items[${subItemCount}][name]" value="${subItemName}">
-                    ${subItemName}
-                </td>
-                <td>
-                    <input type="hidden" name="sub_items[${subItemCount}][description]" value="${subItemDescription}">
-                    ${subItemDescription}
-                </td>
-                <td>
-                    <input type="hidden" name="sub_items[${subItemCount}][amount]" value="${subItemAmount}">
-                    ${subItemAmount}
-                </td>
-                <td>
-                    <input type="hidden" name="sub_items[${subItemCount}][price]" value="${subItemPrice}">
-                    ${subItemPrice}
-                </td>
-                <td>
-                    <input type="file" name="sub_items[${subItemCount}][image]" class="sub-item-image-file" data-index="${subItemCount}" style="display: none;">
-                    <img src="" alt="Sub Item Image" class="sub-item-image-preview" style="max-width: 100px;">
-                </td>
-                <td>
-                    <button type="button" class="btn btn-danger remove-sub-item" data-id="${subItemCount}">Remove</button>
-                </td>
-            </tr>
-        `;
+                    if (subItemIndex) {
+                        // Edit existing sub-item
+                        let subItemRow = $('#sub-items-table-body').find('tr[data-id="' + subItemIndex + '"]');
+                        subItemRow.find('input[name^="sub_items"][name$="[name]"]').val(subItemName);
+                        subItemRow.find('input[name^="sub_items"][name$="[description]"]').val(subItemDescription);
+                        subItemRow.find('input[name^="sub_items"][name$="[amount]"]').val(subItemAmount);
+                        subItemRow.find('input[name^="sub_items"][name$="[price]"]').val(subItemPrice);
+                        subItemRow.find('input[name^="sub_items"][name$="[image_url]"]').val(imageSrc);
+                        subItemRow.find('span').eq(0).text(subItemName);
+                        subItemRow.find('span').eq(1).text(subItemDescription);
+                        subItemRow.find('span').eq(2).text(subItemAmount);
+                        subItemRow.find('span').eq(3).text(subItemPrice);
 
-                $('#sub-items-table-body').append(subItemRow);
+                        if (subItemImage) {
+                            subItemRow.find('.sub-item-image-preview').attr('src', imageSrc);
+
+                            let imageData = new DataTransfer();
+                            imageData.items.add(subItemImage);
+                            subItemRow.find('.sub-item-image-file').prop('files', imageData.files);
+                        }
+                    } else {
+                        // Add new sub-item
+                        let subItemCount = $('#sub-items-table-body tr').length;
+                        let subItemRow = `
+                            <tr data-id="${subItemCount}">
+                                <td>
+                                    <input type="hidden" name="sub_items[${subItemCount}][name]" value="${subItemName}">
+                                    <span>${subItemName}</span>
+                                </td>
+                                <td>
+                                    <input type="hidden" name="sub_items[${subItemCount}][description]" value="${subItemDescription}">
+                                    <span>${subItemDescription}</span>
+                                </td>
+                                <td>
+                                    <input type="hidden" name="sub_items[${subItemCount}][amount]" value="${subItemAmount}">
+                                    <span>${subItemAmount}</span>
+                                </td>
+                                <td>
+                                    <input type="hidden" name="sub_items[${subItemCount}][price]" value="${subItemPrice}">
+                                    <span>${subItemPrice}</span>
+                                </td>
+                                <td>
+                                    <input type="hidden" name="sub_items[${subItemCount}][image_url]" value="${imageSrc}">
+                                    <input type="file" name="sub_items[${subItemCount}][image]" class="sub-item-image-file" data-index="${subItemCount}" style="display: none;">
+                                    <img src="${imageSrc}" alt="Sub Item Image" class="sub-item-image-preview" style="max-width: 100px;border-radius: 10px;">
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-danger remove-sub-item" data-id="${subItemCount}">Remove</button>
+                                    <button type="button" class="btn btn-primary edit-sub-item" data-id="${subItemCount}">Edit</button>
+                                </td>
+                            </tr>
+                        `;
+                        $('#sub-items-table-body').append(subItemRow);
+
+                        if (subItemImage) {
+                            let imageData = new DataTransfer();
+                            imageData.items.add(subItemImage);
+                            $('#sub-items-table-body').find('tr:last .sub-item-image-file').prop('files', imageData.files);
+                        }
+                    }
+
+                    // Clear modal form fields
+                    $('#create-sub-item-form')[0].reset();
+                    $('#sub_item_index_modal').val('');
+                    $('#sub-item-image-preview-modal').html('');
+                    $('#subItemModal').modal('hide');
+                };
 
                 if (subItemImage) {
-                    let reader = new FileReader();
-                    reader.onload = function(e) {
-                        $('#sub-items-table-body').find('tr:last .sub-item-image-preview').attr('src', e.target.result);
-                    }
                     reader.readAsDataURL(subItemImage);
-
-                    let imageData = new DataTransfer();
-                    imageData.items.add(subItemImage);
-                    $('#sub-items-table-body').find('tr:last .sub-item-image-file').prop('files', imageData.files);
+                } else {
+                    reader.onload({ target: { result: '' } }); // Trigger onload manually if no image is selected
                 }
-
-                // Clear modal form fields
-                $('#create-sub-item-form')[0].reset();
-                $('#sub-item-image-preview-modal').html('');
-                $('#subItemModal').modal('hide');
             });
 
             $('#create-edit-item-form').on('submit', function(e) {
@@ -311,9 +353,8 @@
                         });
 
                         // Optionally, reset the form fields
-                        $('#create-edit-item-form')[0].reset();
-                        // $('#image-preview').html('');
-                        $('#sub-items-table-body').html('');
+                        // $('#create-edit-item-form')[0].reset();
+                        // $('#sub-items-table-body').html('');
                     },
                     error: function(response) {
                         $.toast().reset('all'); // Reset previous toasts
@@ -340,6 +381,52 @@
                     name: 'sub_items_to_remove[]',
                     value: subItemId
                 }).appendTo('#create-edit-item-form');
+            });
+
+            $(document).on('click', '.edit-sub-item', function() {
+                let subItemRow = $(this).closest('tr');
+                let subItemIndex = subItemRow.data('id');
+                let subItemName = subItemRow.find('input[name^="sub_items"][name$="[name]"]').val();
+                let subItemDescription = subItemRow.find('input[name^="sub_items"][name$="[description]"]').val();
+                let subItemAmount = subItemRow.find('input[name^="sub_items"][name$="[amount]"]').val();
+                let subItemPrice = subItemRow.find('input[name^="sub_items"][name$="[price]"]').val();
+
+                $('#create-sub-item-form')[0].reset();  // Reset form fields
+
+                $('#sub_item_name_modal').val(subItemName);
+                $('#sub_item_description_modal').val(subItemDescription);
+                $('#sub_item_amount_modal').val(subItemAmount);
+                $('#sub_item_price_modal').val(subItemPrice);
+                $('#sub_item_index_modal').val(subItemIndex);
+
+                let subItemImageSrc = subItemRow.find('.sub-item-image-preview').attr('src');
+                if (subItemImageSrc) {
+                    $('#sub-item-image-preview-modal').html('<img src="' + subItemImageSrc + '" alt="Sub Item Image Preview" style="max-width: 200px;">');
+                } else {
+                    $('#sub-item-image-preview-modal').html('<img src="" alt="Sub Item Image Preview" style="max-width: 200px;">');
+                }
+
+                $('#sub_item_image_modal').off('change').on('change', function() {
+                    let reader = new FileReader();
+                    reader.onload = function(e) {
+                        $('#sub-item-image-preview-modal').html('<img src="' + e.target.result + '" alt="Sub Item Image Preview" style="max-width: 200px;">');
+                        subItemRow.find('.sub-item-image-preview').attr('src', e.target.result);
+                        subItemRow.find('input[name^="sub_items"][name$="[image_url]"]').val(e.target.result);
+
+                        let imageData = new DataTransfer();
+                        imageData.items.add($('#sub_item_image_modal')[0].files[0]);
+                        subItemRow.find('.sub-item-image-file').prop('files', imageData.files);
+                    }
+                    reader.readAsDataURL(this.files[0]);
+                });
+
+                $('#subItemModal').modal('show');
+            });
+
+            $('#subItemModal').on('hidden.bs.modal', function () {
+                $('#create-sub-item-form')[0].reset();  // Reset form fields when the modal is closed
+                $('#sub-item-image-preview-modal').html('');
+                $('#sub_item_image_modal').off('change');
             });
         });
     </script>

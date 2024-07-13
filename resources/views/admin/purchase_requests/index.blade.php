@@ -31,6 +31,8 @@
                                 <th>Amount</th>
                                 <th>Status</th>
                                 <th>Payment Method</th>
+                                <th>Created At</th>
+                                <th>Updated At</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
@@ -40,8 +42,19 @@
                                     <td>{{ $purchaseRequest->id }}</td>
                                     <td>{{ $purchaseRequest->user->name }}</td>
                                     <td>{{ $purchaseRequest->amount }}</td>
-                                    <td style="color: @if($purchaseRequest->status == 'canceled' || $purchaseRequest->status == 'rejected') #F00 @elseif($purchaseRequest->status == 'approved') #1abc9c @endif;">{{ ucfirst($purchaseRequest->status) }}</td>
+                                    <td>
+                                        <span class="badge
+                                            @if($purchaseRequest->status == 'pending') bg-warning-subtle text-warning
+                                            @elseif($purchaseRequest->status == 'approved') bg-success-subtle text-success
+                                            @elseif($purchaseRequest->status == 'rejected') bg-danger-subtle text-danger
+                                            @else bg-secondary-subtle text-secondary
+                                            @endif">
+                                            {{ ucfirst($purchaseRequest->status) }}
+                                        </span>
+                                    </td>
                                     <td>{{ $purchaseRequest->paymentMethod->gateway ?? "" }}</td>
+                                    <td>{{ $purchaseRequest->created_at ?? "" }}</td>
+                                    <td>{{ $purchaseRequest->updated_at ?? "" }}</td>
                                     <td>
                                         <a href="{{ route('purchase-requests.show', $purchaseRequest->id) }}" class="btn btn-info"><i class=" ri-eye-line"></i></a>
                                         <a href="{{ route('purchase-requests.edit', $purchaseRequest->id) }}" class="btn btn-warning"><i class="ri-edit-box-fill"></i></a>

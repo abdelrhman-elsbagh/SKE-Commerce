@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Marcellus&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 </head>
 <body class="page-login">
 <div class="page-wrapper">
@@ -42,13 +43,23 @@
                         <form id="registrationForm" action="{{ route('register') }}" method="POST">
                             @csrf
                             <div class="uk-margin">
+                                <input class="uk-input" type="text" name="name" placeholder="Name">
+                                <div class="uk-text-danger" id="error-name"></div>
+                            </div>
+                            <div class="uk-margin">
                                 <input class="uk-input" type="email" name="email" placeholder="Email">
                                 <div class="uk-text-danger" id="error-email"></div>
                             </div>
                             <div class="uk-margin">
-                                <input class="uk-input" type="text" name="name" placeholder="Username">
-                                <div class="uk-text-danger" id="error-name"></div>
+                                <select class="uk-select" name="currency_id">
+                                    <option value="">Select Currency ( USD ) Default</option>
+                                    @foreach($currencies as $currency)
+                                        <option value="{{ $currency->id }}">{{ $currency->currency }}</option>
+                                    @endforeach
+                                </select>
+                                <div class="uk-text-danger" id="error-currency_id"></div>
                             </div>
+
                             <div class="uk-margin">
                                 <input class="uk-input" type="password" name="password" placeholder="Password">
                                 <div class="uk-text-danger" id="error-password"></div>
@@ -73,6 +84,7 @@
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script>
     $(document).ready(function() {
         $('#registrationForm').submit(function(e) {
@@ -84,7 +96,7 @@
                 type: 'POST',
                 data: $(this).serialize(),
                 success: function(data) {
-                    alert('Registration successful!');
+                    toastr.success('Registration successful!');
                     window.location.href = '/'; // Redirect to the home page
                 },
                 error: function(response) {
@@ -92,9 +104,10 @@
                         const errors = response.responseJSON.errors;
                         $.each(errors, function(key, value) {
                             $('#error-' + key).text(value[0]); // Set error text
+                            toastr.error(value[0]);
                         });
                     } else {
-                        alert('An unexpected error occurred. Please try again.');
+                        toastr.error('An unexpected error occurred. Please try again.');
                     }
                 }
             });

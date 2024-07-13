@@ -79,8 +79,8 @@
                     },
                     success: function(response) {
                         if(response.success) {
-                            $favoriteCard.remove();
                             toastr.success('Removed from favorites successfully.');
+                            location.reload(); // Refresh the page after success
                         } else {
                             toastr.error('Failed to remove from favorites.');
                         }

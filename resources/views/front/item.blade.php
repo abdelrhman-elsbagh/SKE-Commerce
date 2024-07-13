@@ -1,7 +1,7 @@
 @php use Illuminate\Support\Facades\Auth; @endphp
 @extends('front.layout')
 
-@section('title', 'Ske E-Commerce')
+@section('title', 'Items')
 
 @section('content')
     <main class="page-main">
@@ -38,7 +38,7 @@
                                                                 @if($subItem->getFirstMediaUrl('images'))
 
                                                                     <img src="{{ $subItem->getFirstMediaUrl('images') }}" alt="{{ $subItem->name }}" class="uk-width-1-1"
-                                                                         style="height: 20px; width: 20px">
+                                                                         style="height: 20px; width: 20px; border-radius: 5px">
                                                                 @endif
                                                             </h3>
                                                             <p class="uk-card-title uk-margin-remove-bottom" style="text-align: center;font-size: 14px; margin-top: 5px">{{ $subItem->description ?? "" }}</p>
@@ -47,7 +47,7 @@
                                                 </div>
                                                 <div class="uk-card-footer" style="text-align: center;border-top: 0;padding: 10px 20px; ">
                                                     <span class="uk-text-bold" style="color: #F46119; font-size: 18px;">
-                                                        {{ number_format($subItem->price + ($subItem->price * $config->fee / 100), 2) }} USD
+                                                        {{ number_format($subItem->price + ($subItem->price * $config->fee / 100), 2) }} {{ $user->currency->currency ?? "USD" }}
                                                     </span>
                                                     <i class="fas fa-heart fa-1x heart-icon" style="color: {{ $isFavorited ? '#f46119' : '#ccc' }}; position: absolute; top: 10px; left: 10px;"></i>
                                                 </div>
@@ -63,7 +63,7 @@
                         </div>
                     </div>
                     <div class="game-profile-price" style="margin-top: 110px">
-                        <div class="game-profile-price__value">$0.00 USD</div>
+                        <div class="game-profile-price__value">$0.00 {{ $user->currency->currency ?? "USD" }}</div>
                         <button id="buyNowButton" class="uk-button uk-button-danger uk-width-1-1" type="button"><span class="ico_shopping-cart"></span><span>Buy Now</span></button>
                         <button id="addToFavouritesButton" class="uk-button uk-button-primary uk-width-1-1" type="button"><span class="ico_add-square"></span><span>Add to Favourites</span></button>
                     </div>
@@ -112,8 +112,8 @@
         </div>
     </main>
 
-    <script src="{{ asset('assets/js/libs.js') }}"></script>
     <script src="{{ asset('assets/js/main.js') }}"></script>
+    <script src="{{ asset('assets/js/libs.js') }}"></script>
     <script>
         $(document).ready(function() {
             // Find all elements with class 'item-crd'
@@ -179,16 +179,16 @@
                     body: formData
                 }).then(response => response.json())
                     .then(data => {
-                        setTimeout(function () {
-                            buyNowButton.disabled = false;
-                        }, 5000);
+                        // setTimeout(function () {
+                        //     buyNowButton.disabled = false;
+                        // }, 5000);
 
                         if (data.success) {
                             setTimeout(function () {
                                 toastr.success(data.message);
                                 setTimeout(function () {
                                     window.location.href = "{{ route('home') }}";
-                                }, 5000);
+                                }, 2000);
                             }, 100); // Wait for 5 seconds before showing the success toast and redirecting
                         } else {
                             toastr.error(data.message);

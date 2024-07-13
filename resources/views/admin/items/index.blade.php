@@ -40,7 +40,7 @@
                                 <tr id="item-{{ $item->id }}">
                                     <td>{{ $item->id }}</td>
                                     <td>{{ $item->name }}</td>
-                                    <td>{{ $item->description }}</td>
+                                    <td>{{ \Illuminate\Support\Str::limit($item->description, 70, '...') }}</td>
                                     <td>
                                         @foreach($item->subItems as $subItem)
                                             <span class="badge bg-success">{{ $subItem->name }}</span>

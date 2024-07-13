@@ -6,6 +6,7 @@ use App\Http\Controllers\BusinessPurchaseRequestController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ClientPurchaseRequestController;
 use App\Http\Controllers\ConfigController;
+use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DiamondRatesController;
 use App\Http\Controllers\FavoriteController;
@@ -16,6 +17,7 @@ use App\Http\Controllers\NewsController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\PlanController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SliderController;
 use App\Http\Controllers\SubscriptionController;
@@ -30,29 +32,34 @@ use App\Http\Controllers\RoutingController;
 require __DIR__ . '/auth.php';
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
 Route::get('registration', [HomeController::class, 'register_page'])->name('register-page');
 Route::get('register-business', [HomeController::class, 'register_business_page'])->name('register-business');
 Route::get('sign-in', [HomeController::class, 'login_page'])->name('sign-in');
 Route::get('business-sign-in', [HomeController::class, 'login_business_page'])->name('business-sign-in');
 Route::post('business-login', [HomeController::class, 'login_business'])->name('business-login');
-Route::get('profile', [HomeController::class, 'profile'])->name('profile');
 Route::get('business-profile', [HomeController::class, 'business_profile'])->name('business-profile');
-Route::get('favourites', [HomeController::class, 'favourites'])->name('favourites');
-Route::get('wallet', [HomeController::class, 'wallet'])->name('wallet');
 Route::get('business-wallet', [HomeController::class, 'business_wallet'])->name('business-wallet');
 Route::get('plans', [HomeController::class, 'plans'])->name('plans-page');
-Route::get('payment-methods', [HomeController::class, 'payment_methods'])->name('payments-page');
-Route::get('terms-conditions', [HomeController::class, 'terms_page'])->name('terms-page');
-Route::get('/item/{id}', [HomeController::class, 'item'])->name('item.show');
-Route::post('purchase', [HomeController::class, 'purchase'])->name('purchase');
-Route::post('purchase_order', [HomeController::class, 'purchase_order'])->name('purchase_order');
+
 Route::post('login', [HomeController::class, 'login']);
 Route::post('register', [HomeController::class, 'register'])->name('register');
 Route::post('register_business', [HomeController::class, 'register_business'])->name('register_business');
-Route::post('/purchase-request', [PurchaseController::class, 'request'])->name('purchase.request');
-Route::post('/favorites/add', [FavoriteController::class, 'add'])->name('favorites.add');
 
-Route::post('/favorites/remove', [FavoriteController::class, 'remove'])->name('favorites.remove');
+Route::middleware(['auth', 'role:User'])->group(function () {
+    Route::get('favourites', [HomeController::class, 'favourites'])->name('favourites');
+    Route::get('posts', [HomeController::class, 'posts'])->name('posts');
+    Route::get('wallet', [HomeController::class, 'wallet'])->name('wallet');
+    Route::get('payment-methods', [HomeController::class, 'payment_methods'])->name('payments-page');
+    Route::get('terms-conditions', [HomeController::class, 'terms_page'])->name('terms-page');
+    Route::get('/item/{id}', [HomeController::class, 'item'])->name('item.show');
+    Route::post('purchase', [HomeController::class, 'purchase'])->name('purchase');
+    Route::post('purchase_order', [HomeController::class, 'purchase_order'])->name('purchase_order');
+    Route::get('profile', [HomeController::class, 'profile'])->name('profile');
+    Route::post('/purchase-request', [PurchaseController::class, 'request'])->name('purchase.request');
+    Route::post('/favorites/add', [FavoriteController::class, 'add'])->name('favorites.add');
+    Route::post('/favorites/remove', [FavoriteController::class, 'remove'])->name('favorites.remove');
+});
 
 
 Route::post('logout', [HomeController::class, 'logout'])->name('logout');
@@ -60,9 +67,7 @@ Route::post('business-logout', [HomeController::class, 'business_logout'])->name
 
 Route::put('users/{id}', [UserController::class, 'profile_update'])->name('profile-update');
 
-Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
-    // Define the admin home route
-
+Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:Admin']], function () {
     Route::get('', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('index', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -89,6 +94,10 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
     Route::resource('subscriptions', SubscriptionController::class);
     Route::resource('tags', TagController::class);
     Route::resource('fee-groups', FeeGroupController::class)->names('fee_groups');
+    Route::resource('posts', PostController::class);
+    Route::resource('currencies', CurrencyController::class);
+
+    Route::get('/order-export', [OrderController::class, 'export'])->name('orders.export');
 
     Route::get('news/edit', [NewsController::class, 'edit'])->name('news.edit');
     Route::put('news/{id}', [NewsController::class, 'update'])->name('news.update');

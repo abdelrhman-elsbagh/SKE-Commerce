@@ -21,6 +21,7 @@ class ConfigController extends Controller
                 'facebook' => 'Default Facebook',
                 'fee' => 10,
                 'discount' => 0,
+                'currency' => 'USD',
             ]);
         }
 

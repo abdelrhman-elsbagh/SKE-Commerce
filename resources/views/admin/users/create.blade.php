@@ -43,8 +43,11 @@
                                 <textarea class="form-control" id="bio" name="bio"></textarea>
                             </div>
                             <div class="mb-3">
-                                <label for="address" class="form-label">Address</label>
-                                <input type="text" class="form-control" id="address" name="address">
+                                <label for="address" class="form-label">Country</label>
+                                <select class="form-control" id="address" name="address" required>
+                                    <option value="">Select Country</option>
+                                    <!-- Countries will be loaded here by JavaScript -->
+                                </select>
                             </div>
                             <div class="mb-3">
                                 <label for="date_of_birth" class="form-label">Date of Birth</label>
@@ -95,6 +98,14 @@
 
     <script>
         $(document).ready(function() {
+            // Load countries from JSON file
+            $.getJSON('{{ asset("assets/countries.json") }}', function(data) {
+                var $countrySelect = $('#address');
+                $.each(data, function(key, entry) {
+                    $countrySelect.append($('<option></option>').attr('value', entry.name).text(entry.name));
+                });
+            });
+
             $('#avatar').change(function() {
                 let reader = new FileReader();
                 reader.onload = function(e) {

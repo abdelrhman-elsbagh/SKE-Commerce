@@ -12,7 +12,7 @@
                     </div>
                     <div class="widjet__body">
                         <div class="wallet-info">
-                            <div class="wallet-value">{{ number_format($wallet->balance, 2) }} USD</div>
+                            <div class="wallet-value">{{ number_format($wallet->balance, 2) }} {{ $user->currency->currency ?? "USD" }}</div>
                             <div class="wallet-label">Available</div>
                         </div>
                     </div>
@@ -34,7 +34,7 @@
                                         <div class="activities-item__date" style="font-weight: 900">Requested on: {{ $request->created_at->format('d M, Y') }}</div>
                                         <div class="activities-item__status">Status: {{ ucfirst($request->status) }}</div>
                                     </div>
-                                    <div class="activities-item__price">{{ number_format($request->amount, 2) }} USD</div>
+                                    <div class="activities-item__price">{{ number_format($request->amount, 2) }} {{ $user->currency->currency ?? "USD" }}</div>
                                 </li>
                             @endforeach
                         </ul>
@@ -85,7 +85,7 @@
                                         <div class="activities-item__date">Start Date: {{ $subscription->start_date->format('d M, Y') }}</div>
                                         <div class="activities-item__date">End Date: {{ $subscription->end_date->format('d M, Y') }}</div>
                                     </div>
-                                    <div class="activities-item__price">{{ number_format($subscription->plan->price, 2) }} USD</div>
+                                    <div class="activities-item__price">{{ number_format($subscription->plan->price, 2) }} {{ $user->currency->currency ?? "USD" }}</div>
                                 </li>
                             @endforeach
                         </ul>

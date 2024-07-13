@@ -14,6 +14,7 @@
             <div class="col-12">
                 <div class="page-title-box">
                     <h4 class="page-title">Orders</h4>
+                    <a href="{{ route('orders.export') }}" class="btn btn-success">Export as Excel</a>
                 </div>
             </div>
         </div>
@@ -28,6 +29,7 @@
                                 <th>ID</th>
                                 <th>User</th>
                                 <th>Service ID</th>
+                                <th>Amount</th>
                                 <th>Order Type</th>
                                 <th>Created At</th>
                                 <th>Updated At</th>
@@ -42,6 +44,7 @@
                                     <td>{{ $order->id }}</td>
                                     <td>{{ $order->user->name }}</td>
                                     <td>{{ $order->subItems[0]->service_id ?? ""}}</td>
+                                    <td>{{ $order->subItems[0]->subItem->amount ?? ""}}</td>
                                     <td>{{ $order->order_type }}</td>
                                     <td>{{ $order->created_at }}</td>
                                     <td>{{ $order->updated_at }}</td>

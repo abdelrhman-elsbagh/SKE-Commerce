@@ -30,6 +30,7 @@ class User extends Authenticatable implements HasMedia
         'status',
         'fee',
         'fee_group_id',
+        'currency_id',
     ];
 
     /**
@@ -102,5 +103,15 @@ class User extends Authenticatable implements HasMedia
     public function feeGroup()
     {
         return $this->belongsTo(FeeGroup::class);
+    }
+
+    public function likes()
+    {
+        return $this->hasMany(Like::class);
+    }
+
+    public function currency()
+    {
+        return $this->belongsTo(Currency::class);
     }
 }

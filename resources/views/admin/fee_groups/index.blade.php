@@ -36,8 +36,8 @@
                             @foreach($feeGroups as $feeGroup)
                                 <tr id="fee-group-{{ $feeGroup->id }}">
                                     <td>{{ $feeGroup->id }}</td>
-                                    <td>{{ $feeGroup->fee }}</td>
-                                    <td>{{ $feeGroup->name }}</td>
+                                    <td>{{ $feeGroup->fee }}%</td>
+                                    <td>{{ $feeGroup->name ?? "" }}</td>
                                     <td>
                                         <a href="{{ route('fee_groups.show', $feeGroup->id) }}" class="btn btn-info"><i class=" ri-eye-line"></i></a>
                                         <a href="{{ route('fee_groups.edit', $feeGroup->id) }}" class="btn btn-warning"><i class="ri-edit-box-fill"></i></a>

@@ -30,6 +30,10 @@
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Roles</th>
+                                <th>Status</th>
+                                <th>Country</th>
+                                <th>Fee Group</th>
+                                <th>Currency</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
@@ -40,6 +44,14 @@
                                     <td>{{ $user->name }}</td>
                                     <td>{{ $user->email }}</td>
                                     <td>{{ implode(', ', $user->roles->pluck('name')->toArray()) }}</td>
+                                    <td>
+                                        <span class="badge @if($user->status == 'active') bg-success-subtle text-success @elseif($user->status == 'inactive') bg-danger-subtle text-danger @endif rounded-pill">
+                                            {{ ucfirst($user->status) }}
+                                        </span>
+                                    </td>
+                                    <td>{{ $user->address }}</td>
+                                    <td>{{ $user->feeGroup->name ?? "" }}</td>
+                                    <td>{{ $user->currency->currency ?? "USD" }}</td>
                                     <td>
                                         <a href="{{ route('users.edit', $user->id) }}" class="btn btn-warning"><i class="ri-edit-box-fill"></i></a>
                                         <button class="btn btn-danger btn-delete" data-id="{{ $user->id }}"><i class="ri-delete-bin-5-line"></i></button>

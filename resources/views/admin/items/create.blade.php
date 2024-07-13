@@ -158,7 +158,7 @@
                     <form id="create-sub-item-form">
                         <div class="mb-3">
                             <label for="sub_item_name_modal" class="form-label">Sub Item Name</label>
-                            <input type="text" class="form-control" id="sub_item_name_modal" name="sub_item_name_modal" required>
+                            <input type="text" class="form-control" id="sub_item_name_modal" name="sub_item_name_modal">
                         </div>
                         <div class="mb-3">
                             <label for="sub_item_description_modal" class="form-label">Sub Item Description</label>
@@ -170,7 +170,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="sub_item_price_modal" class="form-label">Sub Item Price</label>
-                            <input type="number" step="0.01" class="form-control" id="sub_item_price_modal" name="sub_item_price_modal" required>
+                            <input type="number" step="0.5" class="form-control" id="sub_item_price_modal" name="sub_item_price_modal" required>
                         </div>
                         <div class="mb-3">
                             <label for="sub_item_image_modal" class="form-label">Sub Item Image</label>

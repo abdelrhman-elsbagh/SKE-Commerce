@@ -13,14 +13,10 @@
     <link rel="shortcut icon" href="{{ asset('assets/img/favicon.png')}}" type="image/x-icon">
     <link rel="stylesheet" href="{{ asset('assets/css/libs.min.css')}}">
     <link rel="stylesheet" href="{{ asset('assets/css/main.css')}}">
-
-
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Marcellus&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-
-
 
 </head>
 
@@ -50,25 +46,35 @@
 <input id="toggle" type="checkbox">
 <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function() {
+        const darkThemeLink = document.createElement('link');
+        darkThemeLink.rel = 'stylesheet';
+        darkThemeLink.href = '{{ asset('assets/css/dark.css') }}';
+        darkThemeLink.id = 'dark-theme-css';
+
         // Check if the cookie exists and set the checkbox state and theme accordingly
         const darkThemeCookie = document.cookie.split('; ').find(row => row.startsWith('darkTheme='));
         if (darkThemeCookie && darkThemeCookie.split('=')[1] === 'true') {
             document.getElementById("toggle").checked = true;
             document.getElementsByTagName('body')[0].classList.add("dark-theme");
+            document.head.appendChild(darkThemeLink);
         }
 
         document.getElementById("toggle").addEventListener("change", function() {
             if (this.checked) {
                 document.getElementsByTagName('body')[0].classList.add("dark-theme");
                 document.cookie = "darkTheme=true; path=/; max-age=" + 60 * 60 * 24 * 365;
+                document.head.appendChild(darkThemeLink);
             } else {
                 document.getElementsByTagName('body')[0].classList.remove("dark-theme");
                 document.cookie = "darkTheme=false; path=/; max-age=" + 60 * 60 * 24 * 365;
+                const darkThemeCss = document.getElementById('dark-theme-css');
+                if (darkThemeCss) {
+                    document.head.removeChild(darkThemeCss);
+                }
             }
         });
     });
 </script>
-
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -129,7 +135,6 @@
     });
 </script>
 
-
 <!-- Loader-->
 <div id="page-preloader">
     <div class="preloader-1">
@@ -144,10 +149,8 @@
         <span class="line line-8"></span>
         <span class="line line-9"></span>
     </div>
-
 </div>
 <!-- Loader end-->
-
 
 <div class="page-wrapper">
     <header class="page-header">
@@ -161,25 +164,29 @@
                         @else
                             <img src="{{ asset('assets/img/logo.png')}}" alt="logo">
                         @endif
-                            <span class="page-header__logo_text">{{$config->name}}</span>
+                        <span class="page-header__logo_text">{{$config->name}}</span>
                     </a>
                 </div>
             </div>
             <div class="page-header__content">
-                <div class="page-header__search1">
-
-                </div>
+                <div class="page-header__search1"></div>
                 <div class="page-header__action">
                     @auth('business_client')
-                        <a class="profile" href="{{route('business-wallet')}}" style="margin-right: 40px;"><div class="activities-item__price">
-{{--                                <i class="fa fa-coins"></i>--}}
-                                {{\Illuminate\Support\Facades\Auth::user()->wallet->balance}}  USD</div></a>
-                        <a class="profile" href="{{route('business-profile')}}" style="margin-right: 40px;"><img src="{{ asset('assets/img/profile.png')}}" alt="profile"></a>
+                        <a class="profile" href="{{route('business-wallet')}}" style="margin-right: 40px;">
+                            <div class="activities-item__price">
+                                {{\Illuminate\Support\Facades\Auth::user()->wallet->balance}} {{ $user->currency->currency ?? "USD" }}
+                            </div>
+                        </a>
+                        <a class="profile" href="{{route('business-profile')}}" style="margin-right: 40px;">
+                            <img src="{{ asset('assets/img/profile.png')}}" alt="profile">
+                        </a>
                     @elseauth('web')
-                        <a class="profile" href="{{route('wallet')}}" style="margin-right: 40px;"><div class="activities-item__price">
-{{--                                <i class="fa fa-coins"></i>--}}
-                            {{\Illuminate\Support\Facades\Auth::user()->wallet->balance}}  USD</div></a>
-                        <a class="profile" href="{{route('profile')}}" >
+                        <a class="profile" href="{{route('wallet')}}" style="margin-right: 40px;">
+                            <div class="activities-item__price">
+                                {{\Illuminate\Support\Facades\Auth::user()->wallet->balance}} {{ $user->currency->currency ?? "USD" }}
+                            </div>
+                        </a>
+                        <a class="profile" href="{{route('profile')}}">
                             @if(\Illuminate\Support\Facades\Auth::user()->getFirstMediaUrl('avatars'))
                                 <img src="{{ \Illuminate\Support\Facades\Auth::user()->getFirstMediaUrl('avatars') }}" alt="profile" style="margin-left: 50px; border-radius: 50%">
                             @else
@@ -187,7 +194,6 @@
                             @endif
                         </a>
                     @endauth
-
                 </div>
             </div>
         </div>
@@ -199,7 +205,6 @@
                     @if(Auth::guard('web')->guest() && Auth::guard('business_client')->guest())
                         <li><a href="{{ route('sign-in') }}"><i class="fas fa-sign-in-alt"></i><span>Login</span></a></li>
                         <li><a href="{{ route('register-page') }}"><i class="fas fa-user-plus"></i><span>Register</span></a></li>
-
                         <li><a href="{{ route('business-sign-in') }}"><i class="fas fa-sign-in-alt"></i><span>Admin Login</span></a></li>
                         <li><a href="{{ route('register-business') }}"><i class="fas fa-user-plus"></i><span>Register as Admin</span></a></li>
                     @endif
@@ -207,9 +212,7 @@
                     @auth('business_client')
                         <li><a href="{{route('business-wallet')}}"><i class="ico_wallet"></i><span>Wallet</span></a></li>
                         <li><a href="{{route('business-profile')}}"><i class="ico_profile"></i><span>Profile</span></a></li>
-
                         <li><a href="{{ route('plans-page') }}"><i class="fas fa-box-open"></i><span>Plans</span></a></li>
-
                         <li>
                             <a href="{{ route('logout') }}"
                                onclick="event.preventDefault(); document.getElementById('logout-form-business').submit();">
@@ -222,21 +225,15 @@
                     @elseauth('web')
                         @if(Auth::user()->hasRole('Admin'))
                             <li><a href="{{route('dashboard')}}"><i class="ico_profile"></i><span>Admin Dashboard</span></a></li>
-
-                            @else
+                        @else
                             <li class="uk-active"><a href="{{route('home')}}"><i class="ico_store"></i><span>Home</span></a></li>
-
                             <li><a href="{{route('profile')}}"><i class="ico_profile"></i><span>Profile</span></a></li>
-
                             <li><a href="{{route('favourites')}}"><i class="ico_favourites"></i><span>Favourites</span><span class="count">{{$favoritesCount}}</span></a></li>
-
                             <li><a href="{{route('wallet')}}"><i class="ico_wallet"></i><span>Wallet</span></a></li>
-
+                            <li><a href="{{route('posts')}}"><i class="fa fa-tag pr8"></i><span>Posts</span></a></li>
                             <li><a href="#modal-purchase-request" data-uk-toggle><i class="fas fa-money-bill-wave pr8" style="font-size: 16px;"></i><span>Purchase Request</span></a></li>
-
                             <li><a href="{{ route('payments-page') }}"><i class="fas fa-credit-card pr8"></i><span>Payment Methods</span></a></li>
-                            <li><a href="{{ route('terms-page') }}"><i class="fas fa-file-contract pr8"></i><span>Terms & Conditions</span></a></li>
-
+                            <li style="text-decoration: underline;position: fixed;bottom: 0;"><a href="{{ route('terms-page') }}"><i class="fas fa-file-contract pr8"></i><span>Terms & Conditions</span></a></li>
                         @endif
                         <li>
                             <a href="{{ route('logout') }}"
@@ -260,7 +257,6 @@
                         </li>
                     @endauth
                 </ul>
-
             </div>
         </aside>
 
@@ -269,7 +265,8 @@
 </div>
 <div class="page-modals">
     <div class="uk-flex-top" id="modal-report" data-uk-modal>
-        <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical"><button class="uk-modal-close-default" type="button" data-uk-close></button>
+        <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+            <button class="uk-modal-close-default" type="button" data-uk-close></button>
             <h2 class="uk-modal-title">Report</h2>
             <form class="uk-form-stacked" action="#">
                 <div class="uk-margin">

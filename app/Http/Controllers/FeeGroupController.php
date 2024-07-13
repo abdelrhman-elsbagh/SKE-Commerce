@@ -28,7 +28,7 @@ class FeeGroupController extends Controller
     {
         $request->validate([
             'fee' => 'required|numeric',
-            'name' => 'required|string|max:255',
+            'name' => 'nullable|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
@@ -56,7 +56,7 @@ class FeeGroupController extends Controller
     {
         $request->validate([
             'fee' => 'required|numeric',
-            'name' => 'required|string|max:255',
+            'name' => 'nullable|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
