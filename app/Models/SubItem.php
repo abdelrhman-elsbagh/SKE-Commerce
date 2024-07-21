@@ -23,6 +23,12 @@ class SubItem extends Model implements HasMedia
         return $this->hasOne(OrderSubItem::class, 'sub_item_id');
     }
 
+    public function orders()
+    {
+        return $this->hasManyThrough(Order::class, OrderSubItem::class, 'sub_item_id', 'id', 'id', 'order_id');
+    }
+
+
     public function orderSubItems()
     {
         return $this->hasMany(OrderSubItem::class, 'sub_item_id');

@@ -13,9 +13,18 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::with('roles', 'media', 'wallet')->get();
+        $users = User::with(['roles', 'media', 'wallet', 'orders' => function($query) {
+            $query->whereIn('status', ['active', 'pending']);
+        }])->get();
+
+        // Calculate total orders for each user
+        foreach ($users as $user) {
+            $user->total_orders = $user->orders->sum('total');
+        }
+
         return view('admin.users.index', compact('users'));
     }
+
 
 
     public function create()
@@ -108,8 +117,7 @@ class UserController extends Controller
             'status' => 'nullable|string',
             'avatar' => 'nullable|image',
             'role' => 'required|exists:roles,id',
-            'fee_group_id' => 'required|exists:fee_groups,id',
-            'currency_id' => 'required|exists:currencies,id',
+            'fee_group_id' => 'exists:fee_groups,id',
             ]);
 
         $user = User::findOrFail($id);
@@ -121,8 +129,7 @@ class UserController extends Controller
             'date_of_birth' => $request->date_of_birth,
             'status' => $request->status,
             'fee' => $request->fee,
-            'fee_group_id' => $request->fee_group_id,
-            'currency_id' => $request->currency_id,
+            'fee_group_id' => $request->fee_group_id ?? null,
         ]);
 
         if ($request->filled('password')) {

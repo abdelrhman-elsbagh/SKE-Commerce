@@ -16,6 +16,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/2.0.2/quill.min.js" integrity="sha512-1nmY9t9/Iq3JU1fGf0OpNCn6uXMmwC1XYX9a6547vnfcjCY1KvU9TE5e8jHQvXBoEH7hcKLIbbOjneZ8HCeNLA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 
+    <style>
+        .res-table-card{
+            overflow: scroll;
+        }
+        #basic-datatable{
+            width: 100% !important;
+        }
+        #basic-datatable,
+        #basic-datatable th,
+        #basic-datatable td{
+            text-align: center;
+        }
+    </style>
 </head>
 
 <body>

@@ -88,7 +88,7 @@ class HomeController extends Controller
         $wallet = UserWallet::where('user_id', $user->id)->firstOrFail();
         $orders = $user->orders()->with('subItems.subItem.item.media')->orderBy('created_at', 'DESC')->get();
         $activeOrders = $user->orders()->with('subItems.subItem.item.media')->where('status', 'active')->get();
-        $purchaseRequests = $user->purchaseRequests()->latest()->take(5)->get();
+        $purchaseRequests = $user->purchaseRequests()->with('paymentMethod')->latest()->take(5)->get();
 
         // Calculate total money of orders
         $totalOrderMoney = $activeOrders->sum('total');
@@ -330,7 +330,7 @@ class HomeController extends Controller
         $userFavorites = Auth::user()->favorites()->with(['item', 'subItem.item', 'item.media', 'subItem.media'])->get();
         View::share('config', $config);
         $paymentMethods = PaymentMethod::where('status', 'active')->get();
-        return view('front.favourites', compact('userFavorites', 'paymentMethods'));
+        return view('front.favourites', compact('userFavorites', 'paymentMethods', 'user'));
     }
 
     public function purchase_order(Request $request)
@@ -351,19 +351,27 @@ class HomeController extends Controller
             return response()->json(['success' => false, 'message' => 'Wallet not found'], 404);
         }
 
+        $currencyPrice = 1;
+        if ($user && $user->currency) {
+            $currencyPrice = $user->currency->price;
+        }
+
         // Retrieve the selected sub-item
         $subItem = SubItem::findOrFail($request->sub_item_id);
 
         // Retrieve the fee percentage from the config
         $config = Config::first(); // Assuming you have a Config model to fetch the fee percentage
+        $fee_name = "System/Default";
         if($user->feeGroup){
             $config->fee = $user->feeGroup->fee;
+            $fee_name = $user->feeGroup->name ?? "";
         }
 
         $feePercentage = $config->fee;
 
         // Calculate the total price including the fee
-        $totalPrice = $subItem->price + ($subItem->price * $feePercentage / 100);
+        $sub_price = $subItem->price * $currencyPrice;
+        $totalPrice = $sub_price + ($sub_price * $feePercentage / 100);
 
         // Check if the user has enough balance
         if ($wallet->balance < $totalPrice) {
@@ -371,8 +379,12 @@ class HomeController extends Controller
         }
 
         // Deduct the amount from the user's wallet
+        $before_balance = $wallet->balance;
         $wallet->balance -= $totalPrice;
         $wallet->save();
+
+        $after_balance = $wallet->balance;
+
 
 
         // Create the order
@@ -380,6 +392,18 @@ class HomeController extends Controller
             'user_id' => $user->id,
             'total' => $totalPrice,
             'status' => 'pending',
+            'user_email' => $user->email ?? null,
+            'user_name' => $user->name ?? null,
+            'user_phone' => $user->phone ?? null,
+            'item_price' =>  $sub_price ?? null,
+            'item_fee' => $config->fee ?? null,
+            'fee_name' => $fee_name ?? null,
+            'item_name' => $subItem->item->name ?? null,
+            'sub_item_name' => $subItem->name ?? null,
+            'service_id' => $request->service_id ?? null,
+            'wallet_before' => $before_balance ?? null,
+            'wallet_after' => $after_balance  ?? null,
+            'amount' => $subItem->amount ?? null,
         ]);
 
 

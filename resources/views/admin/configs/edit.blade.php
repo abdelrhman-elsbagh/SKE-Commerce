@@ -52,8 +52,14 @@
                                 <input type="number" step="0.01" class="form-control" id="fee" name="fee" value="{{ $config->fee }}" required>
                             </div>
                             <div class="mb-3">
-                                <label for="fee" class="form-label">Currency</label>
-                                <input type="text" class="form-control" id="currency" name="currency" value="{{ $config->currency }}">
+                                <label for="font" class="form-label">Font</label>
+                                <select class="form-control" id="font" name="font">
+                                    <option value="Nunito" {{ $config->font == 'Nunito' ? 'selected' : '' }}>Nunito</option>
+                                    <option value="Oswald" {{ $config->font == 'Oswald' ? 'selected' : '' }}>Oswald</option>
+                                    <option value="Noto Sans" {{ $config->font == 'Noto Sans' ? 'selected' : '' }}>Noto Sans</option>
+                                    <option value="Raleway" {{ $config->font == 'Raleway' ? 'selected' : '' }}>Raleway</option>
+                                    <option value="Roboto" {{ $config->font == 'Roboto' ? 'selected' : '' }}>Roboto</option>
+                                </select>
                             </div>
                             <div class="mb-3">
                                 <label for="logo" class="form-label">Logo</label>

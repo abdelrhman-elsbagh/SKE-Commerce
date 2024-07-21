@@ -22,6 +22,7 @@ class ConfigController extends Controller
                 'fee' => 10,
                 'discount' => 0,
                 'currency' => 'USD',
+                'font' => 'Nunito',
             ]);
         }
 

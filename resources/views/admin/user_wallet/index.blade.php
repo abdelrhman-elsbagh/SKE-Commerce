@@ -13,14 +13,18 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body res-table-card">
                         <h4 class="header-title">User Wallets</h4>
                         <table id="basic-datatable" class="table table-striped table-bordered dt-responsive nowrap">
                             <thead>
                             <tr>
-                                <th>ID</th>
+                                <th>Wallet ID</th>
                                 <th>User</th>
                                 <th>Balance</th>
+                                <th>Currency</th>
+                                <th>Active Orders</th>
+                                <th>Refunded Orders</th>
+                                <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
@@ -29,9 +33,19 @@
                                 <tr id="wallet-{{ $wallet->id }}">
                                     <td>{{ $wallet->id }}</td>
                                     <td>{{ $wallet->user->name }}</td>
-                                    <td>{{ $wallet->balance }}</td>
+                                    <td>{{ $wallet->balance ?? "" }}</td>
+                                    <td>{{ $wallet->user->currency->currency ?? "USD" }}</td>
+                                    <td>{{ $wallet->activeOrdersCount }}</td>
+                                    <td>{{ $wallet->refundedOrdersCount }}</td>
+                                    <td class="text-center">
+                                        @if($wallet->increase_status == 'increased')
+                                            <span class="badge bg-success-subtle text-success rounded-pill" style="font-size: 18px">+</span>
+                                        @else
+                                            <span class="badge bg-danger-subtle text-danger rounded-pill" style="font-size: 18px">-</span>
+                                        @endif
+                                    </td>
                                     <td>
-                                        <a href="{{ route('user-wallets.show', $wallet->id) }}" class="btn btn-info"><i class=" ri-eye-line"></i></a>
+                                        <a href="{{ route('user-wallets.show', $wallet->id) }}" class="btn btn-info"><i class="ri-eye-line"></i></a>
                                         <a href="{{ route('user-wallets.edit', $wallet->id) }}" class="btn btn-warning"><i class="ri-edit-box-fill"></i></a>
                                     </td>
                                 </tr>

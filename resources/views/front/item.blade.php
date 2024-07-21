@@ -15,7 +15,7 @@
                         <div class="widjet__body" style="position: relative">
                             <form id="subItemForm" method="POST" action="{{ route('purchase') }}">
                                 @csrf
-                                <input class="uk-input light-border" id="service_id" name="service_id" type="text" placeholder="Enter service ID" style="position: absolute;bottom: -80px;left: 0;background: #FFF;">
+                                <input class="uk-input light-border" id="service_id" name="service_id" type="text" placeholder="Enter User ID In Application" style="position: absolute;bottom: -80px;left: 0;background: #FFF;">
                                 <div class="uk-grid uk-child-width-1-5@s uk-grid-small" data-uk-grid>
                                     @foreach($item->subItems as $subItem)
                                         @php
@@ -88,7 +88,13 @@
                         {{--                        </li>--}}
                         <li>
                             @foreach($item->tags as $tag)
-                                <span class="" style="background: #F46119;margin-right: 5px;color: #FFF;padding: 5px;border-radius: 7px;font-size: 12px;font-weight: 900;">{{ $tag->name }}</span>
+                                <span class="" style="background: #F46119;margin-right: 5px;color: #FFF;padding: 5px;border-radius: 7px;font-size: 12px;font-weight: 900;">
+                                    {{ $tag->name }}
+                                    @if($tag->getFirstMediaUrl('images'))
+                                        <img src="{{ $tag->getFirstMediaUrl('images') }}" alt="Item" width="15">
+                                    @endif
+                                </span>
+
                             @endforeach
                         </li>
                     </ul>
@@ -161,7 +167,7 @@
                 }
 
                 if (!serviceIdInput.value.trim()) {
-                    toastr.error('Please enter a service ID.');
+                    toastr.error('Please enter User ID In Application.');
                     return;
                 }
 

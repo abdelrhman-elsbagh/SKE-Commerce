@@ -27,8 +27,8 @@
                         </div>
                         @if($feeGroup)
                             <div class="fee-group-info" style="text-align: center">
-                                @if($feeGroup->getFirstMediaUrl('images'))
-                                    <img src="{{ $feeGroup->getFirstMediaUrl('images') }}" alt="Fee Group Image" style="max-width: 50px;border-radius: 50%">
+                                @if($feeGroup->getFirstMediaUrl('logos'))
+                                    <img src="{{ $feeGroup->getFirstMediaUrl('logos') }}" alt="Fee Group Image" style="max-width: 100px;border-radius: 50%">
                                 @endif
                                 <div class="fee-group-name">{{ $feeGroup->name }}</div>
                             </div>

@@ -28,6 +28,11 @@ class Item extends Model implements HasMedia
         return $this->hasMany(SubItem::class);
     }
 
+    public function orderSubItems()
+    {
+        return $this->hasMany(OrderSubItem::class);
+    }
+
     public function getPriceInUsdAttribute()
     {
         $rate = DiamondRate::where('diamonds', $this->price_in_diamonds)->first();

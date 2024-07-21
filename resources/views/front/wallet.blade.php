@@ -15,13 +15,13 @@
                     </div>
                     <div class="card-height">
                         <div class="uk-card uk-card-default uk-card-body" style="text-align: center;">
-                            <h3 class="uk-card-title static-head">Total Order Money</h3>
+                            <h3 class="uk-card-title static-head">Total Orders</h3>
                             <p class="wallet-value">{{ number_format($totalOrderMoney, 2) }} {{ $user->currency->currency ?? "USD" }}</p>
                         </div>
                     </div>
                     <div class="card-height">
                         <div class="uk-card uk-card-default uk-card-body" style="text-align: center;">
-                            <h3 class="uk-card-title static-head">Total Purchase Requests</h3>
+                            <h3 class="uk-card-title static-head">Total Deposit</h3>
                             <p class="wallet-value">{{ number_format($totalPurchaseRequestAmount, 2) }} {{ $user->currency->currency ?? "USD" }}</p>
                         </div>
                     </div>
@@ -32,20 +32,24 @@
                         <h3 class="uk-text-lead">Recent Purchase Requests</h3>
                     </div>
                     <input type="text" id="search-purchase-requests" class="form-control uk-input" placeholder="Search purchase requests by ID or notes...">
+                    <div class="d-flex justify-content-around my-3" style="margin-bottom: 10px">
+                        <button class="btn btn-outline-primary filter-pr-btn" data-status="all">All</button>
+                        <button class="btn btn-outline-primary filter-pr-btn" data-status="approved">Approved</button>
+                        <button class="btn btn-outline-primary filter-pr-btn" data-status="rejected">Rejected</button>
+                    </div>
                     <div class="widjet__body" style="padding: 0;">
                         <ul class="activities-list" id="purchase-requests-list" style="">
                             @foreach($purchaseRequests as $request)
-                                <li class="activities-item" style="padding: 20px 30px" data-id="{{ $request->id }}" data-notes="{{ $request->notes }}">
+                                <li class="activities-item" style="padding: 20px 30px" data-id="{{ $request->id }}" data-notes="{{ $request->notes }}" data-status="{{ $request->status }}">
                                     <div class="activities-item__logo">
-                                        <img src="{{ $request->getFirstMediaUrl('purchase_documents') ?? asset('assets/img/default-image.jpg') }}" alt="image">
+                                        <img src="{{ $request->paymentMethod->getFirstMediaUrl('payment_method_images') ?? asset('assets/img/default-image.jpg') }}" alt="image">
                                     </div>
                                     <div class="activities-item__info">
                                         <div class="activities-item__title">Request ID: #{{ $request->id }}</div>
                                         <div class="activities-item__title">Notes: {{ $request->notes }}</div>
                                         <div class="activities-item__date" style="font-weight: 900">Requested on: {{ $request->created_at->format('d M, Y - H:i') }}</div>
-
                                         <div class="activities-item__status">
-                                            @if($request->status == 'canceled' || $request->status == 'refunded')
+                                            @if($request->status == 'rejected')
                                                 <span class="badge bg-danger-subtle text-danger rounded-pill item__status">{{ ucfirst($request->status) }}</span>
                                             @elseif($request->status == 'approved')
                                                 <span class="badge bg-success-subtle text-success rounded-pill item__status">{{ ucfirst($request->status) }}</span>
@@ -56,39 +60,19 @@
                                     </div>
                                     <div class="activities-item__price">{{ number_format($request->amount, 2) }} {{ $user->currency->currency ?? "USD" }}</div>
                                 </li>
-{{--                                <li style="width: 100%; height: 10px; background: #F5F5F5"></li>--}}
                             @endforeach
                         </ul>
                     </div>
                 </div>
             </div>
             <div class="uk-width-1-3@l">
-
-{{--                <div class="widjet --payment-method">--}}
-{{--                    <div class="widjet__head">--}}
-{{--                        <h3 class="uk-text-lead">Payment Method</h3>--}}
-{{--                    </div>--}}
-{{--                    <div class="widjet__body">--}}
-{{--                        <div class="payment-card">--}}
-{{--                            <div class="payment-card__head">--}}
-{{--                                <div class="payment-card__chip">--}}
-{{--                                    <img src="{{ asset('assets/img/payment-card-chip.svg') }}" alt="chip">--}}
-{{--                                </div>--}}
-{{--                                <div class="payment-card__logo">--}}
-{{--                                    <img src="{{ asset('assets/img/payment-card-logo.svg') }}" alt="logo">--}}
-{{--                                </div>--}}
-{{--                            </div>--}}
-{{--                            <div class="payment-card__number">Direct Payment</div>--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                </div>--}}
                 <div id="" style="">
                     <div id="gateway-card" class="widjet__body uk-card">
                         <h3 class="uk-text-lead">{{ $user->feeGroup->name ?? ""  }}</h3>
                         <div class="">
                             @if($feeGroup)
                                 @if($feeGroup->getFirstMediaUrl('images'))
-                                    <img src="{{ $feeGroup->getFirstMediaUrl('images') }}" alt="Fee Group Image" style="max-width: 150px;">
+                                    <img src="{{ $feeGroup->getFirstMediaUrl('images') }}" alt="Fee Group Image" style="max-width: 120px;">
                                 @endif
                             @endif
                         </div>
@@ -100,46 +84,68 @@
                         <h3 class="uk-text-lead">Recent Orders</h3>
                     </div>
                     <input type="text" id="search-orders" class="form-control uk-input" placeholder="Search orders by ID or name...">
+                    <div class="d-flex justify-content-around my-3" style="margin-bottom: 10px">
+                        <button class="btn btn-outline-primary filter-btn" data-status="all">  All</button>
+                        <button class="btn btn-outline-primary filter-btn" data-status="active">Active</button>
+                        <button class="btn btn-outline-primary filter-btn" data-status="pending">Pending</button>
+                        <button class="btn btn-outline-primary filter-btn" data-status="refunded">Refunded</button>
+                    </div>
                     <div class="widjet__body">
                         <ul class="activities-list" id="orders-list" style="max-height: 400px; overflow: scroll;">
                             @foreach($orders as $order)
-                                @foreach($order->subItems as $orderSubItem)
-                                    @php
-                                        $subItem = $orderSubItem->subItem;
-                                        $item = $subItem->item;
-                                    @endphp
-                                    <li class="activities-item" data-id="{{ $order->id }}" data-name="{{ $item->name }}">
-                                        <div class="activities-item__logo">
+                                @php
+                                    $orderSubItem = $order->subItems->first(); // Assuming there's at least one subItem
+                                    $subItem = $orderSubItem->subItem ?? null;
+                                    $item = $subItem->item ?? null;
+                                @endphp
+                                <li class="activities-item" data-id="{{ $order->id }}" data-name="{{ $item->name ?? 'Unknown Item' }}" data-status="{{ $order->status }}">
+                                    <div class="activities-item__logo">
+
+                                        @if($subItem->getFirstMediaUrl('images'))
+                                            <a href="{{ route('item.show', ['id' => $item->id]) }}">
+                                                @if($subItem->getFirstMediaUrl('images'))
+                                                    <img src="{{ $subItem->getFirstMediaUrl('images') }}" alt="{{ $order->item_name ?? "" }}" style="height: 100%">
+                                                @endif
+                                            </a>
+                                        @endif
+
+                                        @if($item)
                                             <a href="{{ route('item.show', ['id' => $item->id]) }}">
                                                 @if($item->getFirstMediaUrl('images'))
-                                                    <img src="{{ $item->getFirstMediaUrl('images') }}" alt="{{ $item->name }}" style="height: 100%">
+                                                    <img src="{{ $item->getFirstMediaUrl('images') }}" alt="{{ $order->item_name ?? "" }}" style="height: 100%">
                                                 @else
                                                     <img src="{{ asset('assets/img/default-image.jpg') }}" alt="Default Image">
                                                 @endif
                                             </a>
-                                        </div>
-                                        <div class="activities-item__info">
+                                        @else
+                                            <img src="{{ asset('assets/img/default-image.jpg') }}" alt="Default Image">
+                                        @endif
+                                    </div>
+                                    <div class="activities-item__info">
+                                        @if($item)
                                             <a class="activities-item__title" href="{{ route('item.show', ['id' => $item->id]) }}">
-                                                {{ $item->name }}
+                                                {{ $order->item_name ?? "" }}
                                             </a>
-                                            <div class="activities-item__date">Order ID: #{{ $order->id }}</div>
-                                            <div class="activities-item__date">Price {{ $order->total ?? "0" }} {{ $user->currency->currency ?? "USD" }}</div>
-                                            <div class="activities-item__date">Service ID: #{{ $orderSubItem->service_id ?? "" }}</div> <!-- Display the service_id -->
-                                            <div class="activities-item__date">Amount: {{ $orderSubItem->subItem->amount ?? "" }}</div>
-                                            <div class="activities-item__date">{{ $order->created_at->format('d M, Y - H:i') }}</div>
-                                            <div class="activities-item__status">
-                                                @if($order->status == 'canceled' || $order->status == 'refunded')
-                                                    <span class="badge bg-danger-subtle text-danger rounded-pill item__status">{{ ucfirst($order->status) }}</span>
-                                                @elseif($order->status == 'active')
-                                                    <span class="badge bg-success-subtle text-success rounded-pill item__status">{{ ucfirst($order->status) }}</span>
-                                                @else
-                                                    <span class="badge bg-warning-subtle text-secondary rounded-pill item__status">{{ ucfirst($order->status) }}</span>
-                                                @endif
-                                            </div>
+                                        @else
+                                            <div class="activities-item__title">{{ $order->item_name ?? "" }}</div>
+                                        @endif
+                                        <div class="activities-item__date">Order ID: #{{ $order->id }}</div>
+                                        <div class="activities-item__date">Price: {{ $order->total ?? "0" }} {{ $user->currency->currency ?? "USD" }}</div>
+                                        <div class="activities-item__date">U ID App: #{{ $order->service_id ?? "" }}</div> <!-- Display the service_id -->
+                                        <div class="activities-item__date">Amount: {{ $order->amount ?? "" }}</div>
+                                        <div class="activities-item__date">{{ $order->created_at->format('d M, Y - H:i') }}</div>
+                                        <div class="activities-item__status">
+                                            @if($order->status == 'canceled' || $order->status == 'refunded')
+                                                <span class="badge bg-danger-subtle text-danger rounded-pill item__status">{{ ucfirst($order->status) }}</span>
+                                            @elseif($order->status == 'active')
+                                                <span class="badge bg-success-subtle text-success rounded-pill item__status">{{ ucfirst($order->status) }}</span>
+                                            @else
+                                                <span class="badge bg-warning-subtle text-secondary rounded-pill item__status">{{ ucfirst($order->status) }}</span>
+                                            @endif
                                         </div>
-                                        <div class="activities-item__price">{{ number_format($orderSubItem->price, 2) }} {{ $user->currency->currency ?? "USD" }}</div>
-                                    </li>
-                                @endforeach
+                                    </div>
+                                    <div class="activities-item__price">{{ number_format($order->total ?? 0, 2) }} {{ $user->currency->currency ?? "USD" }}</div>
+                                </li>
                             @endforeach
                         </ul>
                     </div>
@@ -188,6 +194,30 @@
                         $(this).data('notes').toString().toLowerCase().includes(query)
                     );
                 });
+            });
+
+            // Filter orders by status
+            $('.filter-btn').on('click', function() {
+                var status = $(this).data('status');
+                if (status === 'all') {
+                    $('#orders-list .activities-item').show();
+                } else {
+                    $('#orders-list .activities-item').each(function() {
+                        $(this).toggle($(this).data('status') === status);
+                    });
+                }
+            });
+
+            // Filter purchase requests by status
+            $('.filter-pr-btn').on('click', function() {
+                var status = $(this).data('status');
+                if (status === 'all') {
+                    $('#purchase-requests-list .activities-item').show();
+                } else {
+                    $('#purchase-requests-list .activities-item').each(function() {
+                        $(this).toggle($(this).data('status') === status);
+                    });
+                }
             });
         });
     </script>

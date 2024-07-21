@@ -15,6 +15,7 @@ $(document).ready(function () {
   "use strict";
 
   new DataTable('#basic-datatable', {
+      responsive: true,
     keys: true,
       order: [[4, 'desc']],
     language: {

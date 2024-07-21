@@ -19,7 +19,7 @@
                             @method('PUT')
                             <div class="mb-3">
                                 <label for="currency" class="form-label">Currency</label>
-                                <input type="text" class="form-control" id="currency" name="currency" value="{{ $currency->currency }}" required>
+                                <input type="text" class="form-control" id="currency" name="currency" value="{{ $currency->currency }}" readonly>
                             </div>
                             <div class="mb-3">
                                 <label for="price" class="form-label">Price Equivalent To "USD"</label>

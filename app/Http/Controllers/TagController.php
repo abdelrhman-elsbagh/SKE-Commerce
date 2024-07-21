@@ -24,38 +24,41 @@ class TagController extends Controller
 
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255|unique:tags',
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
 
-        $tag = Tag::create($validatedData);
+        $tag = Tag::create($request->only('name'));
 
-        if ($request->ajax()) {
-            return response()->json(['status' => 'success', 'message' => 'Tag created successfully.']);
+        if ($request->hasFile('image')) {
+            $tag->addMedia($request->file('image'))->toMediaCollection('images');
         }
 
-        return redirect()->route('tags.index')->with('success', 'Tag created successfully.');
+        return response()->json(['status' => 'success', 'message' => 'Tag created successfully.']);
     }
+
+    public function update(Request $request, Tag $tag)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+        ]);
+
+        $tag->update($request->only('name'));
+
+        if ($request->hasFile('image')) {
+            $tag->clearMediaCollection('images');
+            $tag->addMedia($request->file('image'))->toMediaCollection('images');
+        }
+
+        return response()->json(['status' => 'success', 'message' => 'Tag updated successfully.']);
+    }
+
 
     public function edit($id)
     {
         return view('admin.tags.edit', ['tag' => Tag::findOrFail($id)]);
-    }
-
-    public function update(Request $request, $id)
-    {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255|unique:tags,name,' . $id,
-        ]);
-
-        $tag = Tag::findOrFail($id);
-        $tag->update($validatedData);
-
-        if ($request->ajax()) {
-            return response()->json(['status' => 'success', 'message' => 'Tag updated successfully.']);
-        }
-
-        return redirect()->route('tags.index')->with('success', 'Tag updated successfully.');
     }
 
     public function destroy($id)

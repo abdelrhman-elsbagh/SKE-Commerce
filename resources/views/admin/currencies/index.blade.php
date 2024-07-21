@@ -13,7 +13,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body res-table-card">
                         <a href="{{ route('currencies.create') }}" class="btn btn-primary mb-3">Create Currency</a>
                         <table class="table table-striped table-bordered">
                             <thead>
@@ -31,13 +31,8 @@
                                     <td>{{ $currency->currency }}</td>
                                     <td>{{ $currency->price }}</td>
                                     <td>
-                                        <a href="{{ route('currencies.show', $currency->id) }}" class="btn btn-info">Show</a>
-                                        <a href="{{ route('currencies.edit', $currency->id) }}" class="btn btn-warning">Edit</a>
-                                        <form action="{{ route('currencies.destroy', $currency->id) }}" method="POST" style="display:inline;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger">Delete</button>
-                                        </form>
+                                        <a href="{{ route('currencies.show', $currency->id) }}" class="btn btn-info"><i class=" ri-eye-line"></i></a>
+                                        <a href="{{ route('currencies.edit', $currency->id) }}" class="btn btn-warning"><i class="ri-edit-box-fill"></i></a>
                                     </td>
                                 </tr>
                             @endforeach

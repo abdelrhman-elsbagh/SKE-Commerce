@@ -22,7 +22,7 @@ console.log('jQuery version:', $.fn.jquery);
         nav: "vertical",
 
         layout: {
-            mode: "fluid",
+            mode: "detached",
             position: "fixed",
         },
 
@@ -31,12 +31,12 @@ console.log('jQuery version:', $.fn.jquery);
         },
 
         menu: {
-            color: "dark",
+            color: "light",
         },
 
         // This option for only vertical (left Sidebar) layout
         sidenav: {
-            size: "default",
+            size: "condensed",
             user: false,
         },
     };

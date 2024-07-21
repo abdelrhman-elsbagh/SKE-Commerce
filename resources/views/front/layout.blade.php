@@ -18,6 +18,43 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Marcellus&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <!-- Conditionally include Oswald font if selected -->
+    @if($config->font == 'Oswald')
+        <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <style>
+            body, h1,h2,h3,h4,h5,h6, p, div, a {
+                font-family: 'Oswald', sans-serif !important;
+            }
+        </style>
+    @elseif($config->font == 'Noto Sans')
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+        <style>
+            body, h1,h2,h3,h4,h5,h6, p, div, a {
+                font-family: 'Noto Sans', sans-serif !important;
+            }
+        </style>
+    @elseif($config->font == 'Raleway')
+        <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <style>
+            body, h1,h2,h3,h4,h5,h6, p, div, a {
+                font-family: 'Raleway', sans-serif !important;
+            }
+        </style>
+    @elseif($config->font == 'Roboto')
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+        <style>
+            body, h1,h2,h3,h4,h5,h6, p, div, a {
+                font-family: 'Roboto', sans-serif !important;
+            }
+        </style>
+    @endif
+
 </head>
 
 <body class="page-store">
@@ -233,7 +270,6 @@
                             <li><a href="{{route('posts')}}"><i class="fa fa-tag pr8"></i><span>Posts</span></a></li>
                             <li><a href="#modal-purchase-request" data-uk-toggle><i class="fas fa-money-bill-wave pr8" style="font-size: 16px;"></i><span>Purchase Request</span></a></li>
                             <li><a href="{{ route('payments-page') }}"><i class="fas fa-credit-card pr8"></i><span>Payment Methods</span></a></li>
-                            <li style="text-decoration: underline;position: fixed;bottom: 0;"><a href="{{ route('terms-page') }}"><i class="fas fa-file-contract pr8"></i><span>Terms & Conditions</span></a></li>
                         @endif
                         <li>
                             <a href="{{ route('logout') }}"
@@ -334,6 +370,15 @@
         </div>
     </div>
 </div>
+
+<footer class="page-footer" style="padding: 20px 0 5px 0;text-align: center">
+    <div class="container text-center">
+        <p class="mt-2" style="margin-bottom: 5px">&copy;
+            <script>document.write(new Date().getFullYear())</script>
+            {{ $config->name }} All Rights Reserved.</p>
+        <a href="{{ route('terms-page') }}">Terms & Conditions</a>
+    </div>
+</footer>
 
 <script src="{{ asset('assets/js/libs.js')}}"></script>
 <script src="{{ asset('assets/js/main.js')}}"></script>

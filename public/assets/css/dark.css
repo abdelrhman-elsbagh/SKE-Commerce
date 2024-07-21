@@ -22,3 +22,12 @@
 #bio{
     background: #F5F5F5;
 }
+.btn-outline-primary:hover{
+    color: #F65100;
+    background-color: #fff;
+    border-color: #fff;
+}
+.btn-outline-primary{
+    background: #FFF;
+    border: none;
+}

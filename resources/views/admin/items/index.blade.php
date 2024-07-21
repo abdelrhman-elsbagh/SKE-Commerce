@@ -21,15 +21,16 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body  res-table-card">
                         <a href="{{ route('items.create') }}" class="btn btn-primary mb-3">Create Item</a>
                         <table id="basic-datatable" class="table table-striped table-bordered dt-responsive nowrap">
                             <thead>
                             <tr>
-                                <th>ID</th>
+                                <th>Apps ID</th>
                                 <th>Name</th>
+                                <th>Order Active</th>
+                                <th>Order Refunded</th>
                                 <th>Description</th>
-                                <th>Sub Items</th>
                                 <th>Category</th>
                                 <th>Tags</th>
                                 <th>Actions</th>
@@ -40,12 +41,9 @@
                                 <tr id="item-{{ $item->id }}">
                                     <td>{{ $item->id }}</td>
                                     <td>{{ $item->name }}</td>
+                                    <td>{{ $item->activeOrdersSum }}</td>
+                                    <td>{{ $item->refundedOrdersSum }}</td>
                                     <td>{{ \Illuminate\Support\Str::limit($item->description, 70, '...') }}</td>
-                                    <td>
-                                        @foreach($item->subItems as $subItem)
-                                            <span class="badge bg-success">{{ $subItem->name }}</span>
-                                        @endforeach
-                                    </td>
                                     <td>{{ $item->category->name }}</td>
                                     <td>
                                         @foreach($item->tags as $tag)
@@ -53,7 +51,7 @@
                                         @endforeach
                                     </td>
                                     <td>
-                                        <a href="{{ route('items.show', $item->id) }}" class="btn btn-info"><i class=" ri-eye-line"></i></a>
+                                        <a href="{{ route('items.show', $item->id) }}" class="btn btn-info"><i class="ri-eye-line"></i></a>
                                         <a href="{{ route('items.edit', $item->id) }}" class="btn btn-warning"><i class="ri-edit-box-fill"></i></a>
                                         <button class="btn btn-danger btn-delete" data-id="{{ $item->id }}"><i class="ri-delete-bin-5-line"></i></button>
                                     </td>
@@ -146,6 +144,5 @@
                 });
             });
         });
-
     </script>
 @endsection

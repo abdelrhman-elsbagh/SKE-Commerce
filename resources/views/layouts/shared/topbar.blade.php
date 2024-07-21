@@ -16,13 +16,15 @@
                 </a>
 
                 <!-- Logo Dark -->
-                <a href="/" class="logo-dark">
-                    <span class="logo-lg">
-                        <img src="/images/logo-dark.png" alt="dark logo">
+                <a href="{{ route('dashboard') }}" class="logo-dark">
+                    @if($config->getFirstMediaUrl('logos'))
+                        <span class="logo-lg">
+                        <img src="{{ $config->getFirstMediaUrl('logos') }}" alt="dark logo">
                     </span>
-                    <span class="logo-sm">
-                        <img src="/images/logo-sm.png" alt="small logo">
+                        <span class="logo-sm">
+                        <img src=src="{{ $config->getFirstMediaUrl('logos') }}" alt="small logo">
                     </span>
+                    @endif
                 </a>
             </div>
 
@@ -343,7 +345,12 @@
             <li class="dropdown">
                 <a class="nav-link dropdown-toggle arrow-none nav-user px-2" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                     <span class="account-user-avatar">
-                        <img src="/images/users/avatar-1.jpg" alt="user-image" width="32" class="rounded-circle">
+                        @if($config->getFirstMediaUrl('logos'))
+                            <img src="{{ $config->getFirstMediaUrl('logos') }}" alt="user-image" width="32" class="rounded-circle">
+                        @else
+                            <img src="{{ asset('assets/img/logo.png')}}"  alt="user-image" width="32" class="rounded-circle">
+                        @endif
+{{--                        <img src="/images/users/avatar-1.jpg" alt="user-image" width="32" class="rounded-circle">--}}
                     </span>
                     <span class="d-lg-flex flex-column gap-1 d-none">
                         <h5 class="my-0">

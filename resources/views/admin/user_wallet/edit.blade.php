@@ -24,13 +24,13 @@
                             @csrf
                             @method('PUT')
                             <div class="mb-3">
-                                <label for="user_id" class="form-label">User</label>
-                                <select class="form-control" id="user_id" name="user_id" required>
-                                    <option value="">Select User</option>
-                                    @foreach($users as $user)
-                                        <option value="{{ $user->id }}" {{ $wallet->user_id == $user->id ? 'selected' : '' }}>{{ $user->name }}</option>
-                                    @endforeach
-                                </select>
+                                <label for="user_name" class="form-label">User</label>
+                                <input type="text" class="form-control" id="user_name" value="{{ $wallet->user->name }}" readonly>
+                                <input type="hidden" name="user_id" value="{{ $wallet->user_id }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="currency" class="form-label">Currency</label>
+                                <input type="text" class="form-control" id="currency" value="{{ $wallet->user->currency->currency ?? 'USD' }}" readonly>
                             </div>
                             <div class="mb-3">
                                 <label for="balance" class="form-label">Balance</label>

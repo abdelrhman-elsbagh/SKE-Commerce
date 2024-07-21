@@ -21,7 +21,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body res-table-card">
                         <a href="{{ route('users.create') }}" class="btn btn-primary mb-3">Create New User</a>
                         <table id="basic-datatable" class="table table-striped table-bordered dt-responsive nowrap">
                             <thead>
@@ -29,11 +29,13 @@
                                 <th>ID</th>
                                 <th>Name</th>
                                 <th>Email</th>
+                                <th>Country</th>
                                 <th>Roles</th>
                                 <th>Status</th>
-                                <th>Country</th>
                                 <th>Fee Group</th>
                                 <th>Currency</th>
+                                <th>Balance</th>
+                                <th>Total Orders</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
@@ -43,15 +45,17 @@
                                     <td>{{ $user->id }}</td>
                                     <td>{{ $user->name }}</td>
                                     <td>{{ $user->email }}</td>
+                                    <td>{{ $user->address }}</td>
                                     <td>{{ implode(', ', $user->roles->pluck('name')->toArray()) }}</td>
                                     <td>
                                         <span class="badge @if($user->status == 'active') bg-success-subtle text-success @elseif($user->status == 'inactive') bg-danger-subtle text-danger @endif rounded-pill">
                                             {{ ucfirst($user->status) }}
                                         </span>
                                     </td>
-                                    <td>{{ $user->address }}</td>
                                     <td>{{ $user->feeGroup->name ?? "" }}</td>
                                     <td>{{ $user->currency->currency ?? "USD" }}</td>
+                                    <td>{{ number_format($user->wallet->balance ?? 0, 2) }} {{ $user->currency->currency ?? "USD" }}</td>
+                                    <td>{{ number_format($user->total_orders, 2) }} {{ $user->currency->currency ?? "USD" }}</td>
                                     <td>
                                         <a href="{{ route('users.edit', $user->id) }}" class="btn btn-warning"><i class="ri-edit-box-fill"></i></a>
                                         <button class="btn btn-danger btn-delete" data-id="{{ $user->id }}"><i class="ri-delete-bin-5-line"></i></button>

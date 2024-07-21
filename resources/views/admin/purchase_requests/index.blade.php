@@ -22,11 +22,11 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body  res-table-card">
                         <table id="basic-datatable" class="table table-striped table-bordered dt-responsive nowrap">
                             <thead>
                             <tr>
-                                <th>ID</th>
+                                <th>Request ID</th>
                                 <th>User</th>
                                 <th>Amount</th>
                                 <th>Status</th>
@@ -50,6 +50,15 @@
                                             @else bg-secondary-subtle text-secondary
                                             @endif">
                                             {{ ucfirst($purchaseRequest->status) }}
+
+                                            @if($purchaseRequest->status == 'pending')
+                                                <i class="bi bi-clock-history ms-1 fs-14"></i>
+                                            @elseif($purchaseRequest->status == 'approved')
+                                                <i class="bi bi-check2-circle ms-1 fs-14"></i>
+                                            @elseif($purchaseRequest->status == 'rejected')
+                                                <i class="ri-close-circle-line ms-1 fs-14"></i>
+                                            @else
+                                            @endif
                                         </span>
                                     </td>
                                     <td>{{ $purchaseRequest->paymentMethod->gateway ?? "" }}</td>
@@ -57,8 +66,9 @@
                                     <td>{{ $purchaseRequest->updated_at ?? "" }}</td>
                                     <td>
                                         <a href="{{ route('purchase-requests.show', $purchaseRequest->id) }}" class="btn btn-info"><i class=" ri-eye-line"></i></a>
-                                        <a href="{{ route('purchase-requests.edit', $purchaseRequest->id) }}" class="btn btn-warning"><i class="ri-edit-box-fill"></i></a>
-                                        <button type="button" class="btn btn-danger btn-delete" data-id="{{ $purchaseRequest->id }}"><i class="ri-delete-bin-5-line"></i></button>
+                                        @if($purchaseRequest->created_at == $purchaseRequest->updated_at)
+                                            <a href="{{ route('purchase-requests.edit', $purchaseRequest->id) }}" class="btn btn-warning"><i class="ri-edit-box-fill"></i></a>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach

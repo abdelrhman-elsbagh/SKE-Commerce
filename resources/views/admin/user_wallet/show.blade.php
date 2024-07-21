@@ -26,6 +26,10 @@
                                 <th>Balance</th>
                                 <td>{{ $wallet->balance }}</td>
                             </tr>
+                            <tr>
+                                <th>Currency</th>
+                                <td>{{ $wallet->user->currency->currency ?? 'USD' }}</td>
+                            </tr>
                         </table>
                         <a href="{{ route('user-wallets.index') }}" class="btn btn-primary">Back</a>
                     </div>

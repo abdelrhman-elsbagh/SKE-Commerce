@@ -20,12 +20,21 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <form id="edit-tag-form" action="{{ route('tags.update', $tag->id) }}" method="POST">
+                        <form id="edit-tag-form" action="{{ route('tags.update', $tag->id) }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
                             <div class="mb-3">
                                 <label for="name" class="form-label">Name</label>
                                 <input type="text" class="form-control" id="name" name="name" required value="{{ $tag->name }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="image" class="form-label">Image</label>
+                                <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                                <div class="mt-2" id="image-preview">
+                                    @if($tag->getFirstMediaUrl('images'))
+                                        <img src="{{ $tag->getFirstMediaUrl('images') }}" alt="Image Preview" style="max-width: 200px;">
+                                    @endif
+                                </div>
                             </div>
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </form>
@@ -43,13 +52,25 @@
 
     <script>
         $(document).ready(function() {
+            $('#image').change(function() {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#image-preview').html('<img src="' + e.target.result + '" alt="Image Preview" style="max-width: 200px;">');
+                }
+                reader.readAsDataURL(this.files[0]);
+            });
+
             $('#edit-tag-form').on('submit', function(e) {
                 e.preventDefault();
+
+                var formData = new FormData(this);
 
                 $.ajax({
                     url: $(this).attr('action'),
                     method: $(this).attr('method'),
-                    data: $(this).serialize(),
+                    data: formData,
+                    processData: false,
+                    contentType: false,
                     success: function(response) {
                         $.toast().reset('all'); // Reset previous toasts
                         $.toast({

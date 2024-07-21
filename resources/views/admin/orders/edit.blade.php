@@ -24,25 +24,19 @@
                             @csrf
                             @method('PUT')
                             <div class="mb-3">
-                                <label for="user_id" class="form-label">User</label>
-                                <select class="form-control" id="user_id" name="user_id" required>
-                                    @foreach($users as $user)
-                                        <option value="{{ $user->id }}" {{ $order->user_id == $user->id ? 'selected' : '' }}>
-                                            {{ $user->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <label for="user_name" class="form-label">User</label>
+                                <input type="text" class="form-control" id="user_name" name="user_name" value="{{ $order->user->name }}" readonly>
+                                <input type="hidden" name="user_id" value="{{ $order->user_id }}">
                             </div>
                             <div class="mb-3">
                                 <label for="total" class="form-label">Total</label>
-                                <input type="number" step="0.01" class="form-control" id="total" name="total" value="{{ $order->total }}" required>
+                                <input type="number" step="0.01" class="form-control" id="total" name="total" value="{{ $order->total }}" readonly>
                             </div>
                             <div class="mb-3">
                                 <label for="order_status" class="form-label">Status</label>
                                 <select class="form-control" id="order_status" name="status" required>
                                     <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Pending</option>
                                     <option value="active" {{ $order->status == 'active' ? 'selected' : '' }}>Active</option>
-                                    <option value="canceled" {{ $order->status == 'canceled' ? 'selected' : '' }}>Canceled</option>
                                     <option value="refunded" {{ $order->status == 'refunded' ? 'selected' : '' }}>Refunded</option>
                                 </select>
                             </div>

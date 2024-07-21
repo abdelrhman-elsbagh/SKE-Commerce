@@ -74,6 +74,12 @@ class ClientPurchaseRequestController extends Controller
         ]);
 
         $purchaseRequest = PurchaseRequest::findOrFail($id);
+
+        // Check if the purchase request has already been updated
+        if ($purchaseRequest->updated_at != $purchaseRequest->created_at) {
+            return response()->json(['error' => 'Purchase request has already been updated and cannot be updated again.'], 400);
+        }
+
         $oldStatus = $purchaseRequest->status;
 
         $purchaseRequest->update([
@@ -84,9 +90,9 @@ class ClientPurchaseRequestController extends Controller
             'payment_method_id' => $request->payment_method_id,
         ]);
 
-        if ($request->hasFile('purchase_documents')) {
+        if ($request->hasFile('document')) {
             $purchaseRequest->clearMediaCollection('purchase_documents');
-            $purchaseRequest->addMedia($request->file('purchase_documents'))->toMediaCollection('purchase_documents');
+            $purchaseRequest->addMedia($request->file('document'))->toMediaCollection('purchase_documents');
         }
 
         // Check if the old status was not "Approved" and the new status is "Approved"
@@ -104,8 +110,9 @@ class ClientPurchaseRequestController extends Controller
             }
         }
 
-        return redirect()->route('purchase-requests.index')->with('success', 'Purchase request updated successfully.');
+        return response()->json(['status' => 'success', 'message' => 'Purchase request updated successfully.']);
     }
+
 
 
     public function destroy($id)

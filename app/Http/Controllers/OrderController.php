@@ -10,10 +10,27 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class OrderController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Order::with(['user', 'subItems.subItem'])->orderBy('created_at', 'DESC')->get();
-        return view('admin.orders.index', compact('orders'));
+        $query = Order::with(['user', 'subItems.subItem'])->orderBy('created_at', 'DESC');
+
+        if ($request->has('status') && $request->status != '') {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $startDate = $request->start_date;
+            $endDate = $request->end_date;
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        }
+
+        $orders = $query->get();
+
+        return view('admin.orders.index', compact('orders'))->with([
+            'statusFilter' => $request->status,
+            'startDate' => $request->start_date,
+            'endDate' => $request->end_date
+        ]);
     }
 
     public function show($id)
@@ -35,21 +52,26 @@ class OrderController extends Controller
     public function update(Request $request, $id)
     {
         $order = Order::findOrFail($id);
-        $originalStatus = $order->status;
 
-        $order->update($request->all());
-
-        // Check if status was changed from 'active' to 'refunded'
-        if ($originalStatus === 'active' && $order->status === 'refunded') {
-            $this->refundOrderAmount($order);
+        // Check if the order has already been updated
+        if ($order->updated_at != $order->created_at) {
+            return response()->json(['message' => 'Order has already been updated once and cannot be updated again.'], 403);
         }
 
-        if ($originalStatus === 'pending' && $order->status === 'refunded') {
+        $originalStatus = $order->status;
+
+        $order->status = $request->status;
+        $order->save();
+
+        // Check if status was changed from 'active' to 'refunded'
+        if (($originalStatus === 'active' && $order->status === 'refunded') ||
+            ($originalStatus === 'pending' && $order->status === 'refunded')) {
             $this->refundOrderAmount($order);
         }
 
         return response()->json(['message' => 'Order updated successfully.']);
     }
+
 
     protected function refundOrderAmount($order)
     {

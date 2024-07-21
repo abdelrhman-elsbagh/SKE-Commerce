@@ -21,7 +21,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body res-table-card">
                         <a href="{{ route('posts.create') }}" class="btn btn-primary mb-3">Create Post</a>
                         <table id="basic-datatable" class="table table-striped table-bordered dt-responsive nowrap">
                             <thead>

@@ -23,6 +23,7 @@
                         <form id="edit-purchase-request-form" action="{{ route('purchase-requests.update', $purchaseRequest->id) }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
+                            <input type="hidden" name="has_been_updated" value="{{ $purchaseRequest->updated_at != $purchaseRequest->created_at ? 'true' : 'false' }}">
                             <div class="mb-3">
                                 <label for="user_id" class="form-label">User</label>
                                 <select class="form-control" id="user_id" name="user_id">
@@ -114,9 +115,13 @@
                         });
                     },
                     error: function(response) {
+                        var message = 'There was an error updating the purchase request.';
+                        if (response.responseJSON && response.responseJSON.error) {
+                            message = response.responseJSON.error;
+                        }
                         $.toast({
                             heading: 'Error',
-                            text: 'There was an error updating the purchase request.',
+                            text: message,
                             icon: 'error',
                             loader: true,
                             loaderBg: '#f96868',

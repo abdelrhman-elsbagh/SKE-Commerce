@@ -5953,3 +5953,60 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
     padding-top: 20px;
     white-space: nowrap;
 }
+
+.filter-btn,
+.filter-pr-btn
+{
+    font-size: 14px !important;
+}
+
+.btn-outline-primary {
+    color: #F65100;
+    border-color: #F65100;
+    display: inline-block;
+    font-weight: 400;
+    line-height: 1.5;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: middle;
+    cursor: pointer;
+    background-color: transparent;
+    border: 1px solid;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    border-radius: 0.375rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.btn-outline-primary:hover {
+    color: #fff;
+    background-color: #F65100;
+    border-color: #F65100;
+}
+
+.btn-outline-primary:focus, .btn-outline-primary.focus {
+    color: #fff;
+    background-color: #F65100;
+    border-color: #F65100;
+    box-shadow: 0 0 0 0.25rem rgba(255, 140, 0, 0.5);
+
+}
+
+.btn-outline-primary:active, .btn-outline-primary.active,
+.show > .btn-outline-primary.dropdown-toggle {
+    color: #fff;
+    background-color: #F65100;
+    border-color: #F65100;
+}
+
+.btn-outline-primary:active:focus, .btn-outline-primary.active:focus,
+.show > .btn-outline-primary.dropdown-toggle:focus {
+    box-shadow: 0 0 0 0.25rem rgba(255, 140, 0, 0.5);
+
+}
+
+.btn-outline-primary:disabled, .btn-outline-primary.disabled {
+    color: #F65100;
+    background-color: transparent;
+}
+

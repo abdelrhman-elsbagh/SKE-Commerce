@@ -48,7 +48,6 @@ class CurrencyController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'currency' => 'required|string|max:255',
             'price' => 'required|numeric',
         ]);
 

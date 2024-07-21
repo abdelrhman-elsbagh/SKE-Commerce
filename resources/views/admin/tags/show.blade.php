@@ -18,6 +18,16 @@
                             <label for="name" class="form-label">Name</label>
                             <p id="name">{{ $tag->name }}</p>
                         </div>
+                        <div class="mb-3">
+                            <label for="image" class="form-label">Image</label>
+                            <div id="image">
+                                @if($tag->getFirstMediaUrl('images'))
+                                    <img src="{{ $tag->getFirstMediaUrl('images') }}" alt="Tag Image" style="max-width: 200px;">
+                                @else
+                                    <p>No image available.</p>
+                                @endif
+                            </div>
+                        </div>
                         <a href="{{ route('tags.index') }}" class="btn btn-secondary">Back</a>
                     </div>
                 </div>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
 use App\Models\User;
 use App\Models\UserWallet;
 use Illuminate\Http\Request;
@@ -12,8 +13,20 @@ class UserWalletController extends Controller
     public function index()
     {
         $wallets = UserWallet::with('user')->get();
+
+        foreach ($wallets as $wallet) {
+            $wallet->activeOrdersCount = Order::where('user_id', $wallet->user->id)
+                ->where('status', 'active')
+                ->count();
+
+            $wallet->refundedOrdersCount = Order::where('user_id', $wallet->user->id)
+                ->where('status', 'refunded')
+                ->count();
+        }
+
         return view('admin.user_wallet.index', compact('wallets'));
     }
+
 
     public function show($id)
     {
@@ -61,7 +74,16 @@ class UserWalletController extends Controller
         ]);
 
         $wallet = UserWallet::findOrFail($id);
-        $wallet->update($request->all());
+        $oldBalance = $wallet->balance;
+        $newBalance = $request->balance;
+
+        // Determine if the balance has increased
+        $increaseStatus = $newBalance > $oldBalance ? 'increased' : 'decrease';
+
+        // Update the wallet
+        $wallet->balance = $newBalance;
+        $wallet->increase_status = $increaseStatus;
+        $wallet->save();
 
         if ($request->ajax()) {
             return response()->json(['status' => 'success', 'message' => 'Wallet updated successfully.']);
@@ -69,6 +91,7 @@ class UserWalletController extends Controller
 
         return redirect()->route('user-wallets.index')->with('success', 'Wallet updated successfully.');
     }
+
 
     public function destroy($id)
     {

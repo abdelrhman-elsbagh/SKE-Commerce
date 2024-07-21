@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DiamondRate;
 use App\Models\Item;
 use App\Models\Category;
+use App\Models\OrderSubItem;
 use App\Models\SubItem;
 use App\Models\Tag;
 use Illuminate\Http\Request;
@@ -14,7 +15,26 @@ class ItemController extends Controller
 {
     public function index()
     {
-        $items = Item::with('category', 'tags')->get();
+        $items = Item::with(['category', 'tags', 'subItems'])->get();
+
+        foreach ($items as $item) {
+            // Get all sub-item IDs for the current item
+            $subItemIds = $item->subItems->pluck('id');
+
+            // Calculate the count of active orders' sub-items
+            $item->activeOrdersSum = OrderSubItem::whereIn('sub_item_id', $subItemIds)
+                ->whereHas('order', function ($query) {
+                    $query->where('status', 'active');
+                })
+                ->count();
+
+            // Calculate the count of refunded orders' sub-items
+            $item->refundedOrdersSum = OrderSubItem::whereIn('sub_item_id', $subItemIds)
+                ->whereHas('order', function ($query) {
+                    $query->where('status', 'refunded');
+                })
+                ->count();
+        }
 
         return view('admin.items.index', compact('items'));
     }

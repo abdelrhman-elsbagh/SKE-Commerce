@@ -45,13 +45,16 @@
                         </a>
 
                         <!-- Logo Dark -->
-                        <a href="/" class="logo-dark">
-                            <span class="logo-lg">
-                                <img src="/images/logo-dark.png" alt="dark logo">
-                            </span>
-                            <span class="logo-sm">
-                                <img src="/images/logo-sm.png" alt="small logo">
-                            </span>
+                        <a href="{{ route('dashboard') }}" class="logo-dark">
+                            @if($config->getFirstMediaUrl('logos'))
+                                <span class="logo-lg">
+                                    <img src= src="{{ $config->getFirstMediaUrl('logos') }}" alt="dark logo">
+                                </span>
+                                <span class="logo-sm">
+                                    <img  src="{{ $config->getFirstMediaUrl('logos') }}" alt="small logo">
+                                </span>
+                            @endif
+
                         </a>
                     </div>
 
@@ -1558,14 +1561,7 @@
                         <div class="col-md-6">
                             <script>
                                 document.write(new Date().getFullYear())
-                            </script> © Attex - Coderthemes.com
-                        </div>
-                        <div class="col-md-6">
-                            <div class="text-md-end footer-links d-none d-md-block">
-                                <a href="javascript: void(0);">About</a>
-                                <a href="javascript: void(0);">Support</a>
-                                <a href="javascript: void(0);">Contact Us</a>
-                            </div>
+                            </script> ©  {{ $config->name ?? "" }}
                         </div>
                     </div>
                 </div>
@@ -1657,7 +1653,7 @@
 
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" name="data-topbar-color"
-                                id="topbar-color-brand" value="brand">
+                                id="topbar-color-brand" value="brand" checked>
                             <label class="form-check-label" for="topbar-color-brand">Brand</label>
                         </div>
                     </div>

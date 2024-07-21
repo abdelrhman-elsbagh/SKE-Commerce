@@ -12,14 +12,23 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
+                <div class="page-title-box">
+                    <h4 class="page-title">Tags</h4>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
                 <div class="card">
                     <div class="card-body">
+                        <a href="{{ route('tags.create') }}" class="btn btn-primary mb-3">Create Tag</a>
                         <h4 class="header-title">Tags</h4>
                         <table id="basic-datatable" class="table table-striped table-bordered dt-responsive nowrap">
                             <thead>
                             <tr>
                                 <th>ID</th>
                                 <th>Name</th>
+                                <th>Image</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
@@ -27,11 +36,16 @@
                             @foreach($tags as $tag)
                                 <tr id="tag-{{ $tag->id }}">
                                     <td>{{ $tag->id }}</td>
-                                    <td>{{ $tag->name }}</td>
+                                    <td>{{ $tag->name ?? "" }}</td>
+                                    <td>
+                                        @if($tag->getFirstMediaUrl('images'))
+                                            <img src="{{ $tag->getFirstMediaUrl('images') }}" alt="Tag Image" style="max-width: 50px;">
+                                        @endif
+                                    </td>
                                     <td>
                                         <a href="{{ route('tags.show', $tag->id) }}" class="btn btn-info"><i class=" ri-eye-line"></i></a>
                                         <a href="{{ route('tags.edit', $tag->id) }}" class="btn btn-warning"><i class="ri-edit-box-fill"></i></a>
-                                        <button class="btn btn-danger btn-delete" data-id="{{ $tag->id }}"><i class="ri-delete-bin-5-line"></i></button>
+                                        <button type="button" class="btn btn-danger btn-delete" data-id="{{ $tag->id }}"><i class="ri-delete-bin-5-line"></i></button>
                                     </td>
                                 </tr>
                             @endforeach
@@ -70,19 +84,18 @@
         'resources/js/pages/demo.datatable-init.js',
         'node_modules/jquery-toast-plugin/dist/jquery.toast.min.js'
     ])
-@endsection
 
-@section('admin-script')
     <script>
         $(document).ready(function() {
             var tagIdToDelete;
 
-            // Ensure click event handler is attached only once using event delegation
+            // Open delete confirmation modal
             $(document).on('click', '.btn-delete', function() {
                 tagIdToDelete = $(this).data('id');
                 $('#deleteModal').modal('show');
             });
 
+            // Confirm delete
             $('#confirmDelete').on('click', function() {
                 $.ajax({
                     url: '{{ route('tags.index') }}/' + tagIdToDelete,
@@ -94,7 +107,6 @@
                     success: function(result) {
                         $('#deleteModal').modal('hide');
                         $('#tag-' + tagIdToDelete).remove();
-                        // Show success message
                         $.toast().reset('all'); // Reset previous toasts
                         $.toast({
                             heading: 'Success',
@@ -106,12 +118,11 @@
                             hideAfter: 3000
                         });
                     },
-                    error: function(err) {
-                        // Show error message
+                    error: function(response) {
                         $.toast().reset('all'); // Reset previous toasts
                         $.toast({
                             heading: 'Error',
-                            text: 'An error occurred while deleting the tag.',
+                            text: 'There was an error deleting the tag.',
                             icon: 'error',
                             loader: true,
                             loaderBg: '#f96868',
