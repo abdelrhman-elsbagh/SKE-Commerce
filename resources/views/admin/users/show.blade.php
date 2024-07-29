@@ -23,20 +23,20 @@
                                 <td>{{ $user->name }}</td>
                             </tr>
                             <tr>
+                                <th>Whatsapp Number</th>
+                                <td>{{ $user->phone ?? "" }}</td>
+                            </tr>
+                            <tr>
                                 <th>Email</th>
                                 <td>{{ $user->email }}</td>
                             </tr>
                             <tr>
                                 <th>Bio</th>
-                                <td>{{ $user->bio }}</td>
+                                <td>{{ $user->bio ?? "" }}</td>
                             </tr>
                             <tr>
-                                <th>Address</th>
-                                <td>{{ $user->address }}</td>
-                            </tr>
-                            <tr>
-                                <th>Date of Birth</th>
-                                <td>{{ $user->date_of_birth }}</td>
+                                <th>Country</th>
+                                <td>{{ $user->address ?? "" }}</td>
                             </tr>
                             <tr>
                                 <th>Status</th>

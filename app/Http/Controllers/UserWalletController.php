@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\PurchaseRequest;
 use App\Models\User;
 use App\Models\UserWallet;
 use Illuminate\Http\Request;
@@ -12,7 +13,7 @@ class UserWalletController extends Controller
 {
     public function index()
     {
-        $wallets = UserWallet::with('user')->get();
+        $wallets = UserWallet::with('user.currency')->get();
 
         foreach ($wallets as $wallet) {
             $wallet->activeOrdersCount = Order::where('user_id', $wallet->user->id)
@@ -22,6 +23,14 @@ class UserWalletController extends Controller
             $wallet->refundedOrdersCount = Order::where('user_id', $wallet->user->id)
                 ->where('status', 'refunded')
                 ->count();
+
+            $wallet->approvedPurchaseRequestSum = PurchaseRequest::where('user_id', $wallet->user->id)
+                ->where('status', 'approved')
+                ->sum('amount');
+
+            $wallet->activePendingOrdersSum = Order::where('user_id', $wallet->user->id)
+                ->whereIn('status', ['active', 'pending'])
+                ->sum('total');
         }
 
         return view('admin.user_wallet.index', compact('wallets'));

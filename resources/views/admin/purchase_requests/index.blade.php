@@ -4,7 +4,13 @@
     @vite([
         'node_modules/datatables.net-bs5/css/dataTables.bootstrap5.min.css',
         'node_modules/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css',
-        'node_modules/jquery-toast-plugin/dist/jquery.toast.min.css'
+        'node_modules/jquery-toast-plugin/dist/jquery.toast.min.css',
+        'node_modules/select2/dist/css/select2.min.css',
+        'node_modules/daterangepicker/daterangepicker.css',
+        'node_modules/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.css',
+        'node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css',
+        'node_modules/bootstrap-timepicker/css/bootstrap-timepicker.min.css',
+        'node_modules/flatpickr/dist/flatpickr.min.css'
     ])
 @endsection
 
@@ -19,6 +25,38 @@
             </div>
         </div>
 
+        <!-- Filter by Status and Date -->
+        <div class="row mb-2">
+            <div class="col-lg-3 mb-2">
+                <div>
+                    <label class="form-label">Date Ranges</label>
+                    <div id="reportrange" class="form-control" data-toggle="date-picker-range" data-target-display="#selectedValue" data-cancel-class="btn-light">
+                        <i class="ri-calendar-2-line"></i>&nbsp;
+                        <span id="selectedValue">{{ request('start_date') ? request('start_date') . ' - ' . request('end_date') : 'Select Date Range' }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Filter Status</label>
+                <select id="statusFilter" class="form-select">
+                    <option value="">All Statuses</option>
+                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                    <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
+                    <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">.</label>
+                <button class="btn btn-primary col-12" id="applyFilters" style="display: block">Search</button>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">.</label>
+                <a class="btn btn-danger" style="display: block" id="clearFilter">Clear Filter</a>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
@@ -28,11 +66,14 @@
                             <tr>
                                 <th>Request ID</th>
                                 <th>User</th>
-                                <th>Amount</th>
-                                <th>Status</th>
-                                <th>Payment Method</th>
+                                <th>Email</th>
+                                <th>Country</th>
                                 <th>Created At</th>
+                                <th>Amount</th>
+                                <th>Currency</th>
+                                <th>Payment Method</th>
                                 <th>Updated At</th>
+                                <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
@@ -40,8 +81,14 @@
                             @foreach($purchaseRequests as $purchaseRequest)
                                 <tr id="purchase-request-{{ $purchaseRequest->id }}">
                                     <td>{{ $purchaseRequest->id }}</td>
-                                    <td>{{ $purchaseRequest->user->name }}</td>
-                                    <td>{{ $purchaseRequest->amount }}</td>
+                                    <td>{{ $purchaseRequest->user->name ?? "" }}</td>
+                                    <td>{{ $purchaseRequest->user->email ?? "" }}</td>
+                                    <td>{{ $purchaseRequest->user->address ?? "" }}</td>
+                                    <td>{{ $purchaseRequest->created_at->format('Y-m-d H:i:s') }}</td>
+                                    <td>{{ $purchaseRequest->amount ?? 0 }}</td>
+                                    <td>{{ $purchaseRequest->user->currency->currency ?? "USD" }}</td>
+                                    <td>{{ $purchaseRequest->paymentMethod->gateway ?? "" }}</td>
+                                    <td>{{ $purchaseRequest->updated_at->format('Y-m-d H:i:s') }}</td>
                                     <td>
                                         <span class="badge
                                             @if($purchaseRequest->status == 'pending') bg-warning-subtle text-warning
@@ -61,9 +108,6 @@
                                             @endif
                                         </span>
                                     </td>
-                                    <td>{{ $purchaseRequest->paymentMethod->gateway ?? "" }}</td>
-                                    <td>{{ $purchaseRequest->created_at ?? "" }}</td>
-                                    <td>{{ $purchaseRequest->updated_at ?? "" }}</td>
                                     <td>
                                         <a href="{{ route('purchase-requests.show', $purchaseRequest->id) }}" class="btn btn-info"><i class=" ri-eye-line"></i></a>
                                         @if($purchaseRequest->created_at == $purchaseRequest->updated_at)
@@ -103,9 +147,11 @@
 @section('script')
     @vite([
         'resources/js/pages/demo.datatable-init.js',
-        'node_modules/jquery-toast-plugin/dist/jquery.toast.min.js'
+        'node_modules/jquery-toast-plugin/dist/jquery.toast.min.js',
+        'resources/js/pages/demo.form-advanced.js'
     ])
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <script>
         $(document).ready(function() {
             var purchaseRequestIdToDelete;
@@ -150,6 +196,43 @@
                         });
                     }
                 });
+            });
+
+            function applyFilters() {
+                var status = $('#statusFilter').val();
+                var dateRange = $('#reportrange').data('daterangepicker');
+                var startDate = dateRange.startDate.format('YYYY-MM-DD');
+                var endDate = dateRange.endDate.format('YYYY-MM-DD');
+                var query = '?status=' + status + '&start_date=' + startDate + '&end_date=' + endDate;
+                window.location.href = '{{ route('purchase-requests.index') }}' + query;
+            }
+
+            $('#applyFilters').on('click', function() {
+                applyFilters();
+            });
+
+            $('#reportrange').daterangepicker({
+                startDate: moment('{{ request('start_date') ?? now()->startOf('month') }}'),
+                endDate: moment('{{ request('end_date') ?? now()->endOf('month') }}'),
+                ranges: {
+                    'Today': [moment(), moment()],
+                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                locale: {
+                    format: 'YYYY-MM-DD'
+                }
+            });
+
+            $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
+                applyFilters();
+            });
+
+            $('#clearFilter').on('click', function() {
+                window.location.href = '{{ route('purchase-requests.index') }}';
             });
         });
     </script>

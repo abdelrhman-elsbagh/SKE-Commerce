@@ -87,17 +87,6 @@
                                     @endforeach
                                 </select>
                             </div>
-
-                            <div class="mb-3">
-                                <label for="fee_group" class="form-label">Currency</label>
-                                <select class="form-control" id="currency_id" name="currency_id">
-                                    <option value="">Select Fee Group</option>
-                                    @foreach($currencies as $currency)
-                                        <option value="{{ $currency->id }}" {{ $user->currency_id == $currency->id ? 'selected' : '' }}>{{ $currency->currency }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </form>
                     </div>

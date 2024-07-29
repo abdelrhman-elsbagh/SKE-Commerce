@@ -28,6 +28,7 @@
                             <tr>
                                 <th>Apps ID</th>
                                 <th>Name</th>
+                                <th>Type</th>
                                 <th>Order Active</th>
                                 <th>Order Refunded</th>
                                 <th>Description</th>
@@ -41,6 +42,7 @@
                                 <tr id="item-{{ $item->id }}">
                                     <td>{{ $item->id }}</td>
                                     <td>{{ $item->name }}</td>
+                                    <td>{{ "Manual" }}</td>
                                     <td>{{ $item->activeOrdersSum }}</td>
                                     <td>{{ $item->refundedOrdersSum }}</td>
                                     <td>{{ \Illuminate\Support\Str::limit($item->description, 70, '...') }}</td>

@@ -27,6 +27,7 @@ class PurchaseController extends Controller
             $purchaseRequest->amount = $request->amount;
             $purchaseRequest->notes = $request->notes;
             $purchaseRequest->payment_method_id = $request->payment_method_id;
+            $purchaseRequest->currency_id = auth()->user()->currency_id ?? null;
 
             if ($request->hasFile('image')) {
                 $purchaseRequest->addMedia($request->file('image'))->toMediaCollection('purchase_documents');

@@ -1,6 +1,6 @@
 @extends('front.layout')
 
-@section('title', 'Plans')
+@section('title', ($config->name ?? "") . "- Plans")
 
 @section('content')
     <main class="page-main">

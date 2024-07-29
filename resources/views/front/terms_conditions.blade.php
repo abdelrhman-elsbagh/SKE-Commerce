@@ -1,12 +1,12 @@
 @extends('front.layout')
 
-@section('title', 'Terms & Conditions')
+@section('title', ($config->name ?? "") . "- Terms & Conditions")
 
 @section('content')
     <main class="page-main">
-        <div class="uk-container">
-            <h3 class="uk-heading-line" style="text-align: center"><span>Terms & Conditions</span></h3>
-            <div class="uk-grid uk-child-width-1-3@m uk-child-width-1-2@s uk-grid-small" data-uk-grid>
+        <div class="">
+            <h3 class="" style="text-align: center"><span style="border-bottom: 2px solid; padding-bottom: 2px;">Terms & Conditions</span></h3>
+            <div class="content" style="width: 100%;background: #FFF;padding: 40px;border-radius: 10px;">
                 {!! $terms->data ?? "" !!}
             </div>
         </div>
@@ -15,13 +15,4 @@
 
 @section('css')
     @vite(['node_modules/jquery-toast-plugin/dist/jquery.toast.min.css'])
-    <style>
-        .uk-card-body {
-            display: flex;
-            flex-direction: column;
-        }
-        .description {
-            flex: 1;
-        }
-    </style>
 @endsection

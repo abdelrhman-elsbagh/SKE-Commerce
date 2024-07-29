@@ -3,6 +3,8 @@
 
 <head>
     @include('layouts.shared/title-meta', ['title' => $page_title])
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
     @yield('css')
     @include('layouts.shared/head-css', ['mode' => $mode ?? '', 'demo' => $demo ?? ''])
 
@@ -15,8 +17,36 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/2.0.2/quill.min.js" integrity="sha512-1nmY9t9/Iq3JU1fGf0OpNCn6uXMmwC1XYX9a6547vnfcjCY1KvU9TE5e8jHQvXBoEH7hcKLIbbOjneZ8HCeNLA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
 
     <style>
+        .select2-container--classic .select2-selection--multiple .select2-selection__choice {
+            background-color: #17a2b8; /* info color */
+            border: 1px solid #17a2b8; /* info color */
+            color: #fff;
+            padding: 0 10px;
+            margin-top: 5px;
+        }
+
+        .select2-container--classic .select2-selection--multiple .select2-selection__choice__remove {
+            color: #fff;
+            margin-right: 10px;
+        }
+
+        .select2-container--classic .select2-selection--multiple .select2-selection__choice__remove:hover {
+            background-color: #138496; /* darker info color */
+        }
+
+        .select2-container--classic .select2-selection--multiple {
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            padding: 0.375rem 0.75rem;
+        }
+
+        .select2-container--classic .select2-selection--multiple .select2-selection__rendered {
+            padding: 0;
+        }
         .res-table-card{
             overflow: scroll;
         }

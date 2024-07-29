@@ -24,5 +24,6 @@ class DatabaseSeeder extends Seeder
 
         $this->call(RoleSeeder::class);
         $this->call(NewsTableSeeder::class);
+        $this->call(CurrencySeeder::class);
     }
 }

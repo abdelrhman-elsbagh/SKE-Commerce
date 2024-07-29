@@ -1,6 +1,6 @@
 @extends('front.layout')
 
-@section('title', 'Payment Methods')
+@section('title', ($config->name ?? "") . "- Payment Methods" )
 
 @section('content')
     <main class="page-main">

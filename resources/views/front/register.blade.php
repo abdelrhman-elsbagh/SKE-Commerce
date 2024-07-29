@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>TeamHost - Join now and play mighty games!</title>
+    <title> {{ $config->name ?? ""  }} - Register</title>
     <meta name="author" content="Templines">
     <meta name="description" content="TeamHost">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,6 +15,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Marcellus&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+    <style>
+        .js-select{
+            width: 100% !important;
+        }
+    </style>
+
 </head>
 <body class="page-login">
 <div class="page-wrapper">
@@ -51,8 +58,11 @@
                                 <div class="uk-text-danger" id="error-email"></div>
                             </div>
                             <div class="uk-margin">
-                                <select class="uk-select" name="currency_id">
-                                    <option value="">Select Currency ( USD ) Default</option>
+                                <input class="uk-input" type="text" name="phone" placeholder="Whatsapp Number">
+                                <div class="uk-text-danger" id="error-phone"></div>
+                            </div>
+                            <div class="uk-margin">
+                                <select class="uk-select js-select" name="currency_id" style="width: 100%">
                                     @foreach($currencies as $currency)
                                         <option value="{{ $currency->id }}">{{ $currency->currency }}</option>
                                     @endforeach
@@ -73,7 +83,7 @@
                             </div>
                             <div class="uk-text-center">
                                 <span>Already have an account?</span>
-                                <a class="uk-margin-small-left" href="{{ route('login') }}">Log In</a>
+                                <a class="uk-margin-small-left" href="{{ route('sign-in') }}">Log In</a>
                             </div>
                         </form>
                     </div>

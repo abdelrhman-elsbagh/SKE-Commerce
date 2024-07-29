@@ -109,7 +109,7 @@
                                     <td class="text-center">
                                         {{ $order->amount ?? "" }}
                                     </td>
-                                    <td>{{ $order->created_at->format('Y-m-d H:i') }}</td>
+                                    <td>{{ $order->created_at->format('Y-m-d H:i:s') }}</td>
 
                                     <td>{{ $order->order_type }}</td>
 
@@ -132,7 +132,7 @@
                                         <span class="badge bg-danger-subtle text-danger rounded-pill">{{ $order->wallet_after ?? ""}} {{ $order->user->currency->currency ?? "USD" }}</span>
 
                                     </td>
-                                    <td>{{ $order->updated_at->format('Y-m-d H:i') }}</td>
+                                    <td>{{ $order->updated_at->format('Y-m-d H:i:s') }}</td>
                                     <td>
                                         @if($order->status == 'canceled' || $order->status == 'refunded')
                                             <span class="badge bg-danger-subtle text-danger rounded-pill">

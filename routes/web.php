@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BusinessClientWalletController;
 use App\Http\Controllers\BusinessPurchaseRequestController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\FeeGroupController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\NewsController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\PlanController;
@@ -59,6 +61,9 @@ Route::middleware(['auth', 'role:User'])->group(function () {
     Route::post('/purchase-request', [PurchaseController::class, 'request'])->name('purchase.request');
     Route::post('/favorites/add', [FavoriteController::class, 'add'])->name('favorites.add');
     Route::post('/favorites/remove', [FavoriteController::class, 'remove'])->name('favorites.remove');
+    Route::post('/notifications/markAsRead/{id}', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+    Route::post('/posts/{post}/like', [PostController::class, 'likePost'])->name('posts.like');
+    Route::post('/posts/{post}/dislike', [PostController::class, 'dislikePost'])->name('posts.dislike');
 });
 
 
@@ -68,8 +73,19 @@ Route::post('business-logout', [HomeController::class, 'business_logout'])->name
 Route::put('users/{id}', [UserController::class, 'profile_update'])->name('profile-update');
 
 Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:Admin']], function () {
+
     Route::get('', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('index', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('permissions', [PermissionController::class, 'index'])->name('permissions.index');
+    Route::get('permissions/create', [PermissionController::class, 'create'])->name('permissions.create');
+    Route::post('permissions', [PermissionController::class, 'store'])->name('permissions.store');
+    Route::get('permissions/{id}', [PermissionController::class, 'show'])->name('permissions.show');
+    Route::get('permissions/{id}/edit', [PermissionController::class, 'edit'])->name('permissions.edit');
+    Route::put('permissions/{id}', [PermissionController::class, 'update'])->name('permissions.update');
+    Route::delete('permissions/{id}', [PermissionController::class, 'destroy'])->name('permissions.destroy');
+    Route::get('assign-permissions', [PermissionController::class, 'assignPermissionsForm'])->name('assign-permissions-form');
+    Route::post('assign-permissions', [PermissionController::class, 'assignPermissions'])->name('assign-permissions');
 
 //    Route::get('', [RoutingController::class, 'index'])->name('admin.home');
 //    Route::get('/home', [RoutingController::class, 'index'])->name('admin.home');
@@ -95,6 +111,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:Admin']], func
     Route::resource('tags', TagController::class);
     Route::resource('fee-groups', FeeGroupController::class)->names('fee_groups');
     Route::resource('posts', PostController::class);
+    Route::resource('notifications', NotificationController::class);
     Route::resource('currencies', CurrencyController::class);
 
     Route::get('/order-export', [OrderController::class, 'export'])->name('orders.export');

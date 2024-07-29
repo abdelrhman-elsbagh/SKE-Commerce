@@ -1,6 +1,6 @@
 @extends('front.layout')
 
-@section('title', 'Ske E-Commerce')
+@section('title', ($config->name ?? "") . "- Home")
 
 @section('content')
     <main class="page-main">

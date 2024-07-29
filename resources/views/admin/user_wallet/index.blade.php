@@ -18,12 +18,16 @@
                         <table id="basic-datatable" class="table table-striped table-bordered dt-responsive nowrap">
                             <thead>
                             <tr>
-                                <th>Wallet ID</th>
+                                <th>User ID</th>
                                 <th>User</th>
-                                <th>Balance</th>
+                                <th>Email</th>
+                                <th>Country</th>
                                 <th>Currency</th>
                                 <th>Active Orders</th>
                                 <th>Refunded Orders</th>
+                                <th>Total Deposit</th>
+                                <th>Total Orders</th>
+                                <th>Wallet Balance</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -31,12 +35,16 @@
                             <tbody>
                             @foreach($wallets as $wallet)
                                 <tr id="wallet-{{ $wallet->id }}">
-                                    <td>{{ $wallet->id }}</td>
+                                    <td>{{ $wallet->user->id }}</td>
                                     <td>{{ $wallet->user->name }}</td>
-                                    <td>{{ $wallet->balance ?? "" }}</td>
+                                    <td>{{ $wallet->user->email }}</td>
+                                    <td>{{ $wallet->user->address }}</td>
                                     <td>{{ $wallet->user->currency->currency ?? "USD" }}</td>
                                     <td>{{ $wallet->activeOrdersCount }}</td>
                                     <td>{{ $wallet->refundedOrdersCount }}</td>
+                                    <td>{{ $wallet->approvedPurchaseRequestSum ?? 0 }}</td>
+                                    <td>{{ $wallet->activePendingOrdersSum ?? 0 }}</td>
+                                    <td>{{ $wallet->balance ?? "" }}</td>
                                     <td class="text-center">
                                         @if($wallet->increase_status == 'increased')
                                             <span class="badge bg-success-subtle text-success rounded-pill" style="font-size: 18px">+</span>

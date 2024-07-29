@@ -545,6 +545,31 @@
             </li>
 
             <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarPosts" aria-expanded="false" aria-controls="sidebarItems" class="side-nav-link nav-link">
+                    <i class="ri-notification-3-fill"></i>
+                    <span> Notifications </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarPosts">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('notifications.index') }}" class="nav-link">All Notifications</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('notifications.create') }}" class="nav-link">Create Notification</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+            <li class="side-nav-item">
+                <a href="{{ route('permissions.index') }}" class="side-nav-link">
+                    <i class="ri-list-check-2"></i>
+                    <span> Permissions </span>
+                </a>
+            </li>
+
+            <li class="side-nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarTags" aria-expanded="false" aria-controls="sidebarTags" class="side-nav-link nav-link">
                     <i class="ri-price-tag-3-line"></i>
                     <span> Tags </span>
@@ -614,9 +639,6 @@
                     <ul class="side-nav-second-level">
                         <li>
                             <a href="{{ route('currencies.index') }}" class="nav-link">All Currencies</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('currencies.create') }}" class="nav-link">Create Currency</a>
                         </li>
                     </ul>
                 </div>

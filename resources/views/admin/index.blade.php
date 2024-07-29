@@ -43,11 +43,10 @@
                         <div class="d-flex justify-content-between">
                             <div class="flex-grow-1 overflow-hidden">
                                 <h5 class="text-muted fw-normal mt-0" title="Number of Customers">Customers</h5>
-                                <h3 class="my-3">{{ $customersCount }}</h3>
-                                <p class="mb-0 text-muted text-truncate">
-                                    <span class="badge bg-success me-1"><i class="ri-arrow-up-line"></i> 2,541</span>
-                                    <span>Since last month</span>
-                                </p>
+                                <h5 class="mb-3">Users: {{ $customersCount }}</h5>
+                                <h5 class="my-1">Active: {{ $activeUsersCount }}</h5>
+                                <h5 class="my-1">Partner: 0</h5>
+                                <h5 class="my-1">Inactive: {{ $inactiveUsersCount }}</h5>
                             </div>
                             <div class="flex-shrink-0">
                                 <div id="widget-customers" class="apex-charts" data-colors="#47ad77,#e3e9ee"></div>
@@ -63,13 +62,13 @@
                         <div class="d-flex justify-content-between">
                             <div class="flex-grow-1 overflow-hidden">
                                 <h5 class="text-muted fw-normal mt-0" title="Number of Orders">Orders</h5>
-                                <h3 class="my-3">{{ $ordersCount }}</h3>
-                                <p class="mb-0 text-muted text-truncate">
-                                    <span class="badge bg-danger me-1"><i class="ri-arrow-down-line"></i> 1.08%</span>
-                                    <span>Since last month</span>
-                                </p>
+                                <h5 class="my-3">Orders {{ $ordersCount }}</h5>
+                                <h5 class="my-2">Active: {{ $activeOrdersCount }}</h5>
+                                <h5 class="mt-2">Refunded: {{ $refundedOrdersCount }}</h5>
                             </div>
-                            <div id="widget-orders" class="apex-charts" data-colors="#3e60d5,#e3e9ee"></div>
+                            <div class="flex-shrink-0">
+                                <div id="widget-orders" class="apex-charts" data-colors="#3e60d5,#e3e9ee"></div>
+                            </div>
                         </div>
                     </div> <!-- end card-body-->
                 </div> <!-- end card-->
@@ -81,7 +80,7 @@
                             <div class="d-flex justify-content-between">
                                 <div class="flex-grow-1 overflow-hidden">
                                     <h5 class="text-muted fw-normal mt-0" title="Total Balance in {{ $data['currency'] }}">{{ $data['currency'] }}</h5>
-                                    <h3 class="my-1">{{ $data['currency'] }} {{ number_format($data['total_balance'], 2) }}</h3>
+                                    <h5 class="my-1">{{ number_format($data['total_balance'], 2) }} </h5>
                                     <p class="mb-0 text-muted text-truncate">
                                         @if ($data['percentage_change'] > 0)
                                             <span class="badge bg-success me-1"><i class="ri-arrow-up-line"></i> Up {{ number_format($data['percentage_change'], 2) }}%</span>
@@ -94,8 +93,9 @@
                                 </div>
                             </div>
                             <div>
-                                <p class="mb-1">Total Orders: {{ $data['currency'] }} {{ number_format($data['total_orders'], 2) }}</p>
-                                <p class="my-0">Revenue: {{ $data['currency'] }} {{ number_format($data['revenue'], 2) }}</p>
+                                <p class="mb-1">Orders: {{ number_format($data['total_orders'], 2) }}</p>
+                                <p class="my-0">Fee: {{ number_format($data['revenue'], 2) }}</p>
+                                <p class="mb-1">Deposit: {{ number_format($data['approved_purchase_requests'], 2) }}</p>
                             </div>
                         </div> <!-- end card-body-->
                     </div> <!-- end card-->

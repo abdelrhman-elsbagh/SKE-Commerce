@@ -1,6 +1,6 @@
 @extends('front.layout')
 
-@section('title', 'Ske E-Commerce')
+@section('title', ($config->name ?? "") . "- Wallet" )
 
 @section('content')
     <main class="page-main">
@@ -34,8 +34,14 @@
                     <input type="text" id="search-purchase-requests" class="form-control uk-input" placeholder="Search purchase requests by ID or notes...">
                     <div class="d-flex justify-content-around my-3" style="margin-bottom: 10px">
                         <button class="btn btn-outline-primary filter-pr-btn" data-status="all">All</button>
-                        <button class="btn btn-outline-primary filter-pr-btn" data-status="approved">Approved</button>
-                        <button class="btn btn-outline-primary filter-pr-btn" data-status="rejected">Rejected</button>
+                        <button class="btn btn-outline-primary filter-pr-btn" data-status="approved">
+                            Approved
+                            <i class="bi bi-check2-circle ms-1 fs-16 icon-search"></i>
+                        </button>
+                        <button class="btn btn-outline-primary filter-pr-btn" data-status="rejected">
+                            Rejected
+                            <i class="bi bi-x-circle fs-16 icon-search"></i>
+                        </button>
                     </div>
                     <div class="widjet__body" style="padding: 0;">
                         <ul class="activities-list" id="purchase-requests-list" style="">
@@ -46,8 +52,14 @@
                                     </div>
                                     <div class="activities-item__info">
                                         <div class="activities-item__title">Request ID: #{{ $request->id }}</div>
-                                        <div class="activities-item__title">Notes: {{ $request->notes }}</div>
+                                        <div class="activities-item__title">Applied Via: {{ $request->paymentMethod->gateway ?? "" }}</div>
+                                        @if($request->notes)
+                                            <div class="activities-item__title">Notes: {{ $request->notes }}</div>
+                                        @endif
                                         <div class="activities-item__date" style="font-weight: 900">Requested on: {{ $request->created_at->format('d M, Y - H:i') }}</div>
+                                        @if($request->created_at != $request->updated_at)
+                                            <div class="activities-item__date" style="font-weight: 900">Updated on: {{ $request->updated_at->format('d M, Y - H:i') }}</div>
+                                        @endif
                                         <div class="activities-item__status">
                                             @if($request->status == 'rejected')
                                                 <span class="badge bg-danger-subtle text-danger rounded-pill item__status">{{ ucfirst($request->status) }}</span>
@@ -66,13 +78,13 @@
                 </div>
             </div>
             <div class="uk-width-1-3@l">
-                <div id="" style="">
-                    <div id="gateway-card" class="widjet__body uk-card">
-                        <h3 class="uk-text-lead">{{ $user->feeGroup->name ?? ""  }}</h3>
-                        <div class="">
+                <div id="parent-div" style="position: relative;">
+                    <div id="gateway-card" class="widjet__body uk-card" style="padding: 10px 25px;border-radius: 5px;">
+                        <h3 class="uk-text-lead" style="padding-bottom: 0;margin-bottom: 5px;font-size: 22px">{{ $user->feeGroup->name ?? "" }}</h3>
+                        <div class="image-container">
                             @if($feeGroup)
                                 @if($feeGroup->getFirstMediaUrl('images'))
-                                    <img src="{{ $feeGroup->getFirstMediaUrl('images') }}" alt="Fee Group Image" style="max-width: 120px;">
+                                    <img src="{{ $feeGroup->getFirstMediaUrl('images') }}" alt="Fee Group Image" class="fit-image">
                                 @endif
                             @endif
                         </div>
@@ -86,9 +98,18 @@
                     <input type="text" id="search-orders" class="form-control uk-input" placeholder="Search orders by ID or name...">
                     <div class="d-flex justify-content-around my-3" style="margin-bottom: 10px">
                         <button class="btn btn-outline-primary filter-btn" data-status="all">  All</button>
-                        <button class="btn btn-outline-primary filter-btn" data-status="active">Active</button>
-                        <button class="btn btn-outline-primary filter-btn" data-status="pending">Pending</button>
-                        <button class="btn btn-outline-primary filter-btn" data-status="refunded">Refunded</button>
+                        <button class="btn btn-outline-primary filter-btn" data-status="active">
+                            Active
+                            <i class="bi bi-check2-circle ms-1 fs-16 icon-search"></i>
+                        </button>
+                        <button class="btn btn-outline-primary filter-btn" data-status="pending">
+                            Pending
+                            <i class="bi bi-clock-history fs-16 icon-search"></i>
+                        </button>
+                        <button class="btn btn-outline-primary filter-btn" data-status="refunded">
+                            Refunded
+                            <i class="bi bi-x-circle fs-16 icon-search"></i>
+                        </button>
                     </div>
                     <div class="widjet__body">
                         <ul class="activities-list" id="orders-list" style="max-height: 400px; overflow: scroll;">
@@ -101,25 +122,27 @@
                                 <li class="activities-item" data-id="{{ $order->id }}" data-name="{{ $item->name ?? 'Unknown Item' }}" data-status="{{ $order->status }}">
                                     <div class="activities-item__logo">
 
-                                        @if($subItem->getFirstMediaUrl('images'))
+                                        @if($item->getFirstMediaUrl('front_image'))
                                             <a href="{{ route('item.show', ['id' => $item->id]) }}">
-                                                @if($subItem->getFirstMediaUrl('images'))
-                                                    <img src="{{ $subItem->getFirstMediaUrl('images') }}" alt="{{ $order->item_name ?? "" }}" style="height: 100%">
-                                                @endif
-                                            </a>
-                                        @endif
-
-                                        @if($item)
-                                            <a href="{{ route('item.show', ['id' => $item->id]) }}">
-                                                @if($item->getFirstMediaUrl('images'))
-                                                    <img src="{{ $item->getFirstMediaUrl('images') }}" alt="{{ $order->item_name ?? "" }}" style="height: 100%">
-                                                @else
-                                                    <img src="{{ asset('assets/img/default-image.jpg') }}" alt="Default Image">
+                                                @if($item->getFirstMediaUrl('front_image'))
+                                                    <img src="{{ $item->getFirstMediaUrl('front_image') }}" alt="{{ $order->item_name ?? "" }}" style="height: 100%">
                                                 @endif
                                             </a>
                                         @else
-                                            <img src="{{ asset('assets/img/default-image.jpg') }}" alt="Default Image">
+                                            @if($item)
+                                                <a href="{{ route('item.show', ['id' => $item->id]) }}">
+                                                    @if($item->getFirstMediaUrl('images'))
+                                                        <img src="{{ $item->getFirstMediaUrl('images') }}" alt="{{ $order->item_name ?? "" }}" style="height: 100%">
+                                                    @else
+                                                        <img src="{{ asset('assets/img/default-image.jpg') }}" alt="Default Image">
+                                                    @endif
+                                                </a>
+                                            @else
+                                                <img src="{{ asset('assets/img/default-image.jpg') }}" alt="Default Image">
+                                            @endif
                                         @endif
+
+
                                     </div>
                                     <div class="activities-item__info">
                                         @if($item)
@@ -136,11 +159,26 @@
                                         <div class="activities-item__date">{{ $order->created_at->format('d M, Y - H:i') }}</div>
                                         <div class="activities-item__status">
                                             @if($order->status == 'canceled' || $order->status == 'refunded')
-                                                <span class="badge bg-danger-subtle text-danger rounded-pill item__status">{{ ucfirst($order->status) }}</span>
+                                                <span class="badge bg-danger-subtle text-danger rounded-pill item__status">
+                                                    {{ ucfirst($order->status) }}
+                                                    @if($request->created_at != $request->updated_at)
+                                                        <span>{{$order->updated_at ?? ""}}</span>
+                                                    @endif
+                                                </span>
                                             @elseif($order->status == 'active')
-                                                <span class="badge bg-success-subtle text-success rounded-pill item__status">{{ ucfirst($order->status) }}</span>
+                                                <span class="badge bg-success-subtle text-success rounded-pill item__status">
+                                                    {{ ucfirst($order->status) }}
+                                                    @if($request->created_at != $request->updated_at)
+                                                        <span>{{$order->updated_at ?? ""}}</span>
+                                                    @endif
+                                                </span>
                                             @else
-                                                <span class="badge bg-warning-subtle text-secondary rounded-pill item__status">{{ ucfirst($order->status) }}</span>
+                                                <span class="badge bg-warning-subtle text-secondary rounded-pill item__status">
+                                                    {{ ucfirst($order->status) }}
+                                                    @if($request->created_at != $request->updated_at)
+                                                        <span>{{$order->updated_at ?? ""}}</span>
+                                                    @endif
+                                                </span>
                                             @endif
                                         </div>
                                     </div>
@@ -168,7 +206,7 @@
                     }
                 });
                 $('.card-height .uk-card').height(maxHeight);
-                $('#gateway-card').height(maxHeight + 40);
+                // $('#gateway-card').height(maxHeight + 40);
             }
 
             setEqualHeight();

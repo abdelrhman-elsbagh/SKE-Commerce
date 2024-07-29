@@ -1,6 +1,6 @@
 @extends('front.layout')
 
-@section('title', 'Posts')
+@section('title', ($config->name ?? "") . "- Posts")
 
 @section('content')
     <main class="page-main">
@@ -22,6 +22,17 @@
                             <div class="game-card__info">
                                 <a class="game-card__title" style="padding-bottom: 0; margin-bottom: 0;">{{ $post->title }}</a>
                                 <p style="font-size: 12px;padding: 0;margin-top: 8px;">{{ \Illuminate\Support\Str::limit($post->description, 300) ?? "" }}</p>
+                                <p style="margin-top: 0;padding-top: 0;margin-bottom: 0;color: #000;">
+                                    Published on: <span style="font-weight: 600;">{{ $post->created_at  }}</span>
+                                </p>
+                                <div class="like-dislike-buttons" style="margin-top: 10px;">
+                                    <button class="like-button" data-post-id="{{ $post->id }}">
+                                        <i class="fas fa-thumbs-up"></i> {{ $post->likes_count }}
+                                    </button>
+                                    <button class="dislike-button" data-post-id="{{ $post->id }}">
+                                        <i class="fas fa-thumbs-down"></i> {{ $post->dislikes_count }}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -69,19 +80,80 @@
                         UIkit.modal('#post-modal').show();
                     });
                 });
+
+                // Like button functionality
+                document.querySelectorAll('.like-button').forEach(function(button) {
+                    button.addEventListener('click', function() {
+                        const postId = this.getAttribute('data-post-id');
+                        const dislikeButton = this.nextElementSibling;
+                        fetch(`/posts/${postId}/like`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Content-Type': 'application/json'
+                            }
+                        }).then(response => response.json()).then(data => {
+                            if (data.success) {
+                                this.innerHTML = `<i class="fas fa-thumbs-up"></i> ${data.likes_count}`;
+                                dislikeButton.innerHTML = `<i class="fas fa-thumbs-down"></i> ${data.dislikes_count}`;
+                                if (data.liked) {
+                                    toastr.success('Post liked.');
+                                } else {
+                                    toastr.success('Like removed.');
+                                }
+                            } else {
+                                toastr.error('Error liking post.');
+                            }
+                        }).catch(error => {
+                            toastr.error('Error liking post.');
+                        });
+                    });
+                });
+
+                // Dislike button functionality
+                document.querySelectorAll('.dislike-button').forEach(function(button) {
+                    button.addEventListener('click', function() {
+                        const postId = this.getAttribute('data-post-id');
+                        const likeButton = this.previousElementSibling;
+                        fetch(`/posts/${postId}/dislike`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Content-Type': 'application/json'
+                            }
+                        }).then(response => response.json()).then(data => {
+                            if (data.success) {
+                                this.innerHTML = `<i class="fas fa-thumbs-down"></i> ${data.dislikes_count}`;
+                                likeButton.innerHTML = `<i class="fas fa-thumbs-up"></i> ${data.likes_count}`;
+                                if (data.disliked) {
+                                    toastr.success('Post disliked.');
+                                } else {
+                                    toastr.success('Dislike removed.');
+                                }
+                            } else {
+                                toastr.error('Error disliking post.');
+                            }
+                        }).catch(error => {
+                            toastr.error('Error disliking post.');
+                        });
+                    });
+                });
             });
         </script>
     @endsection
+
 
     <style>
         .search-container {
             position: relative;
             width: 100%;
         }
+
         .search-container input {
             width: 100%;
             padding-right: 35px;
         }
+
         .search-icon {
             position: absolute;
             right: 30px;
@@ -89,6 +161,7 @@
             transform: translateY(-50%);
             color: #f46119;
         }
+
         .card-tag {
             text-align: center;
             width: 110px;
@@ -103,21 +176,38 @@
             border-radius: 2px;
             max-height: 47px;
         }
+
         .card-tag-inactive {
             background-color: red;
         }
+
         .game-card__box {
             position: relative;
             overflow: hidden;
         }
+
         #post-modal .uk-modal-dialog {
             display: flex;
             align-items: center;
             justify-content: center;
         }
+
         #post-modal .uk-background-cover {
             background-size: cover;
             background-position: center;
+        }
+
+        .like-dislike-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .like-button,
+        .dislike-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #f46119;
         }
     </style>
 @endsection

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PurchaseRequest;
 use App\Models\SubItem;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -15,8 +16,30 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $customersCount = User::count();
+        // Count of users with the "User" role
+        $customersCount = User::whereHas('roles', function ($query) {
+            $query->where('name', 'User');
+        })->count();
+
+        // Count of active users with the "User" role
+        $activeUsersCount = User::whereHas('roles', function ($query) {
+            $query->where('name', 'User');
+        })->where('status', 'active')->count();
+
+        // Count of inactive users with the "User" role
+        $inactiveUsersCount = User::whereHas('roles', function ($query) {
+            $query->where('name', 'User');
+        })->where('status', 'inactive')->count();
+
+        // Total orders count
         $ordersCount = Order::count();
+
+        // Count of active orders
+        $activeOrdersCount = Order::where('status', 'active')->count();
+
+        // Count of refunded orders
+        $refundedOrdersCount = Order::where('status', 'refunded')->count();
+
         $totalOrders = Order::sum('total'); // Sum of all orders
         $growth = $this->calculateGrowth(); // Custom function to calculate growth
         $conversationRate = $this->calculateConversationRate(); // Custom function to calculate conversation rate
@@ -38,26 +61,28 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        // Add this to your index method in DashboardController
-        // Add this to your index method in DashboardController
+        // Get top selling sub-items
         $topSellingSubItems = SubItem::with('item')
             ->withCount('orderSubItems')
             ->orderBy('order_sub_items_count', 'desc')
-            ->take(5)
+            ->take(6)
             ->get();
 
+        // Get revenue by locations
         $revenueByLocations = User::selectRaw('address, COALESCE(currencies.currency, "USD") as currency, SUM(orders.total) as total_revenue')
             ->join('orders', 'users.id', '=', 'orders.user_id')
             ->leftJoin('currencies', 'users.currency_id', '=', 'currencies.id')
-            ->whereIn('orders.status', ['active', 'pending'])
+            ->whereIn('orders.status', ['active'])
             ->groupBy('address', 'currencies.currency')
             ->get();
 
-
-
         return view('admin.index', compact(
             'customersCount',
+            'activeUsersCount',
+            'inactiveUsersCount',
             'ordersCount',
+            'activeOrdersCount',
+            'refundedOrdersCount',
             'totalOrders',
             'growth',
             'conversationRate',
@@ -83,7 +108,7 @@ class DashboardController extends Controller
 
     private function getCurrencyData()
     {
-        $currencies = Currency::all();
+        $currencies = Currency::where('status', 'active')->get();
         $currencyData = [];
 
         // Loop through each currency
@@ -100,6 +125,10 @@ class DashboardController extends Controller
                 $query->where('currency_id', $currency->id);
             })->sum('total');
 
+            $approvedPurchaseRequests = PurchaseRequest::whereHas('user', function($query) use ($currency) {
+                $query->where('currency_id', $currency->id);
+            })->where('status', 'approved')->sum('amount');
+
             $previousMonthRevenue = Order::whereHas('user', function($query) use ($currency) {
                 $query->where('currency_id', $currency->id);
             })->whereIn('status', ['active', 'pending'])
@@ -113,38 +142,10 @@ class DashboardController extends Controller
                 'total_balance' => $totalBalance,
                 'revenue' => $revenue,
                 'total_orders' => $totalOrders,
+                'approved_purchase_requests' => $approvedPurchaseRequests,
                 'percentage_change' => $percentageChange
             ];
         }
-
-        // Aggregate data for users with no specified currency (default to USD)
-        $totalBalance = UserWallet::whereHas('user', function($query) {
-            $query->whereNull('currency_id');
-        })->sum('balance');
-
-        $revenue = Order::whereHas('user', function($query) {
-            $query->whereNull('currency_id');
-        })->whereIn('status', ['active', 'pending'])->sum('total');
-
-        $totalOrders = Order::whereHas('user', function($query) {
-            $query->whereNull('currency_id');
-        })->sum('total');
-
-        $previousMonthRevenue = Order::whereHas('user', function($query) {
-            $query->whereNull('currency_id');
-        })->whereIn('status', ['active', 'pending'])
-            ->whereMonth('created_at', '=', Carbon::now()->subMonth()->month)
-            ->sum('total');
-
-        $percentageChange = $previousMonthRevenue > 0 ? (($revenue - $previousMonthRevenue) / $previousMonthRevenue) * 100 : ($revenue > 0 ? 100 : 0);
-
-        $currencyData[] = [
-            'currency' => 'USD',
-            'total_balance' => $totalBalance,
-            'revenue' => $revenue,
-            'total_orders' => $totalOrders,
-            'percentage_change' => $percentageChange
-        ];
 
         return $currencyData;
     }

@@ -49,7 +49,9 @@
                                 <th>Document</th>
                                 <td>
                                     @if($purchaseRequest->getFirstMediaUrl('purchase_documents'))
-                                        <img src="{{ $purchaseRequest->getFirstMediaUrl('purchase_documents') }}" alt="Document" style="max-width: 200px;">
+                                        <a href="{{ $purchaseRequest->getFirstMediaUrl('purchase_documents') }}" data-lightbox="purchase-document" data-title="Purchase Document">
+                                            <img src="{{ $purchaseRequest->getFirstMediaUrl('purchase_documents') }}" alt="Document" style="max-width: 200px;">
+                                        </a>
                                     @endif
                                 </td>
                             </tr>

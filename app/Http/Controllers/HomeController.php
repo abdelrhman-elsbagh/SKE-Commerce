@@ -8,6 +8,7 @@ use App\Models\Config;
 use App\Models\Currency;
 use App\Models\Item;
 use App\Models\News;
+use App\Models\Notification;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderSubItem;
@@ -44,13 +45,18 @@ class HomeController extends Controller
         }
 
         $favoritesCount = 0;
+        $latestUnreadNotification = null;
         if (Auth::guard('web')->user()) {
             $favoritesCount = $user->favorites()->count() ?? 0;
 
-            if($user->feeGroup){
+            if ($user->feeGroup) {
                 $config->fee = $user->feeGroup->fee;
             }
 
+            // Fetch the latest unread notification for the user
+            $latestUnreadNotification = Notification::whereDoesntHave('usersWhoRead', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })->latest()->first();
         }
 
         $paymentMethods = PaymentMethod::where('status', 'active')->get();
@@ -58,9 +64,25 @@ class HomeController extends Controller
         View::share('config', $config);
         View::share('favoritesCount', $favoritesCount);
 
-        $categorizedItems = $items->groupBy(function($item) {
+        $categorizedItems = $items->groupBy(function ($item) {
             return $item->category->name;
         });
+
+        if($user){
+            if( $user->status == 'inactive' ){
+
+                return view('front.inactive-index', [
+                    'categorizedItems' => $categorizedItems,
+                    'sliders' => $sliders,
+                    'config' => $config,
+                    'paymentMethods' => $paymentMethods,
+                    'user' => $user,
+                    'news' => $news,
+                    'latestUnreadNotification' => $latestUnreadNotification,
+                ]);
+            }
+        }
+
 
         return view('front.index', [
             'categorizedItems' => $categorizedItems,
@@ -69,6 +91,7 @@ class HomeController extends Controller
             'paymentMethods' => $paymentMethods,
             'user' => $user,
             'news' => $news,
+            'latestUnreadNotification' => $latestUnreadNotification,
         ]);
     }
 
@@ -94,7 +117,11 @@ class HomeController extends Controller
         $totalOrderMoney = $activeOrders->sum('total');
 
         // Calculate total amount of purchase requests
-        $totalPurchaseRequestAmount = $purchaseRequests->sum('amount');
+        $approvedPurchaseRequests = $user->purchaseRequests()
+            ->with('paymentMethod')
+            ->where('status', 'approved')
+            ->get();
+        $totalPurchaseRequestAmount = $approvedPurchaseRequests->sum('amount');
 
         $paymentMethods = PaymentMethod::where('status', 'active')->orderBy('created_at', 'DESC')->get();
 
@@ -128,14 +155,13 @@ class HomeController extends Controller
         $favoritesCount = $user->favorites()->count();
         View::share('favoritesCount', $favoritesCount);
 
-        $posts = Post::orderBy('created_at', 'DESC')->get();
+        $posts = Post::withCount(['likes', 'dislikes'])->orderBy('created_at', 'DESC')->get();
         $paymentMethods = PaymentMethod::where('status', 'active')->orderBy('created_at', 'DESC')->get();
 
         return view('front.posts', [
             'posts' => $posts,
             'paymentMethods' => $paymentMethods,
             'user' => $user,
-
         ]);
     }
 
@@ -197,7 +223,7 @@ class HomeController extends Controller
         if (!$user) {
             return redirect()->route('login'); // Redirect to login if not authenticated
         }*/
-        $currencies = Currency::all();
+        $currencies = Currency::where('status', 'active')->get();
         return view('front.register', compact('config', 'currencies'));
     }
 
@@ -206,6 +232,7 @@ class HomeController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
+            'phone' => 'required|numeric',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
@@ -216,8 +243,10 @@ class HomeController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'phone' => $request->phone,
             'currency_id' => $request->currency_id,
             'password' => Hash::make($request->password),
+            'status' => 'inactive',
         ]);
 
         $user->assignRole('User');
@@ -404,6 +433,9 @@ class HomeController extends Controller
             'wallet_before' => $before_balance ?? null,
             'wallet_after' => $after_balance  ?? null,
             'amount' => $subItem->amount ?? null,
+            'currency_id' => $user->currency_id ?? null,
+            'item_id' => $subItem->item->id ?? null,
+            'sub_item_id' => $subItem->id ?? null,
         ]);
 
 

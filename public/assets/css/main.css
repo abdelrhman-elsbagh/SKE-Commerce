@@ -708,7 +708,7 @@ html #youzify-groups-list .item .item-title a {
     z-index: 5;
     position: absolute;
     bottom: 20px;
-    right: 20px;
+    left: 20px;
     width: 75px;
     height: 40px;
     border-radius: 20px;
@@ -1529,8 +1529,9 @@ a:hover {
 
 
 .page-header__logo img {
-    max-width: 30px;
-    height: auto;
+    width: 120px;
+    height: 40px;
+    border-radius: 5px;
     margin-right: 12px;
 }
 
@@ -6010,3 +6011,31 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
     background-color: transparent;
 }
 
+.fs-16{
+    font-size: 16px;
+}
+
+.icon-search{
+    vertical-align: middle;
+    position: relative;
+    top: -4px;
+    font-size: 15px;
+}
+
+#parent-div {
+    overflow: hidden; /* Ensures content stays within the div */
+}
+.fit-image {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 5px;
+}
+.image-container {
+    display: flex;
+    justify-content: center; /* Centers the image horizontally */
+    align-items: center; /* Centers the image vertically */
+    padding: 0; /* Adjust padding as needed */
+    max-width: 100%; /* Ensures the image container doesn't exceed the parent div */
+}

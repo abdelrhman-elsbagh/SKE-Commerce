@@ -16,11 +16,11 @@
                     <div class="card-body">
                         <div class="mb-3">
                             <label for="title" class="form-label">Title</label>
-                            <p id="title">{{ $post->title }}</p>
+                            <p id="title">{{ $post->title ?? "" }}</p>
                         </div>
                         <div class="mb-3">
                             <label for="description" class="form-label">Description</label>
-                            <p id="description">{{ $post->description }}</p>
+                            <p id="description">{{ $post->description ?? "" }}</p>
                         </div>
                         <div class="mb-3">
                             <label for="image" class="form-label">Image</label>
@@ -31,6 +31,14 @@
                                     <p>No image available</p>
                                 @endif
                             </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="likes" class="form-label">Likes</label>
+                            <p id="likes">{{ $post->likes_count ?? 0 }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <label for="dislikes" class="form-label">Dislikes</label>
+                            <p id="dislikes">{{ $post->dislikes_count ?? 0 }}</p>
                         </div>
                         <a href="{{ route('posts.index') }}" class="btn btn-secondary">Back</a>
                     </div>

@@ -31,6 +31,7 @@ class User extends Authenticatable implements HasMedia
         'fee',
         'fee_group_id',
         'currency_id',
+        'phone',
     ];
 
     /**
@@ -113,5 +114,9 @@ class User extends Authenticatable implements HasMedia
     public function currency()
     {
         return $this->belongsTo(Currency::class);
+    }
+    public function notifications()
+    {
+        return $this->belongsToMany(Notification::class, 'notification_reads')->withPivot('status');
     }
 }

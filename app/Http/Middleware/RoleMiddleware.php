@@ -20,8 +20,10 @@ class RoleMiddleware
             return redirect()->route('sign-in');
         }
 
-        if (!Auth::user()->hasRole($role)) {
-            return redirect()->route("home");
+        $user = Auth::user();
+
+        if (!$user->hasRole($role) || $user->status !== 'active') {
+            return redirect()->route('home');
         }
 
         return $next($request);

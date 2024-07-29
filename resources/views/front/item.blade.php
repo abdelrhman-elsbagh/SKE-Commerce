@@ -63,7 +63,7 @@
                         </div>
                     </div>
                     <div class="game-profile-price" style="margin-top: 110px">
-                        <div class="game-profile-price__value">$0.00 {{ $user->currency->currency ?? "USD" }}</div>
+                        <div class="game-profile-price__value" data-currency="{{ $user->currency->currency ?? "USD" }}">0.00 {{ $user->currency->currency ?? "USD" }}</div>
                         <button id="buyNowButton" class="uk-button uk-button-danger uk-width-1-1" type="button"><span class="ico_shopping-cart"></span><span>Buy Now</span></button>
                         <button id="addToFavouritesButton" class="uk-button uk-button-primary uk-width-1-1" type="button"><span class="ico_add-square"></span><span>Add to Favourites</span></button>
                     </div>
@@ -140,9 +140,9 @@
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log("Abdelrahman")
             const cards = document.querySelectorAll('.selectable-card');
             const priceElement = document.querySelector('.game-profile-price__value');
+            let currency = $(priceElement).data('currency')
             const serviceIdInput = document.getElementById('service_id');
             let selectedSubItemId = null;
 
@@ -156,7 +156,7 @@
                     this.querySelector('.selected-icon').style.display = 'block';
                     selectedSubItemId = this.dataset.id;
                     document.getElementById('selectedSubItemId').value = this.dataset.id; // Set the selected sub-item ID in the hidden input
-                    priceElement.textContent = '$' + this.dataset.price; // Update the price
+                    priceElement.textContent = this.dataset.price + " " + currency; // Update the price
                 });
             });
 

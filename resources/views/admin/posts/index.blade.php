@@ -29,6 +29,8 @@
                                 <th>ID</th>
                                 <th>Title</th>
                                 <th>Description</th>
+                                <th>Likes</th>
+                                <th>Dislikes</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
@@ -38,6 +40,8 @@
                                     <td>{{ $post->id }}</td>
                                     <td>{{ $post->title }}</td>
                                     <td>{{ \Illuminate\Support\Str::limit($post->description, 70, '...') }}</td>
+                                    <td>{{ $post->likes_count }}</td>
+                                    <td>{{ $post->dislikes_count }}</td>
                                     <td>
                                         <a href="{{ route('posts.show', $post->id) }}" class="btn btn-info"><i class="ri-eye-line"></i></a>
                                         <a href="{{ route('posts.edit', $post->id) }}" class="btn btn-warning"><i class="ri-edit-box-fill"></i></a>

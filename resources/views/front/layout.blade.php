@@ -23,6 +23,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Marcellus&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- Option 1: Include in HTML -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
 
     <!-- Conditionally include Oswald font if selected -->
     @if($config->font == 'Oswald')
@@ -80,7 +82,6 @@
     }
 </script>
 
-<input id="toggle" type="checkbox">
 <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function() {
         const darkThemeLink = document.createElement('link');
@@ -144,11 +145,12 @@
                 .then(data => {
                     if (data.success) {
                         toastr.success(data.message);
+                        UIkit.modal('#modal-purchase-request').hide();
                         purchaseRequestForm.reset();
                         imagePreview.src = '';
                         setTimeout(() => {
-                            UIkit.modal('#modal-purchase-request').hide();
-                        }, 2000); // Hide the modal after 2 seconds
+                            window.location.href = "{{ route('home') }}";
+                        }, 1500); // Hide the modal after 2 seconds
                     } else {
                         toastr.error(data.message);
                     }
@@ -197,11 +199,11 @@
                 <div class="page-header__logo">
                     <a href="{{route('home')}}">
                         @if($config->getFirstMediaUrl('logos'))
-                            <img src="{{ $config->getFirstMediaUrl('logos') }}" alt="logo">
+                            <img src="{{ $config->getFirstMediaUrl('logos') }}" alt="logo" style="">
                         @else
                             <img src="{{ asset('assets/img/logo.png')}}" alt="logo">
                         @endif
-                        <span class="page-header__logo_text">{{$config->name}}</span>
+{{--                        <span class="page-header__logo_text">{{$config->name}}</span>--}}
                     </a>
                 </div>
             </div>
@@ -236,20 +238,22 @@
         </div>
     </header>
     <div class="page-content">
+
         <aside class="sidebar is-show" id="sidebar">
+            <input id="toggle" type="checkbox">
             <div class="sidebar-box">
                 <ul class="uk-nav">
                     @if(Auth::guard('web')->guest() && Auth::guard('business_client')->guest())
-                        <li><a href="{{ route('sign-in') }}"><i class="fas fa-sign-in-alt"></i><span>Login</span></a></li>
-                        <li><a href="{{ route('register-page') }}"><i class="fas fa-user-plus"></i><span>Register</span></a></li>
-                        <li><a href="{{ route('business-sign-in') }}"><i class="fas fa-sign-in-alt"></i><span>Admin Login</span></a></li>
-                        <li><a href="{{ route('register-business') }}"><i class="fas fa-user-plus"></i><span>Register as Admin</span></a></li>
+                        <li id="login"><a href="{{ route('sign-in') }}"><i class="fas fa-sign-in-alt"></i><span>Login</span></a></li>
+                        <li id="register"><a href="{{ route('register-page') }}"><i class="fas fa-user-plus"></i><span>Register</span></a></li>
+{{--                        <li id="admin-login"><a href="{{ route('business-sign-in') }}"><i class="fas fa-sign-in-alt"></i><span>Admin Login</span></a></li>--}}
+{{--                        <li id="admin-register"><a href="{{ route('register-business') }}"><i class="fas fa-user-plus"></i><span>Register as Admin</span></a></li>--}}
                     @endif
 
                     @auth('business_client')
-                        <li><a href="{{route('business-wallet')}}"><i class="ico_wallet"></i><span>Wallet</span></a></li>
-                        <li><a href="{{route('business-profile')}}"><i class="ico_profile"></i><span>Profile</span></a></li>
-                        <li><a href="{{ route('plans-page') }}"><i class="fas fa-box-open"></i><span>Plans</span></a></li>
+                        <li id="business-wallet"><a href="{{route('business-wallet')}}"><i class="ico_wallet"></i><span>Wallet</span></a></li>
+                        <li id="business-profile"><a href="{{route('business-profile')}}"><i class="ico_profile"></i><span>Profile</span></a></li>
+                        <li id="plans"><a href="{{ route('plans-page') }}"><i class="fas fa-box-open"></i><span>Plans</span></a></li>
                         <li>
                             <a href="{{ route('logout') }}"
                                onclick="event.preventDefault(); document.getElementById('logout-form-business').submit();">
@@ -261,15 +265,15 @@
                         </li>
                     @elseauth('web')
                         @if(Auth::user()->hasRole('Admin'))
-                            <li><a href="{{route('dashboard')}}"><i class="ico_profile"></i><span>Admin Dashboard</span></a></li>
+                            <li id="dashboard"><a href="{{route('dashboard')}}"><i class="ico_profile"></i><span>Admin Dashboard</span></a></li>
                         @else
-                            <li class="uk-active"><a href="{{route('home')}}"><i class="ico_store"></i><span>Home</span></a></li>
-                            <li><a href="{{route('profile')}}"><i class="ico_profile"></i><span>Profile</span></a></li>
-                            <li><a href="{{route('favourites')}}"><i class="ico_favourites"></i><span>Favourites</span><span class="count">{{$favoritesCount}}</span></a></li>
-                            <li><a href="{{route('wallet')}}"><i class="ico_wallet"></i><span>Wallet</span></a></li>
-                            <li><a href="{{route('posts')}}"><i class="fa fa-tag pr8"></i><span>Posts</span></a></li>
-                            <li><a href="#modal-purchase-request" data-uk-toggle><i class="fas fa-money-bill-wave pr8" style="font-size: 16px;"></i><span>Purchase Request</span></a></li>
-                            <li><a href="{{ route('payments-page') }}"><i class="fas fa-credit-card pr8"></i><span>Payment Methods</span></a></li>
+                            <li id="home"><a href="{{route('home')}}"><i class="ico_store"></i><span>Home</span></a></li>
+                            <li id="profile"><a href="{{route('profile')}}"><i class="ico_profile"></i><span>Profile</span></a></li>
+                            <li id="favourites"><a href="{{route('favourites')}}"><i class="ico_favourites"></i><span>Favourites</span><span class="count">{{$favoritesCount}}</span></a></li>
+                            <li id="wallet"><a href="{{route('wallet')}}"><i class="ico_wallet"></i><span>Wallet</span></a></li>
+                            <li id="posts"><a href="{{route('posts')}}"><i class="fa fa-tag pr8"></i><span>Posts</span></a></li>
+                            <li id="purchase-request"><a href="#modal-purchase-request" data-uk-toggle><i class="fas fa-money-bill-wave pr8" style="font-size: 16px;"></i><span>Purchase Request</span></a></li>
+                            <li id="payment-methods"><a href="{{ route('payments-page') }}"><i class="fas fa-credit-card pr8"></i><span>Payment Methods</span></a></li>
                         @endif
                         <li>
                             <a href="{{ route('logout') }}"
@@ -280,7 +284,8 @@
                                 @csrf
                             </form>
                         </li>
-                        <li style="display: flex; justify-content: center; align-items: center;">
+                        <hr />
+                        <li style="display: flex; justify-content: center; align-items: center;margin-top: 80px">
                             <a href="https://wa.me/{{ $config->whatsapp }}?text={{ urlencode('Welcome to ' . str($config->name ?? "") ) }}" target="_blank" style="text-decoration: none; margin-right: 15px;">
                                 <i class="fab fa-whatsapp" style="font-size: 22px; color: #25D366;"></i>
                             </a>
@@ -299,6 +304,7 @@
         @yield('content')
     </div>
 </div>
+
 <div class="page-modals">
     <div class="uk-flex-top" id="modal-report" data-uk-modal>
         <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
@@ -371,6 +377,31 @@
     </div>
 </div>
 
+<div class="page-modals">
+    <!-- Purchase Request Modal -->
+    <div class="uk-flex-top" id="modal-purchase-request" data-uk-modal>
+        <!-- Your existing modal content -->
+    </div>
+
+    <!-- Notification Modal -->
+    @if(isset($latestUnreadNotification))
+        <div class="uk-flex-top" id="modal-notification" data-uk-modal>
+            <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical" style="text-align: center">
+                <button class="uk-modal-close-default" type="button" data-uk-close></button>
+                <h2 class="uk-modal-title">Notifications</h2>
+                <h4 style="margin-top: 10px;font-style: italic;">{{ $latestUnreadNotification->title }}</h4>
+                <p>{{ $latestUnreadNotification->description }}</p>
+                @if($latestUnreadNotification->getFirstMediaUrl('attachments'))
+                    <img src="{{ $latestUnreadNotification->getFirstMediaUrl('attachments') }}" alt="Notification Image" style="max-width: 200px;">
+                @endif
+                <div class="uk-margin">
+                    <button class="uk-button uk-button-danger uk-width-1-1" id="markAsRead" data-notification-id="{{ $latestUnreadNotification->id }}">Mark as Read</button>
+                </div>
+            </div>
+        </div>
+    @endif
+</div>
+
 <footer class="page-footer" style="padding: 20px 0 5px 0;text-align: center">
     <div class="container text-center">
         <p class="mt-2" style="margin-bottom: 5px">&copy;
@@ -382,6 +413,71 @@
 
 <script src="{{ asset('assets/js/libs.js')}}"></script>
 <script src="{{ asset('assets/js/main.js')}}"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get current URL path
+        const currentPath = window.location.pathname;
+
+        // Map routes to their corresponding list item ids
+        const routeMap = {
+            '/': 'home',
+            '/profile': 'profile',
+            '/favourites': 'favourites',
+            '/wallet': 'wallet',
+            '/posts': 'posts',
+            '/plans-page': 'plans',
+            '/payments-page': 'payment-methods',
+            '/register-page': 'register',
+            '/register-business': 'admin-register',
+            '/sign-in': 'login',
+            '/business-sign-in': 'admin-login',
+            '/business-wallet': 'business-wallet',
+            '/business-profile': 'business-profile',
+            '/dashboard': 'dashboard'
+        };
+
+        // Find the corresponding list item id for the current path
+        const activeItemId = routeMap[currentPath];
+
+        // If a corresponding list item id is found, add the uk-active class to it
+        if (activeItemId) {
+            document.getElementById(activeItemId).classList.add('uk-active');
+        }
+    });
+</script>
+
+
+<script>
+    @if(isset($latestUnreadNotification))
+    UIkit.modal('#modal-notification').show();
+    @endif
+
+    document.getElementById('markAsRead').addEventListener('click', function () {
+        const notificationId = this.getAttribute('data-notification-id');
+        fetch('{{ route('notifications.markAsRead', '') }}/' + notificationId, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ notification_id: notificationId })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    UIkit.modal('#modal-notification').hide();
+                    toastr.success('Notification marked as read.');
+                } else {
+                    toastr.error('Failed to mark notification as read.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error.message);
+                toastr.error('There was an error processing your request: ' + error.message);
+            });
+    });
+</script>
 
 @yield('scripts')
 

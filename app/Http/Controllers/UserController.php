@@ -117,7 +117,7 @@ class UserController extends Controller
             'status' => 'nullable|string',
             'avatar' => 'nullable|image',
             'role' => 'required|exists:roles,id',
-            'fee_group_id' => 'exists:fee_groups,id',
+            'fee_group_id' => 'nullable|exists:fee_groups,id',
             ]);
 
         $user = User::findOrFail($id);

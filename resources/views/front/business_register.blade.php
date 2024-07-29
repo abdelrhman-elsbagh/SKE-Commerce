@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>TeamHost - Join now and play mighty games!</title>
+    <title> {{ $config->name ?? ""  }} - Register</title>
     <meta name="author" content="Templines">
     <meta name="description" content="TeamHost">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">

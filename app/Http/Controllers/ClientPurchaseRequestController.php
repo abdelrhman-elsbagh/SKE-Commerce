@@ -11,11 +11,29 @@ use Illuminate\Support\Facades\Auth;
 
 class ClientPurchaseRequestController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $purchaseRequests = PurchaseRequest::with('user', 'paymentMethod')->get();
-        return view('admin.purchase_requests.index', compact('purchaseRequests'));
+        $query = PurchaseRequest::with('user', 'paymentMethod')->orderBy('created_at', 'DESC');
+
+        if ($request->has('status') && $request->status != '') {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $startDate = $request->start_date;
+            $endDate = $request->end_date;
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        }
+
+        $purchaseRequests = $query->get();
+
+        return view('admin.purchase_requests.index', compact('purchaseRequests'))->with([
+            'statusFilter' => $request->status,
+            'startDate' => $request->start_date,
+            'endDate' => $request->end_date
+        ]);
     }
+
 
     public function create()
     {

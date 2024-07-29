@@ -10,25 +10,75 @@ class RolesAndPermissionsSeeder extends Seeder
 {
     public function run()
     {
+        // Forget cached roles and permissions
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+
         // Create permissions
         $permissions = [
             'manage users',
-            'edit articles',
-            'delete articles',
-            'publish articles'
+            'create posts',
+            'update posts',
+            'delete posts',
+            'publish posts',
+            'create purchase-request',
+            'update purchase-request',
+            'delete purchase-request',
+            'view user-wallets',
+            'view business-client-wallets',
+            'edit configs',
+            'update configs',
+            'edit terms',
+            'update terms',
+            'create category',
+            'create diamond-rate',
+            'create item',
+            'create plan',
+            'create payment-method',
+            'create subscription',
+            'create tag',
+            'create fee-group',
+            'create notification',
+            'create currency',
+            'export orders',
+            'edit news',
+            'update news',
+            'view routing'
         ];
 
+        // Create or update permissions
         foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+            Permission::firstOrCreate(['name' => $permission]);
         }
 
         // Create roles and assign permissions
-        $admin = Role::create(['name' => 'admin']);
-        $admin->givePermissionTo(Permission::all());
+        $superAdmin = Role::firstOrCreate(['name' => 'super_admin']);
+        $superAdmin->syncPermissions(Permission::all());
 
-        $editor = Role::create(['name' => 'editor']);
-        $editor->givePermissionTo(['edit articles', 'publish articles']);
+        // Create roles if they do not exist
+        $editor = Role::firstOrCreate(['name' => 'editor']);
+        $user = Role::firstOrCreate(['name' => 'user']);
 
-        $user = Role::create(['name' => 'user']);
+        $admin = Role::firstOrCreate(['name' => 'admin']);
+        $admin->givePermissionTo([
+            'view users',
+            'view articles',
+            'view orders',
+            'view categories',
+            'view posts',
+        ]);
+
+        $editorPermissions = [
+            'create posts',
+            'update posts',
+            'delete posts',
+            'publish posts',
+            'create purchase-request',
+            'update purchase-request',
+            'delete purchase-request',
+            'edit news',
+            'update news'
+        ];
+
+        $editor->givePermissionTo($editorPermissions);
     }
 }

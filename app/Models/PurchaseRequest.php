@@ -17,6 +17,7 @@ class PurchaseRequest extends Model implements HasMedia
         'amount',
         'status',
         'payment_method_id',
+        'currency_id',
     ];
 
     public function user()

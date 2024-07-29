@@ -28,6 +28,7 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Name</th>
+                                <th>Whatsapp Num</th>
                                 <th>Email</th>
                                 <th>Country</th>
                                 <th>Roles</th>
@@ -44,6 +45,7 @@
                                 <tr id="user-{{ $user->id }}">
                                     <td>{{ $user->id }}</td>
                                     <td>{{ $user->name }}</td>
+                                    <td>{{ $user->phone ?? "" }}</td>
                                     <td>{{ $user->email }}</td>
                                     <td>{{ $user->address }}</td>
                                     <td>{{ implode(', ', $user->roles->pluck('name')->toArray()) }}</td>
