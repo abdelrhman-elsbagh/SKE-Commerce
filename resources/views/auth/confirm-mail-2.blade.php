@@ -51,7 +51,7 @@
                     <p class="text-muted">
                         <script>
                             document.write(new Date().getFullYear())
-                        </script> © Attex - Coderthemes.com
+                        </script> © SKE
                     </p>
                 </footer>
 

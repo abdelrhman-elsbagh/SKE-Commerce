@@ -193,7 +193,7 @@
                         </div>
 
                         <div class="card-body p-4">
-                            
+
                             <div class="text-center w-75 m-auto">
                                 <h4 class="text-dark-50 text-center mt-0 fw-bold">See You Again !</h4>
                                 <p class="text-muted mb-4">You are now successfully sign out.</p>
@@ -235,7 +235,7 @@
         <span class="bg-body">
             <script>
                 document.write(new Date().getFullYear())
-            </script> © Attex - Coderthemes.com
+            </script> © SKE
         </span>
     </footer>
     @vite(['resources/js/app.js'])

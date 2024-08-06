@@ -5,7 +5,7 @@
 @section('content')
     <main class="page-main">
         <div class="">
-            <h1 class=""><span>Payment Methods</span></h1>
+{{--            <h1 class=""><span>Payment Methods</span></h1>--}}
             <div class="uk-grid uk-child-width-1-3@m uk-child-width-1-2@s uk-grid-small" data-uk-grid>
                 @foreach($paymentMethods as $method)
                     <div class="">

@@ -12,19 +12,6 @@
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box">
-{{--                    <div class="page-title-right">--}}
-{{--                        <form class="d-flex">--}}
-{{--                            <div class="input-group">--}}
-{{--                                <input type="text" class="form-control shadow border-0" id="dash-daterange">--}}
-{{--                                <span class="input-group-text bg-primary border-primary text-white">--}}
-{{--                                    <i class="ri-calendar-todo-fill fs-13"></i>--}}
-{{--                                </span>--}}
-{{--                            </div>--}}
-{{--                            <a href="javascript: void(0);" class="btn btn-primary ms-2">--}}
-{{--                                <i class="ri-refresh-line"></i>--}}
-{{--                            </a>--}}
-{{--                        </form>--}}
-{{--                    </div>--}}
                     <h4 class="page-title">Dashboard</h4>
                 </div>
             </div>
@@ -32,21 +19,20 @@
 
         <!-- Dashboard stats -->
         <div class="row row-cols-1 row-cols-xxl-5 row-cols-lg-3 row-cols-md-2">
-
+            <!-- Add your card elements here -->
         </div> <!-- end row -->
 
         <!-- Currency stats -->
         <div class="row row-cols-1 row-cols-xxl-5 row-cols-lg-3 row-cols-md-2">
             <div class="col">
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body statstic-card">
                         <div class="d-flex justify-content-between">
                             <div class="flex-grow-1 overflow-hidden">
-                                <h5 class="text-muted fw-normal mt-0" title="Number of Customers">Customers</h5>
-                                <h5 class="mb-3">Users: {{ $customersCount }}</h5>
-                                <h5 class="my-1">Active: {{ $activeUsersCount }}</h5>
-                                <h5 class="my-1">Partner: 0</h5>
-                                <h5 class="my-1">Inactive: {{ $inactiveUsersCount }}</h5>
+                                <h2 class="text-muted fw-normal mt-0" title="Number of Customers">{{ $customersCount }}</h2>
+                                <h5 class="">Active: {{ $activeUsersCount }}</h5>
+                                <h5 class="">Partner: 0</h5>
+                                <h5 class="mb-0">Inactive: {{ $inactiveUsersCount }}</h5>
                             </div>
                             <div class="flex-shrink-0">
                                 <div id="widget-customers" class="apex-charts" data-colors="#47ad77,#e3e9ee"></div>
@@ -58,13 +44,12 @@
 
             <div class="col">
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body statstic-card">
                         <div class="d-flex justify-content-between">
                             <div class="flex-grow-1 overflow-hidden">
-                                <h5 class="text-muted fw-normal mt-0" title="Number of Orders">Orders</h5>
-                                <h5 class="my-3">Orders {{ $ordersCount }}</h5>
-                                <h5 class="my-2">Active: {{ $activeOrdersCount }}</h5>
-                                <h5 class="mt-2">Refunded: {{ $refundedOrdersCount }}</h5>
+                                <h2 class="text-muted fw-normal mt-0" title="Number of Orders">{{ $ordersCount }}</h2>
+                                <h5 class="">Active: {{ $activeOrdersCount }}</h5>
+                                <h5 class="mb-0">Refunded: {{ $refundedOrdersCount }}</h5>
                             </div>
                             <div class="flex-shrink-0">
                                 <div id="widget-orders" class="apex-charts" data-colors="#3e60d5,#e3e9ee"></div>
@@ -73,14 +58,14 @@
                     </div> <!-- end card-body-->
                 </div> <!-- end card-->
             </div>
-        @foreach ($currencyData as $data)
+            @foreach ($currencyData as $data)
                 <div class="col">
                     <div class="card">
-                        <div class="card-body pb-2">
+                        <div class="card-body pb-2 statstic-card">
                             <div class="d-flex justify-content-between">
                                 <div class="flex-grow-1 overflow-hidden">
-                                    <h5 class="text-muted fw-normal mt-0" title="Total Balance in {{ $data['currency'] }}">{{ $data['currency'] }}</h5>
-                                    <h5 class="my-1">{{ number_format($data['total_balance'], 2) }} </h5>
+                                    <h4 class="text-muted fw-normal mt-0" title="Total Balance in {{ $data['currency'] }}">{{ $data['currency'] }}</h4>
+                                    <h3 class="my-1">{{ number_format($data['total_balance'], 2) }} </h3>
                                     <p class="mb-0 text-muted text-truncate">
                                         @if ($data['percentage_change'] > 0)
                                             <span class="badge bg-success me-1"><i class="ri-arrow-up-line"></i> Up {{ number_format($data['percentage_change'], 2) }}%</span>
@@ -93,9 +78,9 @@
                                 </div>
                             </div>
                             <div>
-                                <p class="mb-1">Orders: {{ number_format($data['total_orders'], 2) }}</p>
+                                <p class="my-0">Orders: {{ number_format($data['total_orders'], 2) }}</p>
                                 <p class="my-0">Fee: {{ number_format($data['revenue'], 2) }}</p>
-                                <p class="mb-1">Deposit: {{ number_format($data['approved_purchase_requests'], 2) }}</p>
+                                <p class="my-0">Deposit: {{ number_format($data['approved_purchase_requests'], 2) }}</p>
                             </div>
                         </div> <!-- end card-body-->
                     </div> <!-- end card-->
@@ -218,11 +203,20 @@
                 </div>
             </div> <!-- end col -->
         </div> <!-- end row -->
-
     </div>
     <!-- container -->
 @endsection
 
 @section('script')
     @vite(['resources/js/pages/demo.dashboard.js'])
+    <script>
+        $(document).ready(function () {
+            // Set all card-body elements to the height of the tallest one
+            let maxHeight = 0;
+            $('.statstic-card').each(function() {
+                maxHeight = Math.max(maxHeight, $(this).outerHeight());
+            });
+            $('.statstic-card').css('height', maxHeight + 'px');
+        });
+    </script>
 @endsection

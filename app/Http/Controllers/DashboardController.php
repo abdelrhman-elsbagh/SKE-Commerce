@@ -40,7 +40,7 @@ class DashboardController extends Controller
         // Count of refunded orders
         $refundedOrdersCount = Order::where('status', 'refunded')->count();
 
-        $totalOrders = Order::sum('total'); // Sum of all orders
+        $totalOrders = Order::sum('item_price'); // Sum of all orders
         $growth = $this->calculateGrowth(); // Custom function to calculate growth
         $conversationRate = $this->calculateConversationRate(); // Custom function to calculate conversation rate
 
@@ -72,7 +72,7 @@ class DashboardController extends Controller
         $revenueByLocations = User::selectRaw('address, COALESCE(currencies.currency, "USD") as currency, SUM(orders.total) as total_revenue')
             ->join('orders', 'users.id', '=', 'orders.user_id')
             ->leftJoin('currencies', 'users.currency_id', '=', 'currencies.id')
-            ->whereIn('orders.status', ['active'])
+            ->whereIn('orders.status', ['active', 'pending'])
             ->groupBy('address', 'currencies.currency')
             ->get();
 
@@ -119,11 +119,12 @@ class DashboardController extends Controller
 
             $revenue = Order::whereHas('user', function($query) use ($currency) {
                 $query->where('currency_id', $currency->id);
-            })->whereIn('status', ['active', 'pending'])->sum('total');
+            })->whereIn('status', ['active', 'pending'])->sum('revenue');
 
             $totalOrders = Order::whereHas('user', function($query) use ($currency) {
                 $query->where('currency_id', $currency->id);
-            })->sum('total');
+            })->whereIn('status', ['active', 'pending'])->sum('item_price');
+
 
             $approvedPurchaseRequests = PurchaseRequest::whereHas('user', function($query) use ($currency) {
                 $query->where('currency_id', $currency->id);
@@ -133,7 +134,7 @@ class DashboardController extends Controller
                 $query->where('currency_id', $currency->id);
             })->whereIn('status', ['active', 'pending'])
                 ->whereMonth('created_at', '=', Carbon::now()->subMonth()->month)
-                ->sum('total');
+                ->sum('revenue');
 
             $percentageChange = $previousMonthRevenue > 0 ? (($revenue - $previousMonthRevenue) / $previousMonthRevenue) * 100 : ($revenue > 0 ? 100 : 0);
 

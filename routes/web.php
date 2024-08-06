@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BusinessClientWalletController;
@@ -52,6 +53,7 @@ Route::middleware(['auth', 'role:User'])->group(function () {
     Route::get('favourites', [HomeController::class, 'favourites'])->name('favourites');
     Route::get('posts', [HomeController::class, 'posts'])->name('posts');
     Route::get('wallet', [HomeController::class, 'wallet'])->name('wallet');
+    Route::get('partners', [HomeController::class, 'partners'])->name('partners');
     Route::get('payment-methods', [HomeController::class, 'payment_methods'])->name('payments-page');
     Route::get('terms-conditions', [HomeController::class, 'terms_page'])->name('terms-page');
     Route::get('/item/{id}', [HomeController::class, 'item'])->name('item.show');
@@ -111,6 +113,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:Admin']], func
     Route::resource('tags', TagController::class);
     Route::resource('fee-groups', FeeGroupController::class)->names('fee_groups');
     Route::resource('posts', PostController::class);
+    Route::resource('partners', PartnerController::class);
     Route::resource('notifications', NotificationController::class);
     Route::resource('currencies', CurrencyController::class);
 

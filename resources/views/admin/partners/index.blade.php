@@ -1,18 +1,11 @@
-@extends('layouts.vertical', ['page_title' => 'Payment Methods'])
+@extends('layouts.vertical', ['page_title' => 'Partners'])
 
 @section('css')
     @vite([
         'node_modules/datatables.net-bs5/css/dataTables.bootstrap5.min.css',
         'node_modules/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css',
-        'node_modules/jquery-toast-plugin/dist/jquery.toast.min.css',
-        'node_modules/quill/dist/quill.snow.css'
+        'node_modules/jquery-toast-plugin/dist/jquery.toast.min.css'
     ])
-    <style>
-        .description {
-            display: flex;
-            flex-direction: column;
-        }
-    </style>
 @endsection
 
 @section('content')
@@ -20,34 +13,51 @@
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box">
-                    <h4 class="page-title">Payment Methods</h4>
+                    <h4 class="page-title">Partners</h4>
                 </div>
             </div>
         </div>
 
         <div class="row">
-            <div class="col-lg-12">
+            <div class="col-12">
                 <div class="card">
-                    <div class="card-body res-table-card">
+                    <div class="card-body">
+                        <h4 class="header-title">Partners</h4>
                         <table id="basic-datatable" class="table table-striped table-bordered dt-responsive nowrap">
                             <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Gateway</th>
+                                <th>Name</th>
                                 <th>Description</th>
+                                <th>Facebook <i class="ri-facebook-circle-fill" style="color: #3b5998;"></i></th>
+                                <th>Whatsapp <i class="ri-whatsapp-line" style="color: #25D366;"></i></th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach($paymentMethods as $paymentMethod)
-                                <tr id="payment-method-{{ $paymentMethod->id }}">
-                                    <td>{{ $paymentMethod->id }}</td>
-                                    <td>{{ $paymentMethod->gateway }}</td>
-                                    <td><div class="description">{!! \Illuminate\Support\Str::limit($paymentMethod->description, 100, '...') !!}</div></td>
+                            @foreach($partners as $partner)
+                                <tr id="partner-{{ $partner->id }}">
+                                    <td>{{ $partner->id }}</td>
+                                    <td>{{ $partner->name ?? "" }}</td>
+                                    <td>{{ \Illuminate\Support\Str::limit($partner->description, 70, '...') }}</td>
                                     <td>
-                                        <a href="{{ route('payment-methods.show', $paymentMethod->id) }}" class="btn btn-info"><i class=" ri-eye-line"></i></a>
-                                        <a href="{{ route('payment-methods.edit', $paymentMethod->id) }}" class="btn btn-warning"><i class="ri-edit-box-fill"></i></a>
-                                        <button class="btn btn-danger btn-delete" data-id="{{ $paymentMethod->id }}"><i class="ri-delete-bin-5-line"></i></button>
+                                        @if($partner->facebook)
+                                            <a href="{{ $partner->facebook }}" target="_blank">
+                                                {{ $partner->facebook ?? "" }}
+                                            </a>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($partner->whatsapp)
+                                            <a href="https://wa.me/{{ $partner->whatsapp }}" target="_blank">
+                                                {{ $partner->whatsapp ?? "" }}
+                                            </a>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('partners.show', $partner->id) }}" class="btn btn-info"><i class="ri-eye-line"></i></a>
+                                        <a href="{{ route('partners.edit', $partner->id) }}" class="btn btn-warning"><i class="ri-edit-box-fill"></i></a>
+                                        <button class="btn btn-danger btn-delete" data-id="{{ $partner->id }}"><i class="ri-delete-bin-5-line"></i></button>
                                     </td>
                                 </tr>
                             @endforeach
@@ -70,7 +80,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    Are you sure you want to delete this payment method?
+                    Are you sure you want to delete this partner?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -84,24 +94,24 @@
 @section('script')
     @vite([
         'resources/js/pages/demo.datatable-init.js',
-        'node_modules/jquery-toast-plugin/dist/jquery.toast.min.js',
-//        'node_modules/quill/dist/quill.min.js'
+        'node_modules/jquery-toast-plugin/dist/jquery.toast.min.js'
     ])
+@endsection
 
+@section('admin-script')
     <script>
         $(document).ready(function() {
-            var paymentMethodIdToDelete;
+            var partnerIdToDelete;
 
-            // Open delete confirmation modal
+            // Ensure click event handler is attached only once using event delegation
             $(document).on('click', '.btn-delete', function() {
-                paymentMethodIdToDelete = $(this).data('id');
+                partnerIdToDelete = $(this).data('id');
                 $('#deleteModal').modal('show');
             });
 
-            // Confirm delete
             $('#confirmDelete').on('click', function() {
                 $.ajax({
-                    url: '{{ route('payment-methods.index') }}/' + paymentMethodIdToDelete,
+                    url: '{{ route('partners.index') }}/' + partnerIdToDelete,
                     type: 'POST',
                     data: {
                         _method: 'DELETE',
@@ -109,10 +119,12 @@
                     },
                     success: function(result) {
                         $('#deleteModal').modal('hide');
-                        $('#payment-method-' + paymentMethodIdToDelete).remove();
+                        $('#partner-' + partnerIdToDelete).remove();
+                        // Show success message
+                        $.toast().reset('all'); // Reset previous toasts
                         $.toast({
                             heading: 'Success',
-                            text: 'Payment method deleted successfully.',
+                            text: 'Partner deleted successfully.',
                             icon: 'success',
                             loader: true,
                             loaderBg: '#f96868',
@@ -120,10 +132,12 @@
                             hideAfter: 3000
                         });
                     },
-                    error: function(xhr) {
+                    error: function(err) {
+                        // Show error message
+                        $.toast().reset('all'); // Reset previous toasts
                         $.toast({
                             heading: 'Error',
-                            text: 'An error occurred while deleting the payment method.',
+                            text: 'An error occurred while deleting the partner.',
                             icon: 'error',
                             loader: true,
                             loaderBg: '#f96868',

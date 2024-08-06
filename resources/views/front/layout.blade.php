@@ -213,7 +213,7 @@
                     @auth('business_client')
                         <a class="profile" href="{{route('business-wallet')}}" style="margin-right: 40px;">
                             <div class="activities-item__price">
-                                {{\Illuminate\Support\Facades\Auth::user()->wallet->balance}} {{ $user->currency->currency ?? "USD" }}
+                                {{\Illuminate\Support\Facades\Auth::user()->wallet->balance ?? 0}} {{ $user->currency->currency ?? "USD" }}
                             </div>
                         </a>
                         <a class="profile" href="{{route('business-profile')}}" style="margin-right: 40px;">
@@ -222,7 +222,7 @@
                     @elseauth('web')
                         <a class="profile" href="{{route('wallet')}}" style="margin-right: 40px;">
                             <div class="activities-item__price">
-                                {{\Illuminate\Support\Facades\Auth::user()->wallet->balance}} {{ $user->currency->currency ?? "USD" }}
+                                {{\Illuminate\Support\Facades\Auth::user()->wallet->balance ?? 0}} {{ $user->currency->currency ?? "USD" }}
                             </div>
                         </a>
                         <a class="profile" href="{{route('profile')}}">
@@ -272,6 +272,7 @@
                             <li id="favourites"><a href="{{route('favourites')}}"><i class="ico_favourites"></i><span>Favourites</span><span class="count">{{$favoritesCount}}</span></a></li>
                             <li id="wallet"><a href="{{route('wallet')}}"><i class="ico_wallet"></i><span>Wallet</span></a></li>
                             <li id="posts"><a href="{{route('posts')}}"><i class="fa fa-tag pr8"></i><span>Posts</span></a></li>
+                            <li id="partners"><a href="{{route('partners')}}"><i style="font-size: 15px" class="fas fa-id-badge pr8"></i><span>Agents</span></a></li>
                             <li id="purchase-request"><a href="#modal-purchase-request" data-uk-toggle><i class="fas fa-money-bill-wave pr8" style="font-size: 16px;"></i><span>Purchase Request</span></a></li>
                             <li id="payment-methods"><a href="{{ route('payments-page') }}"><i class="fas fa-credit-card pr8"></i><span>Payment Methods</span></a></li>
                         @endif
@@ -426,6 +427,7 @@
             '/favourites': 'favourites',
             '/wallet': 'wallet',
             '/posts': 'posts',
+            '/partners': 'partners',
             '/plans-page': 'plans',
             '/payments-page': 'payment-methods',
             '/register-page': 'register',
@@ -453,30 +455,36 @@
     UIkit.modal('#modal-notification').show();
     @endif
 
-    document.getElementById('markAsRead').addEventListener('click', function () {
-        const notificationId = this.getAttribute('data-notification-id');
-        fetch('{{ route('notifications.markAsRead', '') }}/' + notificationId, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ notification_id: notificationId })
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    UIkit.modal('#modal-notification').hide();
-                    toastr.success('Notification marked as read.');
-                } else {
-                    toastr.error('Failed to mark notification as read.');
-                }
+        try {
+        document.getElementById('markAsRead').addEventListener('click', function () {
+            const notificationId = this.getAttribute('data-notification-id');
+            fetch('{{ route('notifications.markAsRead', '') }}/' + notificationId, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ notification_id: notificationId })
             })
-            .catch(error => {
-                console.error('Error:', error.message);
-                toastr.error('There was an error processing your request: ' + error.message);
-            });
-    });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        UIkit.modal('#modal-notification').hide();
+                        toastr.success('Notification marked as read.');
+                    } else {
+                        toastr.error('Failed to mark notification as read.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error.message);
+                    toastr.error('There was an error processing your request: ' + error.message);
+                });
+        });
+    }
+    catch (err){
+            console.log(err.message)
+        }
+
 </script>
 
 @yield('scripts')

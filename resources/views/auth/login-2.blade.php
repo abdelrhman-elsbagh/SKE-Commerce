@@ -12,7 +12,7 @@
     <div class="auth-fluid">
         <!--Auth fluid left content -->
         <div class="auth-fluid-form-box">
-            
+
             <div class="card-body d-flex flex-column h-100 gap-3">
 
                 <!-- Logo -->
@@ -73,9 +73,6 @@
                 </div>
 
                 <!-- Footer-->
-                <footer class="footer footer-alt">
-                    <p class="text-muted">Don't have an account? <a href="{{ route('second', ['auth', 'register-2']) }}" class="text-muted ms-1"><b>Sign Up</b></a></p>
-                </footer>
 
             </div> <!-- end .card-body -->
         </div>

@@ -67,8 +67,12 @@
         <!-- Leftbar User -->
         <div class="leftbar-user">
             <a href="{{ route('second', ['pages', 'profile']) }}" class="nav-link">
-                <img src="/images/users/avatar-1.jpg" alt="user-image" height="42" class="rounded-circle shadow-sm">
-                <span class="leftbar-user-name mt-2">Tosha Minner</span>
+                @if($config->getFirstMediaUrl('logos'))
+                    <img src="{{ $config->getFirstMediaUrl('logos') }}" alt="user-image" height="42" class="rounded-circle shadow-sm">
+                @else
+                    <img src="{{ asset('assets/img/logo.png')}}" alt="user-image" height="42" class="rounded-circle shadow-sm">
+                @endif
+                <span class="leftbar-user-name mt-2">{{ $config->name ?? "SKE APP"}}</span>
             </a>
         </div>
 
@@ -471,25 +475,6 @@
                 </a>
             </li>
 
-
-            <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarPaymentMethods" aria-expanded="false" aria-controls="sidebarPaymentMethods" class="side-nav-link nav-link">
-                    <i class="ri-money-dollar-box-line"></i>
-                    <span> Payment Methods </span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="sidebarPaymentMethods">
-                    <ul class="side-nav-second-level">
-                        <li>
-                            <a href="{{ route('payment-methods.index') }}" class="nav-link">All Payment Methods</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('payment-methods.create') }}" class="nav-link">Create Payment Method</a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarCategories" aria-expanded="false" aria-controls="sidebarCategories" class="side-nav-link nav-link">
                     <i class="ri-folder-line"></i>
@@ -510,7 +495,7 @@
 
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarItems" aria-expanded="false" aria-controls="sidebarItems" class="side-nav-link nav-link">
-                    <i class="ri-file-list-line"></i>
+                    <i class=" ri-app-store-line"></i>
                     <span> Items </span>
                     <span class="menu-arrow"></span>
                 </a>
@@ -525,6 +510,25 @@
                     </ul>
                 </div>
             </li>
+
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarPosts" aria-expanded="false" aria-controls="sidebarItems" class="side-nav-link nav-link">
+                    <i class="ri-add-circle-line"></i>
+                    <span> Agents </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarPosts">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('partners.index') }}" class="nav-link">All Partners</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('partners.create') }}" class="nav-link">Create Partner</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
 
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarPosts" aria-expanded="false" aria-controls="sidebarItems" class="side-nav-link nav-link">
@@ -564,9 +568,72 @@
 
             <li class="side-nav-item">
                 <a href="{{ route('permissions.index') }}" class="side-nav-link">
-                    <i class="ri-list-check-2"></i>
+                    <i class="ri-admin-line"></i>
                     <span> Permissions </span>
                 </a>
+            </li>
+
+
+{{--            <li class="side-nav-item">--}}
+{{--                <a data-bs-toggle="collapse" href="#sidebarIcons" aria-expanded="false" aria-controls="sidebarIcons" class="side-nav-link nav-link">--}}
+{{--                    <i class="ri-service-line"></i>--}}
+{{--                    <span> Icons </span>--}}
+{{--                    <span class="menu-arrow"></span>--}}
+{{--                </a>--}}
+{{--                <div class="collapse" id="sidebarIcons">--}}
+{{--                    <ul class="side-nav-second-level">--}}
+{{--                        <li>--}}
+{{--                            <a href="{{ route('second', ['icons', 'remixicons']) }}" class="nav-link">Remix Icons</a>--}}
+{{--                        </li>--}}
+{{--                        <li>--}}
+{{--                            <a href="{{ route('second', ['icons', 'bootstrapicons']) }}" class="nav-link">Bootstrap Icons</a>--}}
+{{--                        </li>--}}
+{{--                    </ul>--}}
+{{--                </div>--}}
+{{--            </li>--}}
+
+
+            <li class="side-nav-item">
+                <a href="{{ route('fee_groups.index') }}" class="side-nav-link">
+                    <i class="ri-percent-line"></i>
+                    <span> Fee Groups </span>
+                </a>
+            </li>
+
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarCurrencies" aria-expanded="false" aria-controls="sidebarItems" class="side-nav-link nav-link">
+                    <i class="ri-exchange-dollar-line"></i>
+                    <span> Currencies </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarCurrencies">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('currencies.index') }}" class="nav-link">All Currencies</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+            <li class="side-nav-title">Design</li>
+
+
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarPaymentMethods" aria-expanded="false" aria-controls="sidebarPaymentMethods" class="side-nav-link nav-link">
+                    <i class="ri-money-dollar-box-line"></i>
+                    <span> Payment Methods </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarPaymentMethods">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('payment-methods.index') }}" class="nav-link">All Payment Methods</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('payment-methods.create') }}" class="nav-link">Create Payment Method</a>
+                        </li>
+                    </ul>
+                </div>
             </li>
 
             <li class="side-nav-item">
@@ -587,7 +654,6 @@
                 </div>
             </li>
 
-
             <li class="side-nav-item">
                 <a href="{{ route('sliders.index') }}" class="side-nav-link nav-link">
                     <i class="ri-slideshow-line"></i>
@@ -598,59 +664,18 @@
             <li class="side-nav-item">
                 <a href="{{ route('news.edit') }}" class="side-nav-link nav-link">
                     <i class="ri-survey-line"></i>
-                    <span> News </span>
+                    <span>M text</span>
                 </a>
             </li>
-
-
-            <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarIcons" aria-expanded="false" aria-controls="sidebarIcons" class="side-nav-link nav-link">
-                    <i class="ri-service-line"></i>
-                    <span> Icons </span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="sidebarIcons">
-                    <ul class="side-nav-second-level">
-                        <li>
-                            <a href="{{ route('second', ['icons', 'remixicons']) }}" class="nav-link">Remix Icons</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('second', ['icons', 'bootstrapicons']) }}" class="nav-link">Bootstrap Icons</a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-
-
-            <li class="side-nav-item">
-                <a href="{{ route('fee_groups.index') }}" class="side-nav-link">
-                    <i class="ri-settings-3-line"></i>
-                    <span> Fee Groups </span>
-                </a>
-            </li>
-
-            <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarCurrencies" aria-expanded="false" aria-controls="sidebarItems" class="side-nav-link nav-link">
-                    <i class="ri-file-list-line"></i>
-                    <span> Currencies </span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="sidebarCurrencies">
-                    <ul class="side-nav-second-level">
-                        <li>
-                            <a href="{{ route('currencies.index') }}" class="nav-link">All Currencies</a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-
 
             <li class="side-nav-item">
                 <a href="{{ route('terms.edit') }}" class="side-nav-link">
-                    <i class="ri-settings-3-line"></i>
+                    <i class="ri-question-line"></i>
                     <span> Terms & Conditions </span>
                 </a>
             </li>
+
+
 
             <li class="side-nav-item">
                 <a href="{{ route('configs.edit') }}" class="side-nav-link">

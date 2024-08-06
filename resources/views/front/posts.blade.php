@@ -22,8 +22,8 @@
                             <div class="game-card__info">
                                 <a class="game-card__title" style="padding-bottom: 0; margin-bottom: 0;">{{ $post->title }}</a>
                                 <p style="font-size: 12px;padding: 0;margin-top: 8px;">{{ \Illuminate\Support\Str::limit($post->description, 300) ?? "" }}</p>
-                                <p style="margin-top: 0;padding-top: 0;margin-bottom: 0;color: #000;">
-                                    Published on: <span style="font-weight: 600;">{{ $post->created_at  }}</span>
+                                <p class="card__info" style="margin-top: 0;padding-top: 0;margin-bottom: 0">
+                                    {{ $post->created_at  }}
                                 </p>
                                 <div class="like-dislike-buttons" style="margin-top: 10px;">
                                     <button class="like-button" data-post-id="{{ $post->id }}">

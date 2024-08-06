@@ -270,58 +270,58 @@
                 </div>
             </li>
 
-            <li class="dropdown d-none d-sm-inline-block">
-                <a class="nav-link dropdown-toggle arrow-none" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
-                    <i class="ri-apps-2-line fs-22"></i>
-                </a>
-                <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated dropdown-lg p-0">
+{{--            <li class="dropdown d-none d-sm-inline-block">--}}
+{{--                <a class="nav-link dropdown-toggle arrow-none" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">--}}
+{{--                    <i class="ri-apps-2-line fs-22"></i>--}}
+{{--                </a>--}}
+{{--                <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated dropdown-lg p-0">--}}
 
-                    <div class="p-2">
-                        <div class="row g-0">
-                            <div class="col">
-                                <a class="dropdown-icon-item" href="#">
-                                    <img src="/images/brands/github.png" alt="Github">
-                                    <span>GitHub</span>
-                                </a>
-                            </div>
-                            <div class="col">
-                                <a class="dropdown-icon-item" href="#">
-                                    <img src="/images/brands/bitbucket.png" alt="bitbucket">
-                                    <span>Bitbucket</span>
-                                </a>
-                            </div>
-                            <div class="col">
-                                <a class="dropdown-icon-item" href="#">
-                                    <img src="/images/brands/dropbox.png" alt="dropbox">
-                                    <span>Dropbox</span>
-                                </a>
-                            </div>
-                        </div>
+{{--                    <div class="p-2">--}}
+{{--                        <div class="row g-0">--}}
+{{--                            <div class="col">--}}
+{{--                                <a class="dropdown-icon-item" href="#">--}}
+{{--                                    <img src="/images/brands/github.png" alt="Github">--}}
+{{--                                    <span>GitHub</span>--}}
+{{--                                </a>--}}
+{{--                            </div>--}}
+{{--                            <div class="col">--}}
+{{--                                <a class="dropdown-icon-item" href="#">--}}
+{{--                                    <img src="/images/brands/bitbucket.png" alt="bitbucket">--}}
+{{--                                    <span>Bitbucket</span>--}}
+{{--                                </a>--}}
+{{--                            </div>--}}
+{{--                            <div class="col">--}}
+{{--                                <a class="dropdown-icon-item" href="#">--}}
+{{--                                    <img src="/images/brands/dropbox.png" alt="dropbox">--}}
+{{--                                    <span>Dropbox</span>--}}
+{{--                                </a>--}}
+{{--                            </div>--}}
+{{--                        </div>--}}
 
-                        <div class="row g-0">
-                            <div class="col">
-                                <a class="dropdown-icon-item" href="#">
-                                    <img src="/images/brands/slack.png" alt="slack">
-                                    <span>Slack</span>
-                                </a>
-                            </div>
-                            <div class="col">
-                                <a class="dropdown-icon-item" href="#">
-                                    <img src="/images/brands/dribbble.png" alt="dribbble">
-                                    <span>Dribbble</span>
-                                </a>
-                            </div>
-                            <div class="col">
-                                <a class="dropdown-icon-item" href="#">
-                                    <img src="/images/brands/behance.png" alt="Behance">
-                                    <span>Behance</span>
-                                </a>
-                            </div>
-                        </div> <!-- end row-->
-                    </div>
+{{--                        <div class="row g-0">--}}
+{{--                            <div class="col">--}}
+{{--                                <a class="dropdown-icon-item" href="#">--}}
+{{--                                    <img src="/images/brands/slack.png" alt="slack">--}}
+{{--                                    <span>Slack</span>--}}
+{{--                                </a>--}}
+{{--                            </div>--}}
+{{--                            <div class="col">--}}
+{{--                                <a class="dropdown-icon-item" href="#">--}}
+{{--                                    <img src="/images/brands/dribbble.png" alt="dribbble">--}}
+{{--                                    <span>Dribbble</span>--}}
+{{--                                </a>--}}
+{{--                            </div>--}}
+{{--                            <div class="col">--}}
+{{--                                <a class="dropdown-icon-item" href="#">--}}
+{{--                                    <img src="/images/brands/behance.png" alt="Behance">--}}
+{{--                                    <span>Behance</span>--}}
+{{--                                </a>--}}
+{{--                            </div>--}}
+{{--                        </div> <!-- end row-->--}}
+{{--                    </div>--}}
 
-                </div>
-            </li>
+{{--                </div>--}}
+{{--            </li>--}}
 
             <li class="d-none d-sm-inline-block">
                 <a class="nav-link" data-bs-toggle="offcanvas" href="#theme-settings-offcanvas">
@@ -366,16 +366,16 @@
                     </div>
 
                     <!-- item-->
-                    <a href="{{ route('second', ['pages', 'profile']) }}" class="dropdown-item">
-                        <i class="ri-account-circle-line fs-18 align-middle me-1"></i>
-                        <span>My Account</span>
-                    </a>
+{{--                    <a href="{{ route('second', ['pages', 'profile']) }}" class="dropdown-item">--}}
+{{--                        <i class="ri-account-circle-line fs-18 align-middle me-1"></i>--}}
+{{--                        <span>My Account</span>--}}
+{{--                    </a>--}}
 
                     <!-- item-->
-                    <a href="{{ route('second', ['pages', 'profile']) }}" class="dropdown-item">
-                        <i class="ri-settings-4-line fs-18 align-middle me-1"></i>
-                        <span>Settings</span>
-                    </a>
+{{--                    <a href="{{ route('second', ['pages', 'profile']) }}" class="dropdown-item">--}}
+{{--                        <i class="ri-settings-4-line fs-18 align-middle me-1"></i>--}}
+{{--                        <span>Settings</span>--}}
+{{--                    </a>--}}
 
                     <!-- item-->
                     <a href="{{ route('second', ['pages', 'faq']) }}" class="dropdown-item">

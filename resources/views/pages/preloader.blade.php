@@ -1743,8 +1743,8 @@
                         <div class="d-flex justify-content-between align-items-center mt-3">
                             <label class="fs-16 fw-bold m-0" for="sidebaruser-check">Sidebar User Info</label>
                             <div class="form-check form-switch">
-                                <input type="checkbox" class="form-check-input" name="  sidebar-user"
-                                    id="sidebaruser-check">
+                                <input type="checkbox" class="form-check-input" name="sidebar-user"
+                                    id="sidebaruser-check" checked>
                             </div>
                         </div>
                     </div>

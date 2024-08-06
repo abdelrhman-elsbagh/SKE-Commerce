@@ -36,8 +36,8 @@ console.log('jQuery version:', $.fn.jquery);
 
         // This option for only vertical (left Sidebar) layout
         sidenav: {
-            size: "condensed",
-            user: false,
+            size: "sm-hover",
+            user: true,
         },
     };
 

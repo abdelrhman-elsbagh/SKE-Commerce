@@ -229,7 +229,7 @@
         <span class="bg-body">
             <script>
                 document.write(new Date().getFullYear())
-            </script> © Attex - Coderthemes.com
+            </script> © SKE
         </span>
     </footer>
 

@@ -183,31 +183,45 @@
                     <div class="col-xxl-4 col-lg-5">
                         <div class="card">
                             <!-- Logo -->
-                            <div class="card-header py-4 text-center bg-primary">
+                            <div class="card-header py-2 text-center bg-primary">
                                 <a href="{{ route('any', 'index') }}">
-                                    <span><img src="/images/logo.png" alt="logo" height="22"></span>
+                                    <span style="color: #FFF;font-weight: 600;font-size: 24px">Look Screen</span>
                                 </a>
                             </div>
 
                             <div class="card-body p-4">
-                                
+
+{{--                                <div class="text-center w-75 m-auto">--}}
+{{--                                    @if($config->getFirstMediaUrl('logos'))--}}
+{{--                                        <img src="{{ $config->getFirstMediaUrl('logos') }}" height="64" alt="user-image" class="rounded-circle shadow">--}}
+{{--                                    @endif--}}
+{{--                                    <h4 class="text-dark-50 text-center mt-3 fw-bold">{{$config->name ?? ""}} </h4>--}}
+{{--                                    <p class="text-muted mb-4">Enter your password to access the admin.</p>--}}
+{{--                                </div>--}}
+
+{{--                                <form action="#">--}}
+{{--                                    <div class="mb-3">--}}
+{{--                                        <label for="password" class="form-label">Password</label>--}}
+{{--                                        <input class="form-control" type="password" required="" id="password" placeholder="Enter your password">--}}
+{{--                                    </div>--}}
+
+{{--                                    <div class="mb-0 text-center">--}}
+{{--                                        <button class="btn btn-primary" type="submit">Log In</button>--}}
+{{--                                    </div>--}}
+{{--                                </form>--}}
+
                                 <div class="text-center w-75 m-auto">
-                                    <img src="/images/users/avatar-1.jpg" height="64" alt="user-image" class="rounded-circle shadow">
-                                    <h4 class="text-dark-50 text-center mt-3 fw-bold">Hi ! Tosha </h4>
-                                    <p class="text-muted mb-4">Enter your password to access the admin.</p>
+                                    @if($config->getFirstMediaUrl('logos'))
+                                        <img src="{{ $config->getFirstMediaUrl('logos') }}" height="64" alt="user-image" class="rounded-circle shadow">
+                                    @endif
+                                    <h4 class="text-dark-50 text-center mt-3 fw-bold">{{$config->name ?? ""}} </h4>
+                                    <p class="text-muted mb-4">Back to Your Dashboard</p>
                                 </div>
 
-                                <form action="#">
-                                    <div class="mb-3">
-                                        <label for="password" class="form-label">Password</label>
-                                        <input class="form-control" type="password" required="" id="password" placeholder="Enter your password">
-                                    </div>
+                                <div class="mb-0 text-center">
+                                    <a class="btn btn-primary" href="{{ route('dashboard')  }}">Home</a>
+                                </div>
 
-                                    <div class="mb-0 text-center">
-                                        <button class="btn btn-primary" type="submit">Log In</button>
-                                    </div>
-                                </form>
-                                
                             </div> <!-- end card-body-->
                         </div>
                         <!-- end card-->
@@ -228,7 +242,7 @@
         <!-- end page -->
 
         <footer class="footer footer-alt fw-medium">
-            <span class="bg-body"><script>document.write(new Date().getFullYear())</script> © Attex - Coderthemes.com</span>
+            <span class="bg-body"><script>document.write(new Date().getFullYear())</script> © SKE</span>
         </footer>
 
     @vite(['resources/js/app.js'])

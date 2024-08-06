@@ -184,11 +184,9 @@
                 <div class="col-xxl-4 col-lg-5">
                     <div class="card">
                         <!-- Logo -->
-                        <div class="card-header py-4 text-center bg-primary">
-                            <a href="{{ route('any', 'index') }}">
-                                <span><img src="/images/logo.png" alt="logo" height="22"></span>
-                            </a>
-                        </div>
+                        <a href="{{ route('any', 'index') }}">
+                            <span style="color: #FFF;font-weight: 600;font-size: 24px">Confirm Mail</span>
+                        </a>
 
                         <div class="card-body p-4">
 

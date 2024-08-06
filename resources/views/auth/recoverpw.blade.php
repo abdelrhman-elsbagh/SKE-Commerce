@@ -188,9 +188,9 @@
                                     <span><img src="/images/logo.png" alt="logo" height="22"></span>
                                 </a>
                             </div>
-                            
+
                             <div class="card-body p-4">
-                                
+
                                 <div class="text-center w-75 m-auto">
                                     <h4 class="text-dark-50 text-center mt-0 fw-bold">Reset Password</h4>
                                     <p class="text-muted mb-4">Enter your email address and we'll send you an email with instructions to reset your password.</p>
@@ -226,9 +226,9 @@
         <!-- end page -->
 
         <footer class="footer footer-alt fw-medium">
-            <span class="bg-body"><script>document.write(new Date().getFullYear())</script> © Attex - Coderthemes.com</span>
+            <span class="bg-body"><script>document.write(new Date().getFullYear())</script> © SKE</span>
         </footer>
-       
+
     @vite(['resources/js/app.js'])
     @include('layouts.shared/footer-script')
 </body>

@@ -18,18 +18,28 @@
                 <!-- Logo -->
                 <div class="auth-brand text-center text-lg-start">
                     <a href="{{ route('any', 'index') }}" class="logo-dark">
-                        <span><img src="/images/logo-dark.png" alt="dark logo" height="22"></span>
+                        <span>
+                             @if($config->getFirstMediaUrl('logos'))
+                                <img src="{{ $config->getFirstMediaUrl('logos') }}" alt="dark logo" height="22">
+                            @endif
+                        </span>
                     </a>
                     <a href="{{ route('any', 'index') }}" class="logo-light">
-                        <span><img src="/images/logo.png" alt="logo" height="22"></span>
+                        <span>
+                            @if($config->getFirstMediaUrl('logos'))
+                                <img src="{{ $config->getFirstMediaUrl('logos') }}" alt="logo" height="22">
+                            @endif
+                        </span>
                     </a>
                 </div>
 
                 <div class="my-auto">
                     <!-- User pic with title-->
                     <div class="text-center w-75 m-auto">
-                        <img src="/images/users/avatar-1.jpg" height="64" alt="user-image" class="rounded-circle shadow">
-                        <h4 class="text-dark-50 text-center mt-3 fw-bold">Hi ! Tosha </h4>
+                        @if($config->getFirstMediaUrl('logos'))
+                            <img src="{{ $config->getFirstMediaUrl('logos') }}" height="64" alt="user-image" class="rounded-circle shadow">
+                        @endif
+                        <h4 class="text-dark-50 text-center mt-3 fw-bold">{{$config->name ?? ""}}</h4>
                         <p class="text-muted mb-4">Enter your password to access the admin.</p>
                     </div>
 

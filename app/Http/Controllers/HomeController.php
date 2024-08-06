@@ -12,6 +12,7 @@ use App\Models\Notification;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderSubItem;
+use App\Models\Partner;
 use App\Models\PaymentMethod;
 use App\Models\Plan;
 use App\Models\Post;
@@ -24,6 +25,7 @@ use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\View;
 use Illuminate\Http\Request;
@@ -400,7 +402,16 @@ class HomeController extends Controller
 
         // Calculate the total price including the fee
         $sub_price = $subItem->price * $currencyPrice;
-        $totalPrice = $sub_price + ($sub_price * $feePercentage / 100);
+        $fe_price = 0;
+
+        try {
+            $fe_price = round($sub_price * $feePercentage / 100, 2);
+        }
+        catch (\Exception $e) {
+            Log::error($e->getMessage());
+        }
+
+        $totalPrice = $sub_price + $fe_price;
 
         // Check if the user has enough balance
         if ($wallet->balance < $totalPrice) {
@@ -436,6 +447,7 @@ class HomeController extends Controller
             'currency_id' => $user->currency_id ?? null,
             'item_id' => $subItem->item->id ?? null,
             'sub_item_id' => $subItem->id ?? null,
+            'revenue' => $fe_price ?? null,
         ]);
 
 
@@ -484,6 +496,25 @@ class HomeController extends Controller
         $paymentMethods = PaymentMethod::with('media')->get();
         return view('front.payment-methods', ['paymentMethods' => $paymentMethods, 'user' => $user]);
     }
+
+    public function partners(Request $request)
+    {
+        $user = Auth::user();
+        $config = Config::with('media')->first();
+        View::share('config', $config);
+
+        $favoritesCount = 0;
+        if ($user) {
+            $favoritesCount = $user->favorites()->count();
+        }
+        View::share('favoritesCount', $favoritesCount);
+
+        $partners = Partner::with('media')->get();
+        $paymentMethods = PaymentMethod::where('status', 'active')->get();
+
+        return view('front.partners', ['partners' => $partners, 'user' => $user, 'paymentMethods' => $paymentMethods]);
+    }
+
 
     public function item(Request $request, $id)
     {

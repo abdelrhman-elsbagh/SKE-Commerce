@@ -186,7 +186,7 @@
                         <!-- Logo -->
                         <div class="card-header py-4 text-center bg-primary">
                             <a href="{{ route('any', 'index') }}">
-                                <span><img src="/images/logo.png" alt="logo" height="22"></span>
+                                <span style="color: #FFF;font-weight: 600;font-size: 24px">Home</span>
                             </a>
                         </div>
 
@@ -218,7 +218,7 @@
         <span class="bg-body">
             <script>
                 document.write(new Date().getFullYear())
-            </script> © Attex - Coderthemes.com
+            </script> © SKE
         </span>
     </footer>
 

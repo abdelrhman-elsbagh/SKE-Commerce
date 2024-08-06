@@ -9,9 +9,9 @@
             @if(isset($item))
                 <div class="uk-width-2-3@l">
                     <div class="">
-                        <div class="widjet__head">
-                            <h3 class="uk-text-lead">Choose the Product</h3>
-                        </div>
+{{--                        <div class="widjet__head">--}}
+{{--                            <h3 class="uk-text-lead">Choose the Product</h3>--}}
+{{--                        </div>--}}
                         <div class="widjet__body" style="position: relative">
                             <form id="subItemForm" method="POST" action="{{ route('purchase') }}">
                                 @csrf
