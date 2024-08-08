@@ -476,24 +476,6 @@
             </li>
 
             <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarCategories" aria-expanded="false" aria-controls="sidebarCategories" class="side-nav-link nav-link">
-                    <i class="ri-folder-line"></i>
-                    <span> Categories </span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="sidebarCategories">
-                    <ul class="side-nav-second-level">
-                        <li>
-                            <a href="{{ route('categories.index') }}" class="nav-link">All Categories</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('categories.create') }}" class="nav-link">Create Category</a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-
-            <li class="side-nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarItems" aria-expanded="false" aria-controls="sidebarItems" class="side-nav-link nav-link">
                     <i class=" ri-app-store-line"></i>
                     <span> Items </span>
@@ -510,25 +492,6 @@
                     </ul>
                 </div>
             </li>
-
-            <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarPosts" aria-expanded="false" aria-controls="sidebarItems" class="side-nav-link nav-link">
-                    <i class="ri-add-circle-line"></i>
-                    <span> Agents </span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="sidebarPosts">
-                    <ul class="side-nav-second-level">
-                        <li>
-                            <a href="{{ route('partners.index') }}" class="nav-link">All Partners</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('partners.create') }}" class="nav-link">Create Partner</a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-
 
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarPosts" aria-expanded="false" aria-controls="sidebarItems" class="side-nav-link nav-link">
@@ -675,7 +638,41 @@
                 </a>
             </li>
 
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarCategories" aria-expanded="false" aria-controls="sidebarCategories" class="side-nav-link nav-link">
+                    <i class="ri-folder-line"></i>
+                    <span> Categories </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarCategories">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('categories.index') }}" class="nav-link">All Categories</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('categories.create') }}" class="nav-link">Create Category</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
 
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarPosts" aria-expanded="false" aria-controls="sidebarItems" class="side-nav-link nav-link">
+                    <i class="ri-add-circle-line"></i>
+                    <span> Agents </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarPosts">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('partners.index') }}" class="nav-link">All Partners</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('partners.create') }}" class="nav-link">Create Partner</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
 
             <li class="side-nav-item">
                 <a href="{{ route('configs.edit') }}" class="side-nav-link">

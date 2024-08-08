@@ -3,9 +3,9 @@
 @section('css')
     @vite([
         'node_modules/jquery-toast-plugin/dist/jquery.toast.min.css',
-        'node_modules/quill/dist/quill.core.css',
-        'node_modules/quill/dist/quill.snow.css'
     ])
+    <!-- Quill.js CSS via CDN -->
+    <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -43,12 +43,29 @@
     @vite([
         'node_modules/jquery-toast-plugin/dist/jquery.toast.min.js',
     ])
+    <!-- Quill.js JS via CDN -->
+    <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
 
     <script>
         $(document).ready(function() {
-            // Initialize Quill editor
+            // Initialize Quill editor with a rich toolbar
             var quill = new Quill('#snow-editor', {
-                theme: 'snow'
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        [{ 'font': [] }, { 'size': ['small', false, 'large', 'huge'] }],  // custom font and size
+                        ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+                        [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+                        [{ 'script': 'sub' }, { 'script': 'super' }],     // superscript/subscript
+                        [{ 'header': 1 }, { 'header': 2 }, 'blockquote', 'code-block'],  // headers and block quote
+                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],    // lists
+                        [{ 'indent': '-1' }, { 'indent': '+1' }],         // outdent/indent
+                        [{ 'direction': 'rtl' }],                         // text direction
+                        [{ 'align': [] }],                                // text alignment
+                        ['link', 'image', 'video'],                       // link, image and video
+                        ['clean']                                         // remove formatting button
+                    ]
+                }
             });
 
             // Update hidden input field whenever content changes
@@ -80,7 +97,7 @@
                             position: 'top-right',
                             hideAfter: 3000,
                             afterHidden: function () {
-                                window.location.href = "{{ route('terms.edit') }}";
+                                window.location.href = "{{ route('terms.edit', $termsConditions->id) }}";
                             }
                         });
                     },

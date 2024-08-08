@@ -14,7 +14,7 @@
                                 <h3 class="uk-card-title">{{ $method->gateway }}</h3>
                             </div>
                             <div class="uk-card-body uk-flex-1">
-                                <p class="description">{!! $method->description !!}</p>
+                                <div class="description payment-desc">{!! $method->description !!}</div>
                                 @if($method->getFirstMediaUrl('payment_method_images'))
                                     <img src="{{ $method->getFirstMediaUrl('payment_method_images') }}" alt="{{ $method->gateway }}" class="" style="max-height: 300px;border-radius: 10px">
                                 @else

@@ -15,10 +15,37 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Marcellus&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
     <style>
         .js-select{
             width: 100% !important;
+        }
+        .custom-select-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .custom-select {
+            width: 100%;
+            border-radius: 8px;
+            background: #F5F5F5;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            padding-right: 30px; /* Make space for the arrow */
+        }
+
+        .custom-select-wrapper::after {
+            content: "\f078"; /* Font Awesome's down arrow */
+            font-family: "Font Awesome 5 Free"; /* Use Font Awesome's free version */
+            font-weight: 900; /* Ensure it's using the correct font weight */
+            position: absolute;
+            top: 50%;
+            right: 10px; /* Adjust the right position to place arrow inside the padding space */
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #999; /* Light gray color for the arrow */
         }
     </style>
 
@@ -62,12 +89,21 @@
                                 <div class="uk-text-danger" id="error-phone"></div>
                             </div>
                             <div class="uk-margin">
-                                <select class="uk-select js-select" name="currency_id" style="width: 100%">
-                                    @foreach($currencies as $currency)
-                                        <option value="{{ $currency->id }}">{{ $currency->currency }}</option>
-                                    @endforeach
-                                </select>
+                                <div class="custom-select-wrapper">
+                                    <select class="uk-select custom-select" name="currency_id">
+                                        @foreach($currencies as $currency)
+                                            <option value="{{ $currency->id }}">{{ $currency->currency }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                                 <div class="uk-text-danger" id="error-currency_id"></div>
+                            </div>
+
+                            <div class="uk-margin">
+                                <div class="custom-select-wrapper">
+                                    <select class="uk-select custom-select" name="country" id="country"></select>
+                                </div>
+                                <div class="uk-text-danger" id="error-country"></div>
                             </div>
 
                             <div class="uk-margin">
@@ -97,6 +133,15 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script>
     $(document).ready(function() {
+        // Load countries from JSON file
+        $.getJSON('{{ asset("assets/countries.json") }}', function(data) {
+            var $countrySelect = $('#country');
+
+            $.each(data, function(key, entry) {
+                $countrySelect.append($('<option></option>').attr('value', entry.name).text(entry.name));
+            });
+        });
+
         $('#registrationForm').submit(function(e) {
             e.preventDefault();
             $('div.uk-text-danger').empty(); // Clear previous errors
@@ -126,5 +171,3 @@
 </script>
 <script src="{{ asset('assets/js/libs.js') }}"></script>
 <script src="{{ asset('assets/js/main.js') }}"></script>
-</body>
-</html>

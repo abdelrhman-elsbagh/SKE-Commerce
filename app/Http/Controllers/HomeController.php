@@ -235,6 +235,8 @@ class HomeController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'phone' => 'required|numeric',
+            'country' => 'required|string',
+            'currency_id' => 'required',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
@@ -247,6 +249,7 @@ class HomeController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'currency_id' => $request->currency_id,
+            'address' => $request->country,
             'password' => Hash::make($request->password),
             'status' => 'inactive',
         ]);
@@ -590,6 +593,7 @@ class HomeController extends Controller
             'business_name' => 'required|string|max:255',
             'phone' => 'required|string|max:15',
             'address' => 'required|string|max:255',
+            'country' => 'required|string|max:255',
         ]);
 
         $user =  BusinessClient::create([
@@ -599,6 +603,7 @@ class HomeController extends Controller
             'business_name' => $request->business_name,
             'phone' => $request->phone,
             'address' => $request->address,
+            'country' => $request->country,
         ]);
 
         BusinessClientWallet::create([

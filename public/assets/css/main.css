@@ -4733,7 +4733,7 @@ body.dark-theme #modal-help ul li {
     }
 
     .page-header__content {
-        padding: 0 15px 0 10px;
+        /*padding: 0 15px 0 10px;*/
     }
 
     .search__btn {
@@ -5880,8 +5880,8 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
     font-weight: 600;
 }
 .pr8{
-    padding-right: 15px;
-}
+    margin-right: 9px;
+    padding-right: 5px;}
 #buyNowButton:disabled:hover {
     background-color: #FFF; /* Ensure the hover state doesn't change the color */
 }
@@ -6038,4 +6038,70 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
     align-items: center; /* Centers the image vertically */
     padding: 0; /* Adjust padding as needed */
     max-width: 100%; /* Ensures the image container doesn't exceed the parent div */
+}
+
+.facebook-icon {
+    background-color: #3b5998;
+    color: white;
+}
+.whatsapp-icon {
+    background-color: #25D366;
+    color: white;
+}
+.instagram-icon {
+    background-color: #E1306C;
+    color: white;
+}
+.telegram-icon {
+    background-color: #0088cc;
+    color: white;
+}
+.uk-card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.uk-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.uk-card-footer .social-icons {
+    display: flex;
+    gap: 10px;
+}
+.uk-card-footer .social-icons a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: white;
+    text-decoration: none;
+}
+.uk-card-footer .social-icons a .fab {
+    font-size: 1.5rem;
+}
+
+.bold{
+    font-weight: 900;
+}
+
+@media (min-width: 1200px) {
+    .uk-card-footer {
+        padding: 20px 20px;
+    }
+}
+
+.partner-card{
+    border-radius: 8px;
+}
+
+.agent-desc *,
+.payment-desc *{
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
 }

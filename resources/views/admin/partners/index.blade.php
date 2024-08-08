@@ -1,4 +1,4 @@
-@extends('layouts.vertical', ['page_title' => 'Partners'])
+@extends('layouts.vertical', ['page_title' => 'Agents'])
 
 @section('css')
     @vite([
@@ -13,7 +13,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box">
-                    <h4 class="page-title">Partners</h4>
+                    <h4 class="page-title">Agents</h4>
                 </div>
             </div>
         </div>
@@ -22,7 +22,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="header-title">Partners</h4>
+                        <h4 class="header-title">Agents</h4>
                         <table id="basic-datatable" class="table table-striped table-bordered dt-responsive nowrap">
                             <thead>
                             <tr>
@@ -31,6 +31,8 @@
                                 <th>Description</th>
                                 <th>Facebook <i class="ri-facebook-circle-fill" style="color: #3b5998;"></i></th>
                                 <th>Whatsapp <i class="ri-whatsapp-line" style="color: #25D366;"></i></th>
+                                <th>Instagram <i class="ri-instagram-line" style="color: #E4405F;"></i></th>
+                                <th>Telegram <i class="ri-telegram-line" style="color: #0088cc;"></i></th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
@@ -39,18 +41,32 @@
                                 <tr id="partner-{{ $partner->id }}">
                                     <td>{{ $partner->id }}</td>
                                     <td>{{ $partner->name ?? "" }}</td>
-                                    <td>{{ \Illuminate\Support\Str::limit($partner->description, 70, '...') }}</td>
+                                    <td>{!! \Illuminate\Support\Str::limit($partner->description, 70, '...') !!}</td>
                                     <td>
                                         @if($partner->facebook)
-                                            <a href="{{ $partner->facebook }}" target="_blank">
-                                                {{ $partner->facebook ?? "" }}
+                                            <a href="{{ $partner->facebook }}" target="_blank" class="badge bg-info-subtle text-info rounded-pill">
+                                                {{ $partner->facebook }}
                                             </a>
                                         @endif
                                     </td>
                                     <td>
                                         @if($partner->whatsapp)
-                                            <a href="https://wa.me/{{ $partner->whatsapp }}" target="_blank">
-                                                {{ $partner->whatsapp ?? "" }}
+                                            <a href="https://wa.me/{{ $partner->whatsapp }}" target="_blank" class="badge bg-success-subtle text-success rounded-pill">
+                                                {{ $partner->whatsapp }}
+                                            </a>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($partner->insta)
+                                            <a href="{{ $partner->insta }}" target="_blank" class="badge bg-danger-subtle text-danger rounded-pill">
+                                                {{ $partner->insta }}
+                                            </a>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($partner->telegram)
+                                            <a href="https://t.me/{{ $partner->telegram }}" target="_blank" class="badge bg-primary-subtle text-primary rounded-pill">
+                                                {{ $partner->telegram }}
                                             </a>
                                         @endif
                                     </td>
@@ -124,7 +140,7 @@
                         $.toast().reset('all'); // Reset previous toasts
                         $.toast({
                             heading: 'Success',
-                            text: 'Partner deleted successfully.',
+                            text: 'Agent deleted successfully.',
                             icon: 'success',
                             loader: true,
                             loaderBg: '#f96868',
@@ -137,7 +153,7 @@
                         $.toast().reset('all'); // Reset previous toasts
                         $.toast({
                             heading: 'Error',
-                            text: 'An error occurred while deleting the partner.',
+                            text: 'An error occurred while deleting the agent.',
                             icon: 'error',
                             loader: true,
                             loaderBg: '#f96868',

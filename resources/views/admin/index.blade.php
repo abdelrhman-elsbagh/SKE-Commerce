@@ -30,9 +30,9 @@
                         <div class="d-flex justify-content-between">
                             <div class="flex-grow-1 overflow-hidden">
                                 <h2 class="text-muted fw-normal mt-0" title="Number of Customers">{{ $customersCount }}</h2>
-                                <h5 class="">Active: {{ $activeUsersCount }}</h5>
-                                <h5 class="">Partner: 0</h5>
-                                <h5 class="mb-0">Inactive: {{ $inactiveUsersCount }}</h5>
+                                <h5 class=""> <span class="badge bg-success-subtle text-success rounded-pill">Active:</span>  {{ $activeUsersCount }}</h5>
+                                <h5 class=""><span class="badge bg-info-subtle text-info rounded-pill">Partner:</span> 0</h5>
+                                <h5 class="mb-0"><span class="badge bg-danger-subtle text-danger rounded-pill">Inactive:</span> {{ $inactiveUsersCount }}</h5>
                             </div>
                             <div class="flex-shrink-0">
                                 <div id="widget-customers" class="apex-charts" data-colors="#47ad77,#e3e9ee"></div>
@@ -48,8 +48,8 @@
                         <div class="d-flex justify-content-between">
                             <div class="flex-grow-1 overflow-hidden">
                                 <h2 class="text-muted fw-normal mt-0" title="Number of Orders">{{ $ordersCount }}</h2>
-                                <h5 class="">Active: {{ $activeOrdersCount }}</h5>
-                                <h5 class="mb-0">Refunded: {{ $refundedOrdersCount }}</h5>
+                                <h5 class=""><span class="badge bg-success-subtle text-success rounded-pill">Active:</span> {{ $activeOrdersCount }}</h5>
+                                <h5 class="mb-0"><span class="badge bg-danger-subtle text-danger rounded-pill">Refunded:</span> {{ $refundedOrdersCount }}</h5>
                             </div>
                             <div class="flex-shrink-0">
                                 <div id="widget-orders" class="apex-charts" data-colors="#3e60d5,#e3e9ee"></div>
@@ -112,7 +112,25 @@
                                         <td>{{ $subItem->item->name ?? "" }}</td>
                                         <td>{{ $subItem->name ?? "" }}</td>
                                         <td>USD {{ number_format($subItem->price, 2) }}</td>
-                                        <td>{{ ucfirst($subItem->item->status) ?? "" }}</td>
+
+                                        <td>
+                                            @if($subItem->item->status == 'canceled' || $subItem->item->status == 'refunded')
+                                                <span class="badge bg-danger-subtle text-danger rounded-pill">
+                                                {{ ucfirst($subItem->item->status) }}
+                                                <i class="ri-close-circle-line ms-1 fs-14"></i>
+                                            </span>
+                                            @elseif($subItem->item->status == 'active')
+                                                <span class="badge bg-success-subtle text-success rounded-pill">
+                                                {{ ucfirst($subItem->item->status) }}
+                                                <i class="bi bi-check2-circle ms-1 fs-14"></i>
+                                            </span>
+                                            @else
+                                                <span class="badge bg-secondary-subtle text-warning rounded-pill">
+                                                {{ ucfirst($subItem->item->status) }}
+                                                <i class="bi bi-clock-history ms-1 fs-14"></i>
+                                            </span>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @endforeach
                                 </tbody>
@@ -189,7 +207,25 @@
                                         <td>{{ $order->id }}</td>
                                         <td>{{ $order->user->name }}</td>
                                         <td>{{ $order->currency->currency ?? 'USD' }} {{ number_format($order->total, 2) }}</td>
-                                        <td>{{ ucfirst($order->status) }}</td>
+
+                                        <td>
+                                            @if($order->status == 'canceled' || $order->status == 'refunded')
+                                                <span class="badge bg-danger-subtle text-danger rounded-pill">
+                                                {{ ucfirst($order->status) }}
+                                                <i class="ri-close-circle-line ms-1 fs-14"></i>
+                                            </span>
+                                            @elseif($order->status == 'active')
+                                                <span class="badge bg-success-subtle text-success rounded-pill">
+                                                {{ ucfirst($order->status) }}
+                                                <i class="bi bi-check2-circle ms-1 fs-14"></i>
+                                            </span>
+                                            @else
+                                                <span class="badge bg-secondary-subtle text-warning rounded-pill">
+                                                {{ ucfirst($order->status) }}
+                                                <i class="bi bi-clock-history ms-1 fs-14"></i>
+                                            </span>
+                                            @endif
+                                        </td>
                                         <td>{{ $order->created_at->format('d M, Y - H:i') }}</td>
                                     </tr>
                                 @endforeach

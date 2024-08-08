@@ -251,8 +251,8 @@
                     @endif
 
                     @auth('business_client')
-                        <li id="business-wallet"><a href="{{route('business-wallet')}}"><i class="ico_wallet"></i><span>Wallet</span></a></li>
-                        <li id="business-profile"><a href="{{route('business-profile')}}"><i class="ico_profile"></i><span>Profile</span></a></li>
+                            <li id="business-profile"><a href="{{route('business-profile')}}"><i class="ico_profile"></i><span>Profile</span></a></li>
+                            <li id="business-wallet"><a href="{{route('business-wallet')}}"><i class="ico_wallet"></i><span>Wallet</span></a></li>
                         <li id="plans"><a href="{{ route('plans-page') }}"><i class="fas fa-box-open"></i><span>Plans</span></a></li>
                         <li>
                             <a href="{{ route('logout') }}"
@@ -267,14 +267,23 @@
                         @if(Auth::user()->hasRole('Admin'))
                             <li id="dashboard"><a href="{{route('dashboard')}}"><i class="ico_profile"></i><span>Admin Dashboard</span></a></li>
                         @else
-                            <li id="home"><a href="{{route('home')}}"><i class="ico_store"></i><span>Home</span></a></li>
-                            <li id="profile"><a href="{{route('profile')}}"><i class="ico_profile"></i><span>Profile</span></a></li>
-                            <li id="favourites"><a href="{{route('favourites')}}"><i class="ico_favourites"></i><span>Favourites</span><span class="count">{{$favoritesCount}}</span></a></li>
-                            <li id="wallet"><a href="{{route('wallet')}}"><i class="ico_wallet"></i><span>Wallet</span></a></li>
-                            <li id="posts"><a href="{{route('posts')}}"><i class="fa fa-tag pr8"></i><span>Posts</span></a></li>
-                            <li id="partners"><a href="{{route('partners')}}"><i style="font-size: 15px" class="fas fa-id-badge pr8"></i><span>Agents</span></a></li>
-                            <li id="purchase-request"><a href="#modal-purchase-request" data-uk-toggle><i class="fas fa-money-bill-wave pr8" style="font-size: 16px;"></i><span>Purchase Request</span></a></li>
-                            <li id="payment-methods"><a href="{{ route('payments-page') }}"><i class="fas fa-credit-card pr8"></i><span>Payment Methods</span></a></li>
+                                <li id="profile"><a href="{{route('profile')}}"><i class="ico_profile"></i><span>Profile</span></a></li>
+                                <li id="home"><a href="{{route('home')}}"><i class="ico_store"></i><span>Home</span></a></li>
+                                <li id="wallet"><a href="{{route('wallet')}}"><i class="ico_wallet"></i><span>Wallet</span></a></li>
+                                <li id="purchase-request"><a href="#modal-purchase-request" data-uk-toggle>
+                                        <i class="fas fa-money-bill-wave pr8" style="font-size: 16px;padding-right: 0"></i><span>Purchase Request</span></a>
+                                </li>
+                                <li id="payment-methods"><a href="{{ route('payments-page') }}"><i class="fas fa-credit-card pr8"></i><span>Payment Methods</span></a></li>
+
+                                <li id="partners"><a href="{{route('partners')}}">
+                                        <i style="font-size: 18px" class="fas fa-id-badge pr8"></i>
+                                        <span style="font-size: 13px">Agents</span></a>
+                                </li>
+                                <li id="posts"><a href="{{route('posts')}}">
+                                        <i style="font-size: 18px" class="fa fa-tag pr8"></i>
+                                        <span style="font-size: 13px">Posts</span></a>
+                                </li>
+                                <li id="favourites"><a href="{{route('favourites')}}"><i class="ico_favourites"></i><span>Favourites</span><span class="count">{{$favoritesCount}}</span></a></li>
                         @endif
                         <li>
                             <a href="{{ route('logout') }}"

@@ -34,7 +34,9 @@ class PartnerController extends Controller
             'description' => 'nullable|string',
             'facebook' => 'nullable|string',
             'whatsapp' => 'nullable|string',
-            'partner_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'insta' => 'nullable|string',
+            'telegram' => 'nullable|string',
+            'partner_image' => 'nullable|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         $partner = Partner::create([
@@ -42,13 +44,15 @@ class PartnerController extends Controller
             'description' => $request->description,
             'facebook' => $request->facebook,
             'whatsapp' => $request->whatsapp,
+            'insta' => $request->insta,
+            'telegram' => $request->telegram,
         ]);
 
         if ($request->hasFile('partner_image')) {
             $partner->addMedia($request->file('partner_image'))->toMediaCollection('partner_images');
         }
 
-        return redirect()->route('partners.index')->with('success', 'Partner created successfully.');
+        return redirect()->route('partners.index')->with('success', 'Agent created successfully.');
     }
 
     public function show($id)
@@ -70,7 +74,9 @@ class PartnerController extends Controller
             'description' => 'nullable|string',
             'facebook' => 'nullable|string',
             'whatsapp' => 'nullable|string',
-            'partner_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'insta' => 'nullable|string',
+            'telegram' => 'nullable|string',
+            'partner_image' => 'nullable|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         $partner = Partner::findOrFail($id);
@@ -80,6 +86,8 @@ class PartnerController extends Controller
             'description' => $request->description,
             'facebook' => $request->facebook,
             'whatsapp' => $request->whatsapp,
+            'insta' => $request->insta,
+            'telegram' => $request->telegram,
         ]);
 
         if ($request->hasFile('partner_image')) {
@@ -87,13 +95,13 @@ class PartnerController extends Controller
             $partner->addMedia($request->file('partner_image'))->toMediaCollection('partner_images');
         }
 
-        return redirect()->route('partners.index')->with('success', 'Partner updated successfully.');
+        return redirect()->route('partners.index')->with('success', 'Agent updated successfully.');
     }
 
     public function destroy($id)
     {
         $partner = Partner::findOrFail($id);
         $partner->delete();
-        return redirect()->route('partners.index')->with('success', 'Partner deleted successfully.');
+        return redirect()->route('partners.index')->with('success', 'Agent deleted successfully.');
     }
 }

@@ -6,6 +6,7 @@ use App\Models\Currency;
 use App\Models\FeeGroup;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
@@ -172,5 +173,50 @@ class UserController extends Controller
         $user->delete();
 
         return redirect()->route('users.index')->with('success', 'User deleted successfully.');
+    }
+
+    public function editProfile()
+    {
+        $user = Auth::user();
+        $roles = Role::all();
+        $feeGroups = FeeGroup::all();
+
+        return view('admin.profile.edit', compact('user', 'roles', 'feeGroups'));
+    }
+
+    // Update the current user's profile
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'password' => 'nullable|string|min:8|confirmed',
+            'bio' => 'nullable|string',
+            'address' => 'nullable|string|max:255',
+            'avatar' => 'nullable|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'bio' => $request->bio,
+            'address' => $request->address,
+            'date_of_birth' => $request->date_of_birth,
+        ]);
+
+        if ($request->password) {
+            $user->update([
+                'password' => Hash::make($request->password),
+            ]);
+        }
+
+        if ($request->hasFile('avatar')) {
+            $user->clearMediaCollection('avatars');
+            $user->addMedia($request->file('avatar'))->toMediaCollection('avatars');
+        }
+
+        return redirect()->route('profile.edit')->with('success', 'Profile updated successfully.');
     }
 }

@@ -1,11 +1,11 @@
-@extends('layouts.vertical', ['page_title' => 'Partner Details'])
+@extends('layouts.vertical', ['page_title' => 'Agents Details'])
 
 @section('content')
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box">
-                    <h4 class="page-title">Partner Details</h4>
+                    <h4 class="page-title">Agents Details</h4>
                 </div>
             </div>
         </div>
@@ -20,7 +20,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="description" class="form-label">Description</label>
-                            <p id="description">{{ $partner->description }}</p>
+                            <p id="description">{!! $partner->description !!}</p>
                         </div>
                         <div class="mb-3">
                             <label for="facebook" class="form-label">Facebook</label>
@@ -29,6 +29,14 @@
                         <div class="mb-3">
                             <label for="whatsapp" class="form-label">Whatsapp</label>
                             <p id="whatsapp">{{ $partner->whatsapp }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <label for="insta" class="form-label">Instagram</label>
+                            <p id="insta">{{ $partner->insta }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <label for="telegram" class="form-label">Telegram</label>
+                            <p id="telegram">{{ $partner->telegram }}</p>
                         </div>
                         <div class="mb-3">
                             <label for="image" class="form-label">Image</label>

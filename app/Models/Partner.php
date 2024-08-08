@@ -16,6 +16,8 @@ class Partner extends Model implements HasMedia
         'description',
         'facebook',
         'whatsapp',
+        'insta',
+        'telegram',
     ];
 
     public function registerMediaCollections(): void
