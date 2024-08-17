@@ -1,4 +1,4 @@
-@extends('layouts.vertical', ['page_title' => 'Posts'])
+@extends('layouts.vertical', ['page_title' => 'Clients'])
 
 @section('css')
     @vite([
@@ -13,39 +13,47 @@
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box">
-                    <h4 class="page-title">Posts</h4>
+                    <h4 class="page-title">Clients</h4>
                 </div>
             </div>
         </div>
 
         <div class="row">
-            <div class="col-lg-12">
+            <div class="col-12">
                 <div class="card">
-                    <div class="card-body res-table-card">
-                        <a href="{{ route('posts.create') }}" class="btn btn-primary mb-3">Create Post</a>
+                    <div class="card-body">
+                        <h4 class="header-title">Clients</h4>
                         <table id="basic-datatable" class="table table-striped table-bordered dt-responsive nowrap">
                             <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Title</th>
-                                <th>Description</th>
-                                <th>Likes</th>
-                                <th>Dislikes</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Currencies</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach($posts as $post)
-                                <tr id="post-{{ $post->id }}">
-                                    <td>{{ $post->id }}</td>
-                                    <td>{{ $post->title }}</td>
-                                    <td>{!! \Illuminate\Support\Str::limit($post->description, 70, '...') !!}</td>
-                                    <td>{{ $post->likes_count }}</td>
-                                    <td>{{ $post->dislikes_count }}</td>
+                            @foreach($clients as $client)
+                                <tr id="client-{{ $client->id }}">
+                                    <td>{{ $client->id }}</td>
+                                    <td>{{ $client->name }}</td>
+                                    <td>{{ $client->email }}</td>
+                                    <td>{{ $client->phone }}</td>
                                     <td>
-                                        <a href="{{ route('posts.show', $post->id) }}" class="btn btn-info"><i class="ri-eye-line"></i></a>
-                                        <a href="{{ route('posts.edit', $post->id) }}" class="btn btn-warning"><i class="ri-edit-box-fill"></i></a>
-                                        <button class="btn btn-danger btn-delete" data-id="{{ $post->id }}"><i class="ri-delete-bin-5-line"></i></button>
+                                        @if($client->currencies->isNotEmpty())
+                                            @foreach($client->currencies as $currency)
+                                                <span class="badge bg-info">{{ $currency->currency }}</span>
+                                            @endforeach
+                                        @else
+                                            No Currencies
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('clients.show', $client->id) }}" class="btn btn-info"><i class="ri-eye-line"></i></a>
+                                        <a href="{{ route('clients.edit', $client->id) }}" class="btn btn-warning"><i class="ri-edit-box-fill"></i></a>
+                                        <button class="btn btn-danger btn-delete" data-id="{{ $client->id }}"><i class="ri-delete-bin-5-line"></i></button>
                                     </td>
                                 </tr>
                             @endforeach
@@ -68,7 +76,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    Are you sure you want to delete this post?
+                    Are you sure you want to delete this client?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -89,17 +97,16 @@
 @section('admin-script')
     <script>
         $(document).ready(function() {
-            var postIdToDelete;
+            var clientIdToDelete;
 
-            // Ensure click event handler is attached only once using event delegation
             $(document).on('click', '.btn-delete', function() {
-                postIdToDelete = $(this).data('id');
+                clientIdToDelete = $(this).data('id');
                 $('#deleteModal').modal('show');
             });
 
             $('#confirmDelete').on('click', function() {
                 $.ajax({
-                    url: '{{ route('posts.index') }}/' + postIdToDelete,
+                    url: '{{ route('clients.index') }}/' + clientIdToDelete,
                     type: 'POST',
                     data: {
                         _method: 'DELETE',
@@ -107,12 +114,11 @@
                     },
                     success: function(result) {
                         $('#deleteModal').modal('hide');
-                        $('#post-' + postIdToDelete).remove();
-                        // Show success message
-                        $.toast().reset('all'); // Reset previous toasts
+                        $('#client-' + clientIdToDelete).remove();
+                        $.toast().reset('all');
                         $.toast({
                             heading: 'Success',
-                            text: 'Post deleted successfully.',
+                            text: 'Client deleted successfully.',
                             icon: 'success',
                             loader: true,
                             loaderBg: '#f96868',
@@ -121,11 +127,10 @@
                         });
                     },
                     error: function(err) {
-                        // Show error message
-                        $.toast().reset('all'); // Reset previous toasts
+                        $.toast().reset('all');
                         $.toast({
                             heading: 'Error',
-                            text: 'An error occurred while deleting the post.',
+                            text: 'An error occurred while deleting the client.',
                             icon: 'error',
                             loader: true,
                             loaderBg: '#f96868',
@@ -136,6 +141,5 @@
                 });
             });
         });
-
     </script>
 @endsection

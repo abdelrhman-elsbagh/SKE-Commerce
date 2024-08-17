@@ -46,14 +46,14 @@
             </div>
         </div>
 
-        <div class="uk-grid uk-child-width-1-6@xl uk-child-width-1-5@m uk-child-width-1-3@s uk-grid-small" data-uk-grid id="items-container">
+        <div class="uk-grid uk-child-width-1-6@xl uk-child-width-1-5@m uk-child-width-1-3 uk-grid-small" data-uk-grid id="items-container">
             @foreach ($categorizedItems as $categoryName => $items)
                 <div class="uk-width-1-1">
                     <h3 class="category-title">{{ $categoryName }}</h3>
-                    <div class="uk-grid uk-child-width-1-6@xl uk-child-width-1-5@m uk-child-width-1-3@s uk-grid-small">
+                    <div class="uk-grid uk-child-width-1-6@xl uk-child-width-1-5@m uk-child-width-1-3 uk-grid-small">
                         @foreach ($items as $item)
-                            <div class="uk-width-1-6@xl uk-width-1-5@m uk-width-1-3@s item-card" data-name="{{ strtolower($item->name) }}" style="margin-top: 15px;">
-                                <div class="game-card " style="overflow: hidden">
+                            <div class="uk-width-1-6@xl uk-width-1-5@m uk-width-1-3 item-card" data-name="{{ strtolower($item->name) }}" style="margin-top: 15px;">
+                                <div class="game-card" style="overflow: hidden">
                                     <div class="game-card__box game-card {{ $item->status == 'inactive' ? 'inactive' : '' }}">
                                         <div class="game-card__media">
                                             <a href="{{ $item->status == 'active' ? route('item.show', ['id' => $item->id]) : '#' }}" class="{{ $item->status == 'inactive' ? 'disabled-link' : '' }}">
@@ -66,7 +66,7 @@
                                         </div>
                                         <div class="game-card__info">
                                             <a class="game-card__title" style="padding-bottom: 0; margin-bottom: 0;" href="{{ $item->status == 'active' ? route('item.show', ['id' => $item->id]) : '#' }}">{{ $item->name }}</a>
-                                            @if(!empty($item->title) && ( $item->title_type == 'default' || $item->title_type == 'new'))
+                                            @if(!empty($item->title) && ($item->title_type == 'default' || $item->title_type == 'new'))
                                                 <div class="card-tag {{ $item->title_type == 'discount' ? 'card-tag-discount' : ($item->title_type == 'new' ? 'card-tag-new' : '') }}">{{ $item->title }}</div>
                                             @endif
                                         </div>

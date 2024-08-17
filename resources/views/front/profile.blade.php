@@ -20,7 +20,7 @@
                                 @endif
                             </div>
                             <div class="user-info__box">
-                                <div class="user-info__title">#{{ $user->id }}</div>
+                                <div class="user-info__title user-info__id">#{{ $user->id }}</div>
                                 <div class="user-info__title">{{ $user->name }}</div>
                                 <div class="user-info__text">{{ $user->address }}, Member since {{ $user->created_at->format('F Y') }}</div>
                             </div>

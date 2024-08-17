@@ -21,7 +21,7 @@
                             </div>
                             <div class="game-card__info">
                                 <a class="game-card__title" style="padding-bottom: 0; margin-bottom: 0;">{{ $post->title }}</a>
-                                <p style="font-size: 12px;padding: 0;margin-top: 8px;">{{ \Illuminate\Support\Str::limit($post->description, 300) ?? "" }}</p>
+                                <section class="post-desc">{!! \Illuminate\Support\Str::limit($post->description, 300) !!}</section>
                                 <p class="card__info" style="margin-top: 0;padding-top: 0;margin-bottom: 0">
                                     {{ $post->created_at  }}
                                 </p>
@@ -49,7 +49,7 @@
                 <div class="uk-background-cover" id="post-modal-image" style="background-image: url('');" uk-height-viewport></div>
                 <div class="uk-padding-large">
                     <h1 id="post-modal-title"></h1>
-                    <p id="post-modal-description"></p>
+                    <div id="post-modal-description"></div>
                 </div>
             </div>
         </div>
@@ -74,7 +74,7 @@
                         const image = this.getAttribute('data-image');
 
                         document.getElementById('post-modal-title').innerText = title;
-                        document.getElementById('post-modal-description').innerText = description;
+                        document.getElementById('post-modal-description').innerHTML = description; // Use innerHTML to render styled content
                         document.getElementById('post-modal-image').style.backgroundImage = `url(${image})`;
 
                         UIkit.modal('#post-modal').show();
@@ -208,6 +208,18 @@
             border: none;
             cursor: pointer;
             color: #f46119;
+        }
+
+        /* Fixes for grid alignment issues */
+        #posts-container .post-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        #posts-container .uk-grid {
+            margin-left: 0;
+            margin-right: 0;
         }
     </style>
 @endsection

@@ -16,12 +16,12 @@ class Order extends Model
         'currency_id', 'item_id', 'sub_item_id', 'revenue'
     ];
 
-    /*public function currency()
+    public function currency()
     {
         return $this->belongsTo(Currency::class);
     }
 
-    public function item()
+   /* public function item()
     {
         return $this->belongsTo(Item::class);
     }

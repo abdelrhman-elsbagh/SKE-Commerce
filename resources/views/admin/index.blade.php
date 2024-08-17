@@ -29,14 +29,15 @@
                     <div class="card-body statstic-card">
                         <div class="d-flex justify-content-between">
                             <div class="flex-grow-1 overflow-hidden">
-                                <h2 class="text-muted fw-normal mt-0" title="Number of Customers">{{ $customersCount }}</h2>
+                                <h4 class="text-muted fw-normal mt-0" title="Total Customers">Customers</h4>
+                                <h2 class="mt-0" title="Number of Customers">{{ $customersCount }}</h2>
                                 <h5 class=""> <span class="badge bg-success-subtle text-success rounded-pill">Active:</span>  {{ $activeUsersCount }}</h5>
                                 <h5 class=""><span class="badge bg-info-subtle text-info rounded-pill">Partner:</span> 0</h5>
                                 <h5 class="mb-0"><span class="badge bg-danger-subtle text-danger rounded-pill">Inactive:</span> {{ $inactiveUsersCount }}</h5>
                             </div>
-                            <div class="flex-shrink-0">
-                                <div id="widget-customers" class="apex-charts" data-colors="#47ad77,#e3e9ee"></div>
-                            </div>
+{{--                            <div class="flex-shrink-0">--}}
+{{--                                <div id="widget-customers" class="apex-charts" data-colors="#47ad77,#e3e9ee"></div>--}}
+{{--                            </div>--}}
                         </div>
                     </div> <!-- end card-body-->
                 </div> <!-- end card-->
@@ -47,13 +48,15 @@
                     <div class="card-body statstic-card">
                         <div class="d-flex justify-content-between">
                             <div class="flex-grow-1 overflow-hidden">
-                                <h2 class="text-muted fw-normal mt-0" title="Number of Orders">{{ $ordersCount }}</h2>
+                                <h4 class="text-muted fw-normal mt-0" title="Total Orders">Orders</h4>
+                                <h2 class="mt-0" title="Number of Orders">{{ $ordersCount }}</h2>
                                 <h5 class=""><span class="badge bg-success-subtle text-success rounded-pill">Active:</span> {{ $activeOrdersCount }}</h5>
-                                <h5 class="mb-0"><span class="badge bg-danger-subtle text-danger rounded-pill">Refunded:</span> {{ $refundedOrdersCount }}</h5>
+                                <h5 class=""><span class="badge bg-danger-subtle text-danger rounded-pill">Refunded:</span> {{ $refundedOrdersCount }}</h5>
+                                <h5 class="mb-0"><span class="badge bg-warning-subtle text-warning rounded-pill">Pending:</span> {{ $pendingOrdersCount }}</h5>
                             </div>
-                            <div class="flex-shrink-0">
-                                <div id="widget-orders" class="apex-charts" data-colors="#3e60d5,#e3e9ee"></div>
-                            </div>
+{{--                            <div class="flex-shrink-0">--}}
+{{--                                <div id="widget-orders" class="apex-charts" data-colors="#3e60d5,#e3e9ee"></div>--}}
+{{--                            </div>--}}
                         </div>
                     </div> <!-- end card-body-->
                 </div> <!-- end card-->
@@ -195,6 +198,7 @@
                                 <thead class="border-top border-bottom bg-light-subtle border-light">
                                 <tr>
                                     <th class="py-1">Order ID</th>
+                                    <th class="py-1">Item</th>
                                     <th class="py-1">User</th>
                                     <th class="py-1">Total</th>
                                     <th class="py-1">Status</th>
@@ -205,8 +209,9 @@
                                 @foreach ($recentOrders as $order)
                                     <tr>
                                         <td>{{ $order->id }}</td>
+                                        <td>{{ $order->sub_item_name }}</td>
                                         <td>{{ $order->user->name }}</td>
-                                        <td>{{ $order->currency->currency ?? 'USD' }} {{ number_format($order->total, 2) }}</td>
+                                        <td>{{ number_format($order->total, 2) }} {{ $order->currency->currency }}</td>
 
                                         <td>
                                             @if($order->status == 'canceled' || $order->status == 'refunded')

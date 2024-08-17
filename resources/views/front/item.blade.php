@@ -16,7 +16,8 @@
                             <form id="subItemForm" method="POST" action="{{ route('purchase') }}">
                                 @csrf
                                 <input class="uk-input light-border" id="service_id" name="service_id" type="text" placeholder="Enter User ID In Application" style="position: absolute;bottom: -80px;left: 0;background: #FFF;">
-                                <div class="uk-grid uk-child-width-1-5@s uk-grid-small" data-uk-grid>
+                                <div class="uk-grid uk-grid-small uk-child-width-1-5@xl uk-child-width-1-4@m uk-child-width-1-2" data-uk-grid>
+
                                     @foreach($item->subItems as $subItem)
                                         @php
                                             $isFavorited = false;
@@ -32,7 +33,7 @@
                                                  data-price="{{ number_format($subItem->price + ($subItem->price * $config->fee / 100), 2) }}">
                                                 <div class="uk-card-header item-crd" style="padding: 10px !important;">
                                                     <div class="uk-grid-small uk-flex-middle" data-uk-grid>
-                                                        <div class="uk-width-expand">
+                                                        <div class="uk-width-expand item-info">
                                                             <h3 class="uk-card-title uk-margin-remove-bottom" style="text-align: center;font-size: 14px;padding-left: 15px;">
                                                                 {{ $subItem->amount }} {{ $subItem->name }}
                                                                 @if($subItem->getFirstMediaUrl('images'))
@@ -127,12 +128,13 @@
 
             $('.item-crd').each(function() {
                 // Update maxHeight to the tallest element
-                var currentHeight = $(this).height();
+                var currentHeight = $(this).innerHeight();
                 if (currentHeight > maxHeight) {
                     maxHeight = currentHeight;
                 }
             });
 
+            console.log("maxHeight", maxHeight)
             // Set all elements to the maxHeight
             $('.item-crd').height(maxHeight);
         });

@@ -578,6 +578,42 @@
                 </div>
             </li>
 
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarClients" aria-expanded="false" aria-controls="sidebarClients" class="side-nav-link nav-link">
+                    <i class="ri-account-circle-line"></i>
+                    <span> Clients </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarClients">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('clients.index') }}" class="nav-link">All Clients</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('clients.create') }}" class="nav-link">Create Client</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarAccounts" aria-expanded="false" aria-controls="sidebarAccounts" class="side-nav-link nav-link">
+                    <i class=" ri-calculator-line"></i>
+                    <span> Accounts </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarAccounts">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('accounts.index') }}" class="nav-link">All ( Calc ) Accounts</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('accounts.create') }}" class="nav-link">Create Transaction</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
             <li class="side-nav-title">Design</li>
 
 
@@ -665,10 +701,10 @@
                 <div class="collapse" id="sidebarPosts">
                     <ul class="side-nav-second-level">
                         <li>
-                            <a href="{{ route('partners.index') }}" class="nav-link">All Partners</a>
+                            <a href="{{ route('partners.index') }}" class="nav-link">All Agents</a>
                         </li>
                         <li>
-                            <a href="{{ route('partners.create') }}" class="nav-link">Create Partner</a>
+                            <a href="{{ route('partners.create') }}" class="nav-link">Create Agent</a>
                         </li>
                     </ul>
                 </div>
@@ -680,9 +716,6 @@
                     <span> Configuration </span>
                 </a>
             </li>
-
-
-
 
 {{--            <li class="side-nav-item">--}}
 {{--                <a data-bs-toggle="collapse" href="#sidebarCharts" aria-expanded="false" aria-controls="sidebarCharts" class="side-nav-link nav-link">--}}

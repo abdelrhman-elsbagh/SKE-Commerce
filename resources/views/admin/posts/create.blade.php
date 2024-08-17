@@ -2,6 +2,8 @@
 
 @section('css')
     @vite(['node_modules/jquery-toast-plugin/dist/jquery.toast.min.css'])
+    <!-- Quill.js CSS via CDN -->
+    <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -29,7 +31,8 @@
                             </div>
                             <div class="mb-3">
                                 <label for="description" class="form-label">Description</label>
-                                <textarea class="form-control" id="description" name="description">{{ $post->description ?? '' }}</textarea>
+                                <div id="quill-editor" style="height: 300px;">{!! $post->description ?? '' !!}</div>
+                                <input type="hidden" name="description" id="description">
                             </div>
                             <div class="mb-3">
                                 <label for="image" class="form-label">Image</label>
@@ -51,19 +54,35 @@
 
 @section('script')
     @vite(['node_modules/jquery-toast-plugin/dist/jquery.toast.min.js'])
+    <!-- Quill.js JS via CDN -->
+    <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
 
     <script>
         $(document).ready(function() {
-            $('#image').change(function() {
-                let reader = new FileReader();
-                reader.onload = function(e) {
-                    $('#image-preview').html('<img src="' + e.target.result + '" alt="Image Preview" style="max-width: 200px;">');
+            // Initialize Quill editor
+            var quill = new Quill('#quill-editor', {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        [{ 'font': [] }, { 'size': ['small', false, 'large', 'huge'] }],  // custom font and size
+                        ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+                        [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+                        [{ 'script': 'sub' }, { 'script': 'super' }],     // superscript/subscript
+                        [{ 'header': 1 }, { 'header': 2 }, 'blockquote', 'code-block'],  // headers and block quote
+                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],    // lists
+                        [{ 'indent': '-1' }, { 'indent': '+1' }],         // outdent/indent
+                        [{ 'direction': 'rtl' }],                         // text direction
+                        [{ 'align': [] }],                                // text alignment
+                        ['link', 'image', 'video'],                       // link, image, and video
+                        ['clean']                                         // remove formatting button
+                    ]
                 }
-                reader.readAsDataURL(this.files[0]);
             });
 
+            // Set Quill's content to the hidden input on form submit
             $('#create-edit-post-form').on('submit', function(e) {
                 e.preventDefault();
+                $('#description').val(quill.root.innerHTML);
 
                 var formData = new FormData(this);
 
@@ -88,9 +107,9 @@
                             }
                         });
 
-                        // Optionally, reset the form fields
                         $('#create-edit-post-form')[0].reset();
                         $('#image-preview').html('');
+                        quill.setContents([]); // Clear Quill editor content after submission
                     },
                     error: function(response) {
                         $.toast().reset('all'); // Reset previous toasts
@@ -105,6 +124,14 @@
                         });
                     }
                 });
+            });
+
+            $('#image').change(function() {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#image-preview').html('<img src="' + e.target.result + '" alt="Image Preview" style="max-width: 200px;">');
+                }
+                reader.readAsDataURL(this.files[0]);
             });
         });
     </script>

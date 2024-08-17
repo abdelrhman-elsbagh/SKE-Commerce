@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\ClientController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
@@ -94,6 +96,12 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:Admin']], func
 
     Route::resource('purchase-requests', ClientPurchaseRequestController::class);
     Route::resource('business-purchase-requests', BusinessPurchaseRequestController::class);
+
+    Route::resource('clients', ClientController::class)->names('clients');
+    Route::resource('accounts', AccountController::class)->names('accounts');
+    Route::get('/export', [AccountController::class, 'export'])->name(name: 'accounts.export');
+    Route::get('/clients-currencies', [ClientController::class, 'getCurrencies'])->name('clients.currencies');
+
 
     Route::resource('user-wallets', UserWalletController::class);
     Route::resource('users', UserController::class);

@@ -40,6 +40,8 @@ class DashboardController extends Controller
         // Count of refunded orders
         $refundedOrdersCount = Order::where('status', 'refunded')->count();
 
+        $pendingOrdersCount = Order::where('status', 'pending')->count();
+
         $totalOrders = Order::sum('item_price'); // Sum of all orders
         $growth = $this->calculateGrowth(); // Custom function to calculate growth
         $conversationRate = $this->calculateConversationRate(); // Custom function to calculate conversation rate
@@ -58,7 +60,7 @@ class DashboardController extends Controller
             $query->with('currency');
         }])
             ->latest()
-            ->take(5)
+            ->take(10)
             ->get();
 
         // Get top selling sub-items
@@ -83,6 +85,7 @@ class DashboardController extends Controller
             'ordersCount',
             'activeOrdersCount',
             'refundedOrdersCount',
+            'pendingOrdersCount',
             'totalOrders',
             'growth',
             'conversationRate',
