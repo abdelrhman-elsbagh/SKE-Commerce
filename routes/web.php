@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\ApiItemsController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ClientStoreController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
@@ -30,6 +32,7 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\TermsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserWalletController;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoutingController;
 
@@ -76,10 +79,17 @@ Route::post('business-logout', [HomeController::class, 'business_logout'])->name
 
 Route::put('users/{id}', [UserController::class, 'profile_update'])->name('profile-update');
 
+Route::get('/items', [ApiItemsController::class, 'allItems'])->name('api-items-all');
+
 Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:Admin']], function () {
 
     Route::get('', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('index', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::resource('clientStores', ClientStoreController::class);
+
+    Route::get('/api-items/edit', [ApiItemsController::class, 'edit'])->name('api-items.edit');
+    Route::post('/items/import', [ApiItemsController::class, 'importItems'])->name('items.import');
 
     Route::get('permissions', [PermissionController::class, 'index'])->name('permissions.index');
     Route::get('permissions/create', [PermissionController::class, 'create'])->name('permissions.create');
@@ -100,6 +110,9 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:Admin']], func
     Route::resource('clients', ClientController::class)->names('clients');
     Route::resource('accounts', AccountController::class)->names('accounts');
     Route::get('/export', [AccountController::class, 'export'])->name(name: 'accounts.export');
+    Route::get('/accounts/{id}/data', [AccountController::class, 'getAccountData'])->name('accounts.getData');
+
+
     Route::get('/clients-currencies', [ClientController::class, 'getCurrencies'])->name('clients.currencies');
 
 

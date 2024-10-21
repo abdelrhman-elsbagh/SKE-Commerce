@@ -11,7 +11,13 @@ class Item extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia;
 
-    protected $fillable = ['name', 'description', 'price_in_diamonds', 'category_id', 'status', 'title', 'title_type',];
+    protected $fillable = ['name', 'description', 'price_in_diamonds', 'category_id', 'status',
+        'title', 'title_type', 'is_outsourced', 'source_domain', 'external_id'];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function category()
     {

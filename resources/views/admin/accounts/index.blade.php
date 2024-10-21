@@ -1,5 +1,19 @@
 @extends('layouts.vertical', ['page_title' => 'Accounts'])
 
+@section('css')
+    @vite([
+        'node_modules/datatables.net-bs5/css/dataTables.bootstrap5.min.css',
+        'node_modules/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css',
+        'node_modules/jquery-toast-plugin/dist/jquery.toast.min.css',
+        'node_modules/select2/dist/css/select2.min.css',
+        'node_modules/daterangepicker/daterangepicker.css',
+        'node_modules/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.css',
+        'node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css',
+        'node_modules/bootstrap-timepicker/css/bootstrap-timepicker.min.css',
+        'node_modules/flatpickr/dist/flatpickr.min.css'
+    ])
+@endsection
+
 @section('content')
     <div class="container-fluid">
         <div class="row">
@@ -78,7 +92,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="header-title">Accounts</h4>
-                        <table id="basic-datatable" class="table table-striped table-bordered dt-responsive nowrap">
+                        <table id="basic-datatable" data-order='{"index": 7, "direction": "desc"}' class="table table-striped table-bordered dt-responsive nowrap">
                             <thead>
                             <tr>
                                 <th>ID</th>
@@ -88,13 +102,14 @@
                                 <th>Client Phone</th>
                                 <th>Currency</th>
                                 <th>Notes</th>
+                                <th>Created At</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
                             <tbody>
                             @foreach($accounts as $account)
                                 <tr id="account-{{ $account->id }}">
-                                    <td>{{ $account->id }}</td>
+                                    <td>{{ $account->mask ?? "" }}</td>
                                     <td>
                                         @if($account->payment_status == 'satisfine')
                                             <span class="badge bg-success-subtle text-success rounded-pill">Satisfine</span>
@@ -115,8 +130,9 @@
                                         @endif
                                     </td>
                                     <td>{{ \Illuminate\Support\Str::limit($account->notes, 70, '...') }}</td>
+                                    <td>{{ $account->created_at->format('Y-m-d H:i') }}</td>
                                     <td>
-                                        <a href="{{ route('accounts.show', $account->id) }}" class="btn btn-info"><i class="ri-eye-line"></i></a>
+                                        <a href="{{ route('accounts.show', $account->client->id) }}" class="btn btn-info"><i class="ri-eye-line"></i></a>
                                         <a href="{{ route('accounts.edit', $account->id) }}" class="btn btn-warning"><i class="ri-edit-box-fill"></i></a>
                                         <button class="btn btn-danger btn-delete" data-id="{{ $account->id }}"><i class="ri-delete-bin-5-line"></i></button>
                                     </td>

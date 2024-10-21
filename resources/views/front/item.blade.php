@@ -16,7 +16,7 @@
                             <form id="subItemForm" method="POST" action="{{ route('purchase') }}">
                                 @csrf
                                 <input class="uk-input light-border" id="service_id" name="service_id" type="text" placeholder="Enter User ID In Application" style="position: absolute;bottom: -80px;left: 0;background: #FFF;">
-                                <div class="uk-grid uk-grid-small uk-child-width-1-5@xl uk-child-width-1-4@m uk-child-width-1-2" data-uk-grid>
+                                <div class="uk-grid uk-grid-small uk-child-width-1-5@xl uk-child-width-1-4@m uk-child-width-1-3" data-uk-grid>
 
                                     @foreach($item->subItems as $subItem)
                                         @php
@@ -82,28 +82,21 @@
                     <div class="game-profile-card__intro">
                         <span>{{$item->description}}</span>
                     </div>
-                    <ul class="game-profile-card__list">
-                        {{--                        <li>--}}
-                        {{--                            <div>Sell Count:</div>--}}
-                        {{--                            <div class="game-card__rating"><span>15</span></div>--}}
-                        {{--                        </li>--}}
-                        <li>
-                            @foreach($item->tags as $tag)
-                                <span class="" style="background: #F46119;margin-right: 5px;color: #FFF;padding: 5px;border-radius: 7px;font-size: 12px;font-weight: 900;">
+                    <ul class="game-profile-card__list list-inline">
+                        @foreach($item->tags as $tag)
+                            <li class="list-inline-item" style="width: auto">
+                                <span style="background: #F46119; margin-right: 5px; color: #FFF; padding: 5px; border-radius: 7px; font-size: 12px; font-weight: 900;">
                                     {{ $tag->name }}
                                     @if($tag->getFirstMediaUrl('images'))
                                         <img src="{{ $tag->getFirstMediaUrl('images') }}" alt="Item" width="15">
                                     @endif
                                 </span>
-
-                            @endforeach
-                        </li>
+                            </li>
+                        @endforeach
                     </ul>
-                    {{--                    <ul class="game-profile-card__type">--}}
-                    {{--                        @foreach($item->tags as $tag)--}}
-                    {{--                            <li><span>{{ $tag->name }}</span></li>--}}
-                    {{--                        @endforeach--}}
-                    {{--                    </ul>--}}
+
+
+
                 </div>
 
                 <div class="game-profile-card__intro"  style="border-radius: 5px;background: #fff;padding: 10px;">

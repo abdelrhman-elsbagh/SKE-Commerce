@@ -56,6 +56,13 @@
                         <form id="edit-user-form" action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data" class="mt-4">
                             @csrf
                             @method('PUT')
+                            <div class="col-lg-12 col-md-12 mb-3">
+                                <label for="secret_key" class="form-label">Secret Key</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="secret_key" name="secret_key" value="{{ $user->secret_key }}" readonly>
+                                    <button class="btn btn-outline-secondary" type="button" id="copyButton"><i class="ri-file-copy-line"></i></button>
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col-lg-6 col-md-12 mb-3">
                                     <label for="name" class="form-label">Name</label>
@@ -165,6 +172,36 @@
                             hideAfter: 3000
                         });
                     }
+                });
+            });
+
+            $('[data-bs-toggle="tooltip"]').tooltip();
+
+            // Handle the copy to clipboard functionality
+            $('#copyButton').click(function() {
+                var secretKeyInput = document.getElementById('secret_key');
+                navigator.clipboard.writeText(secretKeyInput.value).then(function() {
+                    // On success, show a toast notification
+                    $.toast({
+                        heading: 'Success',
+                        text: 'Secret key copied to clipboard.',
+                        icon: 'success',
+                        loader: true,
+                        loaderBg: '#f96868',
+                        position: 'top-right',
+                        hideAfter: 3000
+                    });
+                }, function(err) {
+                    // On error, show an error toast notification
+                    $.toast({
+                        heading: 'Error',
+                        text: 'Failed to copy secret key.',
+                        icon: 'error',
+                        loader: true,
+                        loaderBg: '#f96868',
+                        position: 'top-right',
+                        hideAfter: 3000
+                    });
                 });
             });
         });

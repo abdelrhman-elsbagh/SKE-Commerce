@@ -10,6 +10,7 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable implements HasMedia
 {
@@ -32,6 +33,7 @@ class User extends Authenticatable implements HasMedia
         'fee_group_id',
         'currency_id',
         'phone',
+        'secret_key',
     ];
 
     /**
@@ -86,6 +88,12 @@ class User extends Authenticatable implements HasMedia
         $this->addMediaCollection('avatars')->singleFile();
     }
 
+    public function items()
+    {
+        return $this->hasMany(Item::class); // Adjust if the foreign key or table name differs
+    }
+
+
     public function favorites()
     {
         return $this->hasMany(Favorite::class);
@@ -118,5 +126,14 @@ class User extends Authenticatable implements HasMedia
     public function notifications()
     {
         return $this->belongsToMany(Notification::class, 'notification_reads')->withPivot('status');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($user) {
+            $user->uuid = (string) Str::uuid();  // Automatically generate a UUID when creating a user
+        });
     }
 }

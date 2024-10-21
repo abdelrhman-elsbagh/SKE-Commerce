@@ -614,6 +614,24 @@
                 </div>
             </li>
 
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarAPIS" aria-expanded="false" aria-controls="sidebarAPIS" class="side-nav-link nav-link">
+                    <i class="ri-code-s-slash-line"></i>
+                    <span> APIS </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarAPIS">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('api-items.edit') }}" class="nav-link">APIs Module</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('clientStores.index') }}" class="nav-link">Business Clients</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
             <li class="side-nav-title">Design</li>
 
 

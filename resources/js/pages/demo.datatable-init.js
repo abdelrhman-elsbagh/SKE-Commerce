@@ -14,10 +14,21 @@ import "datatables.net-bs5";
 $(document).ready(function () {
   "use strict";
 
+    let orderIndex = 0; // Default order index is 0 (first column)
+    let orderDirection = 'desc'; // Default order direction
+    const $datatable = $('#basic-datatable');
+    const dataOrder = $datatable.data('order');
+
+    if (dataOrder) {
+        orderIndex = dataOrder.index || orderIndex;
+        orderDirection = dataOrder.direction || orderDirection;
+    }
+
   new DataTable('#basic-datatable', {
       responsive: true,
     keys: true,
-      order: [[0, 'desc']],
+      // order: [[0, 'desc']],
+      order: [[orderIndex, orderDirection]],
     language: {
       "paginate": {
         "previous": "<i class='ri-arrow-left-s-line'>",

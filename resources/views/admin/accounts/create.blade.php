@@ -33,7 +33,7 @@
 
                             <div class="mb-3">
                                 <label for="amount" class="form-label">Amount</label>
-                                <input type="number" class="form-control" id="amount" name="amount" required>
+                                <input type="number" step="0.1" class="form-control" id="amount" name="amount" required>
                             </div>
 
                             <div class="mb-3">
@@ -41,7 +41,7 @@
                                 <select class="form-control select2" id="client_id" name="client_id" required>
                                     <option value="" selected disabled>Select Client</option>
                                     @foreach($clients as $client)
-                                        <option value="{{ $client->id }}">{{ $client->name ?? "" }} | {{ $client->phone ?? ""  }}</option>
+                                        <option value="{{ $client->id }}">{{ $client->id }} | {{ $client->name ?? "" }} | {{ $client->phone ?? ""  }}</option>
                                     @endforeach
                                 </select>
                             </div>

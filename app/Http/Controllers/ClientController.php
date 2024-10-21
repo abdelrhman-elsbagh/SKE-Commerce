@@ -2,16 +2,33 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Account;
 use App\Models\Client;
 use App\Models\Currency;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ClientController extends Controller
 {
     public function index()
     {
-        return view('admin.clients.index', ['clients' => Client::all()]);
+        $clients = Client::with('currencies')->get();
+
+        // Calculate the total sum for each currency for each client
+        foreach ($clients as $client) {
+            $currencySums = Account::select('currency_id', DB::raw('SUM(CASE WHEN payment_status = "creditor" THEN -amount WHEN payment_status = "debtor" THEN amount ELSE 0 END) as total_amount'))
+                ->where('client_id', $client->id)
+                ->groupBy('currency_id')
+                ->get()
+                ->keyBy('currency_id');
+
+            $client->currency_sums = $currencySums;
+        }
+
+        return view('admin.clients.index', compact('clients'));
     }
+
+
 
     public function show($id)
     {

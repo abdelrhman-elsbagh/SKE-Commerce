@@ -35,7 +35,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="amount" class="form-label">Amount</label>
-                                <input type="number" class="form-control" id="amount" name="amount" value="{{ $account->amount }}" required>
+                                <input type="number" step="0.1" class="form-control" id="amount" name="amount" value="{{ $account->amount }}" required>
                             </div>
 
                             <div class="mb-3">

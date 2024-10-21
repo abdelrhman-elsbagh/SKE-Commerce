@@ -57,6 +57,33 @@
         </style>
     @endif
 
+    <style>
+        .sidebar-box ul.uk-nav li a i {
+            font-size: 16px;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        .sidebar-box ul.uk-nav li a span {
+            font-size: 16px;
+            vertical-align: middle;
+        }
+
+        .sidebar-box ul.uk-nav li a i.pr8 {
+            font-size: 18px !important;
+            padding-right: 8px !important;
+        }
+
+        .sidebar-box ul.uk-nav li#partners a span,
+        .sidebar-box ul.uk-nav li#posts a span {
+            font-size: 16px !important;
+        }
+
+        .sidebar-box ul.uk-nav li a .fab {
+            font-size: 22px;
+        }
+    </style>
+
 </head>
 
 <body class="page-store">
@@ -246,17 +273,14 @@
                     @if(Auth::guard('web')->guest() && Auth::guard('business_client')->guest())
                         <li id="login"><a href="{{ route('sign-in') }}"><i class="fas fa-sign-in-alt"></i><span>Login</span></a></li>
                         <li id="register"><a href="{{ route('register-page') }}"><i class="fas fa-user-plus"></i><span>Register</span></a></li>
-{{--                        <li id="admin-login"><a href="{{ route('business-sign-in') }}"><i class="fas fa-sign-in-alt"></i><span>Admin Login</span></a></li>--}}
-{{--                        <li id="admin-register"><a href="{{ route('register-business') }}"><i class="fas fa-user-plus"></i><span>Register as Admin</span></a></li>--}}
                     @endif
 
                     @auth('business_client')
-                            <li id="business-profile"><a href="{{route('business-profile')}}"><i class="ico_profile"></i><span>Profile</span></a></li>
-                            <li id="business-wallet"><a href="{{route('business-wallet')}}"><i class="ico_wallet"></i><span>Wallet</span></a></li>
+                        <li id="business-profile"><a href="{{route('business-profile')}}"><i class="fas fa-user"></i><span>Profile</span></a></li>
+                        <li id="business-wallet"><a href="{{route('business-wallet')}}"><i class="fas fa-wallet"></i><span>Wallet</span></a></li>
                         <li id="plans"><a href="{{ route('plans-page') }}"><i class="fas fa-box-open"></i><span>Plans</span></a></li>
                         <li>
-                            <a href="{{ route('logout') }}"
-                               onclick="event.preventDefault(); document.getElementById('logout-form-business').submit();">
+                            <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form-business').submit();">
                                 <i class="fas fa-sign-out-alt"></i><span>Logout</span>
                             </a>
                             <form id="logout-form-business" action="{{ route('business-logout') }}" method="POST" style="display: none;">
@@ -265,30 +289,21 @@
                         </li>
                     @elseauth('web')
                         @if(Auth::user()->hasRole('Admin'))
-                            <li id="dashboard"><a href="{{route('dashboard')}}"><i class="ico_profile"></i><span>Admin Dashboard</span></a></li>
+                            <li id="dashboard"><a href="{{route('dashboard')}}"><i class="fas fa-tachometer-alt"></i><span>Admin Dashboard</span></a></li>
                         @else
-                                <li id="profile"><a href="{{route('profile')}}"><i class="ico_profile"></i><span>Profile</span></a></li>
-                                <li id="home"><a href="{{route('home')}}"><i class="ico_store"></i><span>Home</span></a></li>
-                                <li id="wallet"><a href="{{route('wallet')}}"><i class="ico_wallet"></i><span>Wallet</span></a></li>
-                                <li id="purchase-request"><a href="#modal-purchase-request" data-uk-toggle>
-                                        <i class="fas fa-money-bill-wave pr8" style="font-size: 16px;padding-right: 0"></i><span>Purchase Request</span></a>
-                                </li>
-                                <li id="payment-methods"><a href="{{ route('payments-page') }}"><i class="fas fa-credit-card pr8"></i><span>Payment Methods</span></a></li>
-
-                                <li id="partners"><a href="{{route('partners')}}">
-                                        <i style="font-size: 18px" class="fas fa-id-badge pr8"></i>
-                                        <span style="font-size: 13px">Agents</span></a>
-                                </li>
-                                <li id="posts"><a href="{{route('posts')}}">
-                                        <i style="font-size: 18px" class="fa fa-tag pr8"></i>
-                                        <span style="font-size: 13px">Posts</span></a>
-                                </li>
-                                <li id="favourites"><a href="{{route('favourites')}}"><i class="ico_favourites"></i><span>Favourites</span><span class="count">{{$favoritesCount}}</span></a></li>
+                            <li id="profile"><a href="{{route('profile')}}"><i class="fas fa-user"></i><span>Profile</span></a></li>
+                            <li id="home"><a href="{{route('home')}}"><i class="fas fa-home"></i><span>Home</span></a></li>
+                            <li id="wallet"><a href="{{route('wallet')}}"><i class="fas fa-wallet"></i><span>Wallet</span></a></li>
+                            <li id="purchase-request"><a href="#modal-purchase-request" data-uk-toggle>
+                                    <i class="fas fa-money-bill-wave"></i><span>Purchase Request</span></a></li>
+                            <li id="payment-methods"><a href="{{ route('payments-page') }}"><i class="fas fa-credit-card"></i><span>Payment Methods</span></a></li>
+                            <li id="partners"><a href="{{route('partners')}}"><i class="fas fa-id-badge"></i><span>Agents</span></a></li>
+                            <li id="posts"><a href="{{route('posts')}}"><i class="fas fa-tag"></i><span>Posts</span></a></li>
+                            <li id="favourites"><a href="{{route('favourites')}}"><i class="fas fa-heart"></i><span>Favourites</span><span class="count">{{$favoritesCount}}</span></a></li>
                         @endif
                         <li>
-                            <a href="{{ route('logout') }}"
-                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                <i class="fas fa-sign-out-alt pr8"></i><span>Logout</span>
+                            <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                <i class="fas fa-sign-out-alt"></i><span>Logout</span>
                             </a>
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                 @csrf
@@ -297,13 +312,13 @@
                         <hr />
                         <li style="display: flex; justify-content: center; align-items: center;margin-top: 80px">
                             <a href="https://wa.me/{{ $config->whatsapp }}?text={{ urlencode('Welcome to ' . str($config->name ?? "") ) }}" target="_blank" style="text-decoration: none; margin-right: 15px;">
-                                <i class="fab fa-whatsapp" style="font-size: 22px; color: #25D366;"></i>
+                                <i class="fab fa-whatsapp" style="color: #25D366;"></i>
                             </a>
                             <a href="{{ $config->telegram }}" target="_blank" style="text-decoration: none; margin-right: 15px;">
-                                <i class="fab fa-telegram" style="font-size: 22px; color: #0088cc;"></i>
+                                <i class="fab fa-telegram" style="color: #0088cc;"></i>
                             </a>
                             <a href="{{ $config->facebook }}" target="_blank" style="text-decoration: none;">
-                                <i class="fab fa-facebook" style="font-size: 22px; color: #1877F2;"></i>
+                                <i class="fab fa-facebook" style="color: #1877F2;"></i>
                             </a>
                         </li>
                     @endauth
