@@ -763,7 +763,6 @@ body.no-scroll {
     flex-direction: column;
     justify-content: space-between;
     min-width: 320px;
-    max-width: 1920px;
     min-height: 100vh;
     margin: 0 auto;
     background: #F5F5F5;
@@ -2503,9 +2502,9 @@ a:hover {
 .user-info__avatar {
     -webkit-box-flex: 0;
     -ms-flex: 0 0 110px;
-    flex: 0 0 110px;
-    width: 110px;
-    height: 110px;
+    /*flex: 0 0 110px;*/
+    max-width: 110px;
+    max-height: 110px;
     margin-right: 20px;
     overflow: hidden;
     border-radius: 50%;

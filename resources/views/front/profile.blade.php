@@ -23,6 +23,22 @@
                                 <div class="user-info__title user-info__id">#{{ $user->id }}</div>
                                 <div class="user-info__title">{{ $user->name }}</div>
                                 <div class="user-info__text">{{ $user->address }}, Member since {{ $user->created_at->format('F Y') }}</div>
+                                @if($user->is_external)
+                                    <div class="user-info__text" style="font-size: 16px;color: #000;font-style: italic;margin-top: 10px;"> <span class="pr-3" style="color: #F46119">Domain : </span> {{ $user->domain ?? "NA" }}</div>
+                                    <div class="user-info__text" style="font-size: 16px;color: #000;font-style: italic;">
+                                        <span class="pr-3" style="color: #F46119">Secret-Key :</span>
+                                        <span id="secret-key">{{ substr($user->secret_key, 0, 3) }}****</span> <!-- Show first 3 letters and hide the rest -->
+
+                                        <button id="toggle-secret-key" class="btn btn-link" style="color: #f46119; font-size: 14px; padding-left: 10px;">
+                                            <i class="fas fa-eye"></i> <!-- FontAwesome eye icon -->
+                                        </button>
+
+                                        <button id="copy-secret-key" class="btn btn-link" style="color: #f46119; font-size: 14px;">
+                                            <i class="fas fa-copy"></i> <!-- FontAwesome copy icon -->
+                                        </button>
+                                    </div>
+
+                                @endif
                             </div>
                         </div>
                         @if($feeGroup)
@@ -106,6 +122,41 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
+            let secretKeyFull = '{{ $user->secret_key ?? "NA" }}'; // Full secret key
+            let secretKeyHidden = secretKeyFull.substr(0, 3) + '****'; // First 3 letters + ****
+            let isHidden = true; // Track whether the key is hidden
+
+            // Toggle show/hide secret key
+            $('#toggle-secret-key').on('click', function(e) {
+                e.preventDefault();
+                let secretKey = $('#secret-key');
+                let toggleIcon = $(this).find('i'); // FontAwesome icon
+
+                if (isHidden) {
+                    // Show the full secret key
+                    secretKey.text(secretKeyFull);
+                    toggleIcon.removeClass('fa-eye').addClass('fa-eye-slash'); // Change icon to eye-slash
+                } else {
+                    // Hide the secret key (show first 3 letters + ****)
+                    secretKey.text(secretKeyHidden);
+                    toggleIcon.removeClass('fa-eye-slash').addClass('fa-eye'); // Change icon back to eye
+                }
+                isHidden = !isHidden; // Toggle the state
+            });
+
+            // Copy secret key to clipboard
+            $('#copy-secret-key').on('click', function() {
+                // Create a temporary input element to copy text
+                let tempInput = $('<input>');
+                $('body').append(tempInput);
+                tempInput.val(secretKeyFull).select(); // Set and select the full secret key
+                document.execCommand("copy"); // Copy to clipboard
+                tempInput.remove(); // Remove the temporary input
+
+                // Show a notification or feedback to user
+                toastr.success('Secret key copied to clipboard!');
+            });
+
             // Load countries from JSON file
             $.getJSON('{{ asset("assets/countries.json") }}', function(data) {
                 var $countrySelect = $('#address');

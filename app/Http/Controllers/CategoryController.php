@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CategoryController extends Controller
 {
@@ -25,6 +26,9 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $category = Category::create($request->all());
+        $user = Auth::user();
+        $category->user_id = $user->id;
+        $category->save();
 
         if ($request->ajax()) {
             return response()->json(['success' => 'Category created successfully.']);

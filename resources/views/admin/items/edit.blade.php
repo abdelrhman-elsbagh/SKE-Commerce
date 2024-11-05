@@ -116,11 +116,13 @@
                                                     <span>{{ $subItem->description }}</span>
                                                 </td>
                                                 <td>
-                                                    <input type="hidden" name="sub_items[{{ $loop->index }}][amount]" value="{{ $subItem->amount }}">
+                                                    <input type="hidden" name="sub_items[{{ $loop->index }}][amount]"
+                                                           value="{{ $subItem->amount }}">
                                                     <span>{{ $subItem->amount }}</span>
                                                 </td>
                                                 <td>
-                                                    <input type="hidden" name="sub_items[{{ $loop->index }}][price]" value="{{ $subItem->price }}">
+                                                    <input type="hidden" name="sub_items[{{ $loop->index }}][price]"
+                                                           value="{{ $subItem->price }}">
                                                     <span>{{ $subItem->price }}</span>
                                                 </td>
                                                 <td style="text-align: center">
@@ -167,11 +169,13 @@
                         </div>
                         <div class="mb-3">
                             <label for="sub_item_amount_modal" class="form-label">Sub Item Amount</label>
-                            <input type="number" class="form-control" id="sub_item_amount_modal" name="sub_item_amount_modal" required>
+                            <input type="number" class="form-control" id="sub_item_amount_modal"
+                                   name="sub_item_amount_modal" required {{ $subItem->external_id ? 'readonly' : '' }}>
                         </div>
                         <div class="mb-3">
                             <label for="sub_item_price_modal" class="form-label">Sub Item Price</label>
-                            <input type="number" step="0.5" class="form-control" id="sub_item_price_modal" name="sub_item_price_modal" required>
+                            <input type="number" step="0.1" class="form-control"
+                                   id="sub_item_price_modal" name="sub_item_price_modal" required {{ $subItem->external_id ? 'readonly' : '' }}>
                         </div>
                         <div class="mb-3">
                             <label for="sub_item_image_modal" class="form-label">Sub Item Image</label>

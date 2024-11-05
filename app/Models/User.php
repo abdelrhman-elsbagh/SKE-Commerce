@@ -34,6 +34,8 @@ class User extends Authenticatable implements HasMedia
         'currency_id',
         'phone',
         'secret_key',
+        'is_external',
+        'domain',
     ];
 
     /**

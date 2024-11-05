@@ -26,26 +26,14 @@
             width: 100%;
         }
 
-        .custom-select {
-            width: 100%;
-            border-radius: 8px;
-            background: #F5F5F5;
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            padding-right: 30px; /* Make space for the arrow */
+
+
+        .custom-tab li.uk-active a {
+            color: #F46119; /* Active tab color */
         }
 
-        .custom-select-wrapper::after {
-            content: "\f078"; /* Font Awesome's down arrow */
-            font-family: "Font Awesome 5 Free"; /* Use Font Awesome's free version */
-            font-weight: 900; /* Ensure it's using the correct font weight */
-            position: absolute;
-            top: 50%;
-            right: 10px; /* Adjust the right position to place arrow inside the padding space */
-            transform: translateY(-50%);
-            pointer-events: none;
-            color: #999; /* Light gray color for the arrow */
+        .custom-tab li a:hover {
+            color: #F46119; /* Hover effect on inactive tabs */
         }
     </style>
 
@@ -65,65 +53,137 @@
             </div>
             <div>
                 <div class="form-login">
-                    <div class="form-login__social">
-                        <ul class="social">
-                            <li><a href="http://www.google.com"><img src="{{ asset('assets/img/google.svg') }}" alt="google"></a></li>
-                            <li><a href="http://www.facebook.com"><img src="{{ asset('assets/img/facebook.svg') }}" alt="facebook"></a></li>
-                            <li><a href="http://www.twitter.com"><img src="{{ asset('assets/img/twitter.svg') }}" alt="twitter"></a></li>
-                        </ul>
-                    </div>
-                    <div class="form-login__box">
-                        <div class="uk-heading-line uk-text-center"><span>or with Email</span></div>
-                        <form id="registrationForm" action="{{ route('register') }}" method="POST">
-                            @csrf
-                            <div class="uk-margin">
-                                <input class="uk-input" type="text" name="name" placeholder="Name">
-                                <div class="uk-text-danger" id="error-name"></div>
-                            </div>
-                            <div class="uk-margin">
-                                <input class="uk-input" type="email" name="email" placeholder="Email">
-                                <div class="uk-text-danger" id="error-email"></div>
-                            </div>
-                            <div class="uk-margin">
-                                <input class="uk-input" type="text" name="phone" placeholder="Whatsapp Number">
-                                <div class="uk-text-danger" id="error-phone"></div>
-                            </div>
-                            <div class="uk-margin">
-                                <div class="custom-select-wrapper">
-                                    <select class="uk-select custom-select" name="currency_id">
-                                        @foreach($currencies as $currency)
-                                            <option value="{{ $currency->id }}">{{ $currency->currency }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="uk-text-danger" id="error-currency_id"></div>
-                            </div>
+                    <!-- Tabs Navigation -->
+                    <ul class="uk-tab custom-tab" uk-tab>
+                        <li class="uk-active"><a href="#">Registration</a></li>
+                        <li><a href="#">Partner Registration</a></li>
+                    </ul>
 
-                            <div class="uk-margin">
-                                <div class="custom-select-wrapper">
-                                    <select class="uk-select custom-select" name="country" id="country"></select>
-                                </div>
-                                <div class="uk-text-danger" id="error-country"></div>
+                    <!-- Tab Content -->
+                    <ul class="uk-switcher uk-margin">
+                        <!-- Normal Registration Form -->
+                        <li>
+                            <div class="form-login__social">
+                                <ul class="social">
+                                    <li><a href="http://www.google.com"><img src="{{ asset('assets/img/google.svg') }}" alt="google"></a></li>
+                                    <li><a href="http://www.facebook.com"><img src="{{ asset('assets/img/facebook.svg') }}" alt="facebook"></a></li>
+                                    <li><a href="http://www.twitter.com"><img src="{{ asset('assets/img/twitter.svg') }}" alt="twitter"></a></li>
+                                </ul>
                             </div>
+                            <div class="form-login__box">
+                                <div class="uk-heading-line uk-text-center"><span>or with Email</span></div>
+                                <form id="registrationForm" action="{{ route('register') }}" method="POST">
+                                    @csrf
+                                    <div class="uk-margin">
+                                        <input class="uk-input" type="text" name="name" placeholder="Name">
+                                        <div class="uk-text-danger" id="error-name"></div>
+                                    </div>
+                                    <div class="uk-margin">
+                                        <input class="uk-input" type="email" name="email" placeholder="Email">
+                                        <div class="uk-text-danger" id="error-email"></div>
+                                    </div>
+                                    <div class="uk-margin">
+                                        <input class="uk-input" type="text" name="phone" placeholder="Whatsapp Number">
+                                        <div class="uk-text-danger" id="error-phone"></div>
+                                    </div>
+                                    <div class="uk-margin">
+                                        <div class="custom-select-wrapper">
+                                            <select class="uk-select custom-select" name="currency_id">
+                                                @foreach($currencies as $currency)
+                                                    <option value="{{ $currency->id }}">{{ $currency->currency }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="uk-text-danger" id="error-currency_id"></div>
+                                    </div>
 
-                            <div class="uk-margin">
-                                <input class="uk-input" type="password" name="password" placeholder="Password">
-                                <div class="uk-text-danger" id="error-password"></div>
+                                    <div class="uk-margin">
+                                        <div class="custom-select-wrapper">
+                                            <select class="uk-select custom-select country" name="country" id="country"></select>
+                                        </div>
+                                        <div class="uk-text-danger" id="error-country"></div>
+                                    </div>
+
+                                    <div class="uk-margin">
+                                        <input class="uk-input" type="password" name="password" placeholder="Password">
+                                        <div class="uk-text-danger" id="error-password"></div>
+                                    </div>
+                                    <div class="uk-margin">
+                                        <input class="uk-input" type="password" name="password_confirmation" placeholder="Confirm Password">
+                                        <div class="uk-text-danger" id="error-password_confirmation"></div>
+                                    </div>
+                                    <div class="uk-margin">
+                                        <button class="uk-button uk-button-danger uk-width-1-1" type="submit">Register</button>
+                                    </div>
+                                    <div class="uk-text-center">
+                                        <span>Already have an account?</span>
+                                        <a class="uk-margin-small-left" href="{{ route('sign-in') }}">Log In</a>
+                                    </div>
+                                </form>
                             </div>
-                            <div class="uk-margin">
-                                <input class="uk-input" type="password" name="password_confirmation" placeholder="Confirm Password">
-                                <div class="uk-text-danger" id="error-password_confirmation"></div>
+                        </li>
+
+                        <!-- Partner Registration Form -->
+                        <li>
+                            <div class="form-login__social">
+                                <ul class="social">
+                                    <li><a href="http://www.google.com"><img src="{{ asset('assets/img/google.svg') }}" alt="google"></a></li>
+                                    <li><a href="http://www.facebook.com"><img src="{{ asset('assets/img/facebook.svg') }}" alt="facebook"></a></li>
+                                    <li><a href="http://www.twitter.com"><img src="{{ asset('assets/img/twitter.svg') }}" alt="twitter"></a></li>
+                                </ul>
                             </div>
-                            <div class="uk-margin">
-                                <button class="uk-button uk-button-danger uk-width-1-1" type="submit">Register</button>
+                            <div class="form-login__box">
+                                <div class="uk-heading-line uk-text-center"><span>Partner Registration</span></div>
+                                <form id="partnerRegistrationForm" action="{{ route('partner-register') }}" method="POST">
+                                    @csrf
+                                    <div class="uk-margin">
+                                        <input class="uk-input" type="text" name="name" placeholder="Name">
+                                        <div class="uk-text-danger" id="error-name"></div>
+                                    </div>
+                                    <div class="uk-margin">
+                                        <input class="uk-input" type="email" name="email" placeholder="Email">
+                                        <div class="uk-text-danger" id="error-email"></div>
+                                    </div>
+                                    <div class="uk-margin">
+                                        <input class="uk-input" type="text" name="company" placeholder="Company Name">
+                                        <div class="uk-text-danger" id="error-company"></div>
+                                    </div>
+                                    <div class="uk-margin">
+                                        <input class="uk-input" type="text" name="domain" placeholder="Domain">
+                                        <div class="uk-text-danger" id="error-company"></div>
+                                    </div>
+                                    <div class="uk-margin">
+                                        <input class="uk-input" type="text" name="phone" placeholder="Whatsapp Number">
+                                        <div class="uk-text-danger" id="error-phone"></div>
+                                    </div>
+                                    <div class="uk-margin">
+                                        <div class="custom-select-wrapper">
+                                            <select class="uk-select custom-select country" name="country" id="country-partner"></select>
+                                        </div>
+                                        <div class="uk-text-danger" id="error-country"></div>
+                                    </div>
+
+                                    <div class="uk-margin">
+                                        <input class="uk-input" type="password" name="password" placeholder="Password">
+                                        <div class="uk-text-danger" id="error-password"></div>
+                                    </div>
+                                    <div class="uk-margin">
+                                        <input class="uk-input" type="password" name="password_confirmation" placeholder="Confirm Password">
+                                        <div class="uk-text-danger" id="error-password_confirmation"></div>
+                                    </div>
+                                    <div class="uk-margin">
+                                        <button class="uk-button uk-button-danger uk-width-1-1" type="submit">Register as Partner</button>
+                                    </div>
+                                    <div class="uk-text-center">
+                                        <span>Already have an account?</span>
+                                        <a class="uk-margin-small-left" href="{{ route('sign-in') }}">Log In</a>
+                                    </div>
+                                </form>
                             </div>
-                            <div class="uk-text-center">
-                                <span>Already have an account?</span>
-                                <a class="uk-margin-small-left" href="{{ route('sign-in') }}">Log In</a>
-                            </div>
-                        </form>
-                    </div>
+                        </li>
+                    </ul>
                 </div>
+
             </div>
         </div>
     </main>
@@ -135,7 +195,7 @@
     $(document).ready(function() {
         // Load countries from JSON file
         $.getJSON('{{ asset("assets/countries.json") }}', function(data) {
-            var $countrySelect = $('#country');
+            var $countrySelect = $('.country');
 
             $.each(data, function(key, entry) {
                 $countrySelect.append($('<option></option>').attr('value', entry.name).text(entry.name));
@@ -143,6 +203,32 @@
         });
 
         $('#registrationForm').submit(function(e) {
+            e.preventDefault();
+            $('div.uk-text-danger').empty(); // Clear previous errors
+
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function(data) {
+                    toastr.success('Registration successful!');
+                    window.location.href = '/'; // Redirect to the home page
+                },
+                error: function(response) {
+                    if (response.status === 422) { // Validation errors
+                        const errors = response.responseJSON.errors;
+                        $.each(errors, function(key, value) {
+                            $('#error-' + key).text(value[0]); // Set error text
+                            toastr.error(value[0]);
+                        });
+                    } else {
+                        toastr.error('An unexpected error occurred. Please try again.');
+                    }
+                }
+            });
+        });
+
+        $('#partnerRegistrationForm').submit(function(e) {
             e.preventDefault();
             $('div.uk-text-danger').empty(); // Clear previous errors
 

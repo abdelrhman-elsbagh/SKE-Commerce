@@ -27,6 +27,7 @@
                             <thead>
                             <tr>
                                 <th>ID</th>
+                                <th>Type</th>
                                 <th>Name</th>
                                 <th>Whatsapp Num</th>
                                 <th>Email</th>
@@ -37,6 +38,7 @@
                                 <th>Currency</th>
                                 <th>Balance</th>
                                 <th>Total Orders</th>
+                                <th>Domain</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
@@ -44,6 +46,7 @@
                             @foreach($users as $user)
                                 <tr id="user-{{ $user->id }}">
                                     <td>{{ $user->id }}</td>
+                                    <td>{{ $user->is_external == 1 ? "API Partner" : "Client" }}</td>
                                     <td>{{ $user->name }}</td>
                                     <td>{{ $user->phone ?? "" }}</td>
                                     <td>{{ $user->email }}</td>
@@ -58,6 +61,7 @@
                                     <td>{{ $user->currency->currency ?? "USD" }}</td>
                                     <td>{{ number_format($user->wallet->balance ?? 0, 2) }} {{ $user->currency->currency ?? "USD" }}</td>
                                     <td>{{ number_format($user->total_orders, 2) }} {{ $user->currency->currency ?? "USD" }}</td>
+                                    <td>{{ $user->domain ?? "NA" }}</td>
                                     <td>
                                         <a href="{{ route('users.edit', $user->id) }}" class="btn btn-warning"><i class="ri-edit-box-fill"></i></a>
                                         <button class="btn btn-danger btn-delete" data-id="{{ $user->id }}"><i class="ri-delete-bin-5-line"></i></button>

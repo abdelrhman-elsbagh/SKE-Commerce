@@ -10,6 +10,7 @@ use App\Models\SubItem;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Auth;
 
 class ItemController extends Controller
 {
@@ -57,6 +58,10 @@ class ItemController extends Controller
     {
         // Create the main item
         $item = Item::create($request->all());
+        $user = Auth::user();
+        $item->user_id = $user->id;
+        $item->save();
+
 
         // Attach tags if provided
         if ($request->has('tags')) {
@@ -71,6 +76,8 @@ class ItemController extends Controller
         if ($request->hasFile('front_image')) {
             $item->addMedia($request->file('front_image'))->toMediaCollection('front_image');
         }
+
+
 
         // Handle sub-items if provided
         if ($request->has('sub_items')) {
@@ -137,7 +144,16 @@ class ItemController extends Controller
             foreach ($request->sub_items as $subItemData) {
                 if (isset($subItemData['id'])) {
                     $subItem = SubItem::findOrFail($subItemData['id']);
+                    $origin_price =  $subItem->price;
+                    $origin_amount =  $subItem->amount;
                     $subItem->update($subItemData);
+
+                    // Only override amount and price if external_id is null
+                    if ($subItem->external_id) {
+                        $subItem->amount = $origin_price;
+                        $subItem->price = $origin_amount;
+                        $subItem->save();
+                    }
 
                     if (isset($subItemData['image']) && $subItemData['image'] instanceof \Illuminate\Http\UploadedFile) {
                         $subItem->clearMediaCollection('images');

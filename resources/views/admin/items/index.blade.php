@@ -42,7 +42,7 @@
                                 <tr id="item-{{ $item->id }}">
                                     <td>{{ $item->id }}</td>
                                     <td>{{ $item->name }}</td>
-                                    <td>{{ "Manual" }}</td>
+                                    <td>{{ $item->is_outsourced == 1 ? 'API' : 'Manual' }}</td>
                                     <td>{{ $item->activeOrdersSum }}</td>
                                     <td>{{ $item->refundedOrdersSum }}</td>
                                     <td>{{ \Illuminate\Support\Str::limit($item->description, 70, '...') }}</td>

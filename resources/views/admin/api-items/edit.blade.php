@@ -8,12 +8,15 @@
     <div class="container">
         <h1 class="mt-5">Fetch and Import Items</h1>
         <div class="form-group">
-            <label for="destination_key">Destination Key:</label>
-            <input type="text" class="form-control" id="destination_key" required>
+            <label for="destination_key">Secret Key:</label>
+            <input type="text" class="form-control" id="destination_key" required value="35ee02c5-884c-4274-a6ac-0db39f2dbfee">
+            @if(auth()->check())
+                <input type="hidden" class="form-control" id="source_key" value="{{ auth()->user()->secret_key }}">
+            @endif
         </div>
         <div class="form-group mt-2">
             <label for="domain">Domain:</label>
-            <input type="url" class="form-control" id="domain" required>
+            <input type="url" class="form-control" id="domain" required value="http://localhost:8003">
         </div>
         <button id="fetchItems" class="btn btn-primary mt-3">Fetch Items</button>
 
@@ -46,6 +49,7 @@
             const itemsContainer = document.getElementById('itemsContainer');
             const itemsTableBody = document.getElementById('itemsTable').querySelector('tbody');
             const destinationKeyInput = document.getElementById('destination_key');
+            const sourceKeyInput = document.getElementById('source_key');
             const domainInput = document.getElementById('domain');
 
             function showToast(message, type = 'error') {
@@ -63,6 +67,7 @@
             fetchItemsBtn.addEventListener('click', function () {
                 axios.post(domainInput.value + '/api/fetch-items', {
                     destination_key: destinationKeyInput.value,
+                    source_key: sourceKeyInput.value,
                     domain: domainInput.value
                 }, {
                     headers: {
@@ -71,6 +76,7 @@
                 })
                     .then(response => {
                         const items = response.data.items;
+                        console.log(response.data.items)
                         let rows = '';
                         items.forEach((item, index) => {
                             rows += `
@@ -102,7 +108,9 @@
                                             <div>Description: ${sub.description || 'N/A'}</div>
                                         </td>
                                         <td>
-                                            <input type="checkbox" name="sub_items" value="${sub.id}" data-sub-item-id="${sub.id}" data-item-name="${item.name}" data-item-description="${item.description}" data-item-id="${item.id}">
+                                            <input type="checkbox" name="sub_items" value="${sub.id}" data-sub-item-id="${sub.id}"
+                                                data-sub-user-id="${sub.user_id}"
+                                                data-item-name="${item.name}" data-item-description="${item.description}" data-item-id="${item.id}">
                                         </td>
                                     </tr>
                                 `;
@@ -124,6 +132,9 @@
                 const subItemsToImport = Array.from(selectedSubItems).map(subItem => {
                     const subItemRow = subItem.closest('tr');
                     return {
+                        external_id: subItem.getAttribute('data-sub-item-id'),
+                        item_id: subItem.getAttribute('data-item-id'),
+                        user_id: subItem.getAttribute('data-sub-user-id'),
                         item_name: subItem.getAttribute('data-item-name'),
                         item_description: subItem.getAttribute('data-item-description'),
                         item_external_id: subItem.getAttribute('data-item-id'),
@@ -131,13 +142,12 @@
                         price: subItemRow.cells[1].innerText.split(':')[1].trim(),
                         amount: subItemRow.cells[2].innerText.split(':')[1].trim(),
                         description: subItemRow.cells[3].innerText.split(':')[1].trim(),
-                        //external_id: subItem.dataset.externalId,
-                        external_id: subItem.getAttribute('data-sub-item-id')
                     };
                 });
 
                 axios.post(`/admin/items/import`, {
                     sub_items: subItemsToImport,
+                    domain: domainInput.value
                 }, {
                     headers: {
                         'Content-Type': 'application/json'

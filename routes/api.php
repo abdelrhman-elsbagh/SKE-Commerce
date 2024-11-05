@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ApiItemsController;
+use App\Http\Controllers\OrderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -18,6 +19,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/make-http-request', [ApiItemsController::class, 'makeHttpRequest'])->name('make-http-request');
 Route::post('/fetch-items', [ApiItemsController::class, 'fetchItems'])->name('api-items.fetch');
+Route::post('/fetch-item', [ApiItemsController::class, 'fetchItem'])->name('api-items.fetchItem');
+Route::post('/fetch-sub-item', [ApiItemsController::class, 'fetchSubItem'])->name('api-items.fetchSubItem');
+Route::post('/store-api-order', [OrderController::class, 'storeApiOrder']);
+
 
 //Route::post('/items/import', [ApiItemsController::class, 'importItems'])->name('api-items.import');
 

@@ -13,7 +13,7 @@ class Order extends Model
         'user_id', 'total', 'status', 'order_type', 'user_email', 'user_phone', 'user_name',
         'item_price' , 'item_fee', 'fee_name', 'item_name', 'sub_item_name',
         'service_id', 'amount', 'wallet_before', 'wallet_after',
-        'currency_id', 'item_id', 'sub_item_id', 'revenue'
+        'currency_id', 'item_id', 'sub_item_id', 'revenue', 'is_external'
     ];
 
     public function currency()

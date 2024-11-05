@@ -18,34 +18,123 @@ class ApiItemsController extends Controller
         return view('admin.api-items.edit');
     }
 
-    public function fetchItems(Request $request)
+    public function fetchSubItem(Request $request)
     {
         $validated = $request->validate([
+            'external_id' => 'required',
             'destination_key' => 'required',
-            'domain' => 'required|url'
         ]);
 
         // Check if the destination key matches a ClientStore's secret_key
-        $clientStore = ClientStore::where('secret_key', $validated['destination_key'])->first();
+        $clientStore = User::where('secret_key', $validated['destination_key'])->first();
+
+        if (!$clientStore) {
+            return response()->json(['message' => 'Invalid destination key.'], 401);
+        }
+
+        // Fetch sub-item by external_id
+        $subItem = SubItem::where('id', $validated['external_id'])
+            ->select('id', 'price', 'amount', 'user_id', 'item_id')
+            ->first();
+
+        if (!$subItem) {
+            return response()->json(['message' => 'Sub-item not found.'], 404);
+        }
+
+        // Add clientStore's fee to the sub-item price
+        if ($clientStore->feeGroup) {
+            $subItem->origin_price = floatval($subItem->price);
+            $subItem->price += round($subItem->price * $clientStore->feeGroup->fee / 100, 2);
+        }
+
+        return response()->json(['sub_item' => $subItem]);
+    }
+
+    public function fetchItem(Request $request)
+    {
+        // Validate the request
+        $validated = $request->validate([
+            'destination_key' => 'required',
+            'source_key' => 'required',
+            'domain' => 'required|url',
+            'item_id' => 'required|integer',
+        ]);
+
+        // Check if the source key matches a User's secret_key (ClientStore)
+        $clientStore = User::where('secret_key', $validated['source_key'])->first();
 
         if (!$clientStore) {
             return response()->json(['message' => 'Invalid source key.'], 401);
         }
 
-        // Check if the source key matches a User's secret_key
+        // Check if the destination key matches a User's secret_key
         $user = User::where('secret_key', $validated['destination_key'])->first();
-
 
         if (!$user) {
             return response()->json(['message' => 'Invalid destination key.'], 401);
+        }
+
+        // Fetch the specific item for the user
+        $item = Item::with('subItems')
+            ->where('user_id', $user->id)
+            ->where('id', $validated['item_id']) // Fetch the specific item based on ID
+            ->first();
+
+        if (!$item) {
+            return response()->json(['message' => 'Item not found.'], 404);
+        }
+
+        return response()->json(['item' => $item]);
+    }
+
+    public function fetchItems(Request $request)
+    {
+        $validated = $request->validate([
+            'source_key' => 'required',
+            'domain' => 'required|url'
+        ]);
+
+        // Check if the source key matches a ClientStore's secret_key
+        $clientStore = User::where([
+            'secret_key' => $validated['source_key'],
+            'status' => 'active',
+        ])->first();
+
+        if (!$clientStore) {
+            return response()->json(['message' => 'Invalid source key.'], 401);
+        }
+
+        // Check if the domain matches a User's domain
+        $user = User::where('domain', $validated['domain'])->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'Invalid info.'], 401);
         }
 
         // Fetch items related to the user identified by the destination key
         $items = Item::with('subItems')
             ->where('user_id', $user->id)
             ->get();
+
+        // Apply the clientStore's feeGroup percentage to each subItem price
+        if ($clientStore->feeGroup) {
+            $feePercentage = $clientStore->feeGroup->fee;
+            foreach ($items as $item) {
+                foreach ($item->subItems as $subItem) {
+                    // Calculate the additional fee amount as a percentage of the original price
+                    $feeAmount = round($subItem->price * $feePercentage / 10, 2);
+                    // Add the fee amount to the original price
+                    $subItem->fee = $feeAmount;
+                    $subItem->price = round($subItem->price + $feeAmount, 2);
+                    $subItem->user_id = $user->id;
+                    $subItem->item_id = $item->id;
+                }
+            }
+        }
+
         return response()->json(['items' => $items]);
     }
+
 
     /**
      * Import selected items into the database under the authenticated user's account.
@@ -53,7 +142,8 @@ class ApiItemsController extends Controller
     public function importItems(Request $request)
     {
         $validated = $request->validate([
-            'sub_items' => 'required|array', // Assuming 'sub_items' contains detailed sub-item data from the client side
+            'sub_items' => 'required|array',
+            'domain' => 'string',
         ]);
 
         $user = Auth::user(); // Get the authenticated user
@@ -81,7 +171,7 @@ class ApiItemsController extends Controller
                     'external_id' => $itemExternalId,
                     'price_in_diamonds' => 0,
                     'category_id' => $category->id,
-                    'status' => 'active',  // Default status to 'active'
+                    'status' => 'active',
                     'title' => $subItemData['item_title'] ?? null,
                     'title_type' => 'default' ?? null,
                     'is_outsourced' => true,
@@ -91,12 +181,16 @@ class ApiItemsController extends Controller
 
             // Associate sub-item with the newly imported item
             SubItem::create([
-                'item_id' => $importedItems[$itemExternalId]->id, // Reference the newly created parent item
+                'item_id' => $importedItems[$itemExternalId]->id,
+                'user_id' => $user->id,
                 'name' => $subItemData['name'],
                 'description' => $subItemData['description'],
                 'amount' => $subItemData['amount'],
                 'price' => $subItemData['price'],
                 'external_id' => $subItemData['external_id'],
+                'external_user_id' => $subItemData['user_id'],
+                'external_item_id' => $subItemData['item_id'],
+                'domain' => $request->input('domain') ?? null,
             ]);
         }
 

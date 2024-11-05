@@ -47,6 +47,8 @@
                                                     </div>
                                                 </div>
                                                 <div class="uk-card-footer" style="text-align: center;border-top: 0;padding: 10px 20px; ">
+                                                    <p>
+                                                    </p>
                                                     <span class="uk-text-bold" style="color: #F46119; font-size: 18px;">
                                                         {{ number_format($subItem->price + ($subItem->price * $config->fee / 100), 2) }} {{ $user->currency->currency ?? "USD" }}
                                                     </span>

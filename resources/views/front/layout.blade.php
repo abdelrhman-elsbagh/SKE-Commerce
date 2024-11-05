@@ -301,6 +301,9 @@
                             <li id="posts"><a href="{{route('posts')}}"><i class="fas fa-tag"></i><span>Posts</span></a></li>
                             <li id="favourites"><a href="{{route('favourites')}}"><i class="fas fa-heart"></i><span>Favourites</span><span class="count">{{$favoritesCount}}</span></a></li>
                         @endif
+                        @if(Auth::user()->is_external)
+                                <li id="favourites"><a href="{{route('api')}}"><i class="fas fa-code"></i><span>API</span></a></li>
+                            @endif
                         <li>
                             <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                 <i class="fas fa-sign-out-alt"></i><span>Logout</span>

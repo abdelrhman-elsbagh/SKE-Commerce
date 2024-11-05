@@ -33,11 +33,29 @@ use App\Http\Controllers\TermsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserWalletController;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoutingController;
 
 
 require __DIR__ . '/auth.php';
+
+Route::get('/abdel', function () {
+    $data = [
+        'external_id' => 77,
+        'destination_key' => "893b8a57-206d-4012-a234-8d51894fd535",
+        'source_key' => "893b8a57-206d-4012-a234-8d51894f88888",
+    ];
+
+    // Send POST request with the correct headers and data
+    $response = Http::withHeaders([
+        'Content-Type' => 'application/json'
+    ])->post("http://localhost:8003/api/fetch-sub-item", $data);
+
+    // Log the request for debugging
+
+    dd($response->json());
+});
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -49,9 +67,11 @@ Route::post('business-login', [HomeController::class, 'login_business'])->name('
 Route::get('business-profile', [HomeController::class, 'business_profile'])->name('business-profile');
 Route::get('business-wallet', [HomeController::class, 'business_wallet'])->name('business-wallet');
 Route::get('plans', [HomeController::class, 'plans'])->name('plans-page');
+Route::get('api', [HomeController::class, 'api'])->name('api');
 
 Route::post('login', [HomeController::class, 'login']);
 Route::post('register', [HomeController::class, 'register'])->name('register');
+Route::post('partner-register', [HomeController::class, 'registerPartner'])->name('partner-register');
 Route::post('register_business', [HomeController::class, 'register_business'])->name('register_business');
 
 Route::middleware(['auth', 'role:User'])->group(function () {
