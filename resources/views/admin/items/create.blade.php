@@ -172,6 +172,22 @@
                             <label for="sub_item_price_modal" class="form-label">Sub Item Price</label>
                             <input type="number" step="0.5" class="form-control" id="sub_item_price_modal" name="sub_item_price_modal" required>
                         </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="is_custom" name="is_custom">
+                            <label class="form-check-label" for="is_custom">Custom</label>
+                        </div>
+                        <div id="customFields" class="row" style="display: none;">
+                            <div class="mb-3 col-sm-12 col-md-6">
+                                <label for="minimum_amount" class="form-label">Minimum Amount</label>
+                                <input type="number" class="form-control" id="minimum_amount" name="minimum_amount">
+                            </div>
+                            <div class="mb-3 col-sm-12 col-md-6">
+                                <label for="max_amount" class="form-label">Maximum Amount</label>
+                                <input type="number" class="form-control" id="max_amount" name="max_amount">
+                            </div>
+                        </div>
+
                         <div class="mb-3">
                             <label for="sub_item_image_modal" class="form-label">Sub Item Image</label>
                             <input type="file" class="form-control" id="sub_item_image_modal" name="sub_item_image_modal" accept="image/*">
@@ -192,6 +208,15 @@
 
     <script>
         $(document).ready(function() {
+
+            $('#is_custom').change(function() {
+                if ($(this).is(':checked')) {
+                    $('#customFields').show();
+                } else {
+                    $('#customFields').hide();
+                }
+            });
+
             $('#image').change(function() {
                 let reader = new FileReader();
                 reader.onload = function(e) {
@@ -222,6 +247,9 @@
                 let subItemName = $('#sub_item_name_modal').val();
                 let subItemDescription = $('#sub_item_description_modal').val();
                 let subItemAmount = $('#sub_item_amount_modal').val();
+                let max_amount = $('#max_amount').val();
+                let minimum_amount = $('#minimum_amount').val();
+                let is_custom = $('#is_custom').is(':checked') ? 1 : 0;
                 let subItemPrice = $('#sub_item_price_modal').val();
                 let subItemImage = $('#sub_item_image_modal')[0].files[0];
 
@@ -244,6 +272,15 @@
                         <td>
                             <input type="hidden" name="sub_items[${subItemCount}][price]" value="${subItemPrice}">
                             ${subItemPrice}
+                        </td>
+                        <td>
+                            <input type="hidden" name="sub_items[${subItemCount}][minimum_amount]" value="${minimum_amount}">
+                            ${minimum_amount}
+                        </td>
+                        <td>
+                            <input type="hidden" name="sub_items[${subItemCount}][max_amount]" value="${max_amount}">
+                            <input type="hidden" name="sub_items[${subItemCount}][is_custom]" value="${is_custom}">
+                            ${max_amount}
                         </td>
                         <td>
                             <input type="file" name="sub_items[${subItemCount}][image]" class="sub-item-image-file" data-index="${subItemCount}" style="display: none;">

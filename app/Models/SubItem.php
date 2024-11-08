@@ -11,9 +11,26 @@ class SubItem extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia;
 
-    protected $fillable = ['item_id', 'name', 'description', 'amount', 'price',
-        'service_id', 'domain', 'external_user_id', 'user_id', 'external_id',
-        'fee_amount','original_price', 'external_item_id'];
+    protected $fillable = [
+        'item_id',
+        'name',
+        'description',
+        'amount',
+        'price',
+        'service_id',
+        'domain',
+        'external_user_id',
+        'user_id',
+        'external_id',
+        'fee_amount',
+        'original_price',
+        'external_item_id',
+        'is_custom',
+        'minimum_amount',
+        'max_amount',
+        'custom_price',
+        'custom_amount',
+    ];
 
     public function user()
     {

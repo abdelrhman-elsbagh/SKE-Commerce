@@ -17,7 +17,6 @@
                                 @csrf
                                 <input class="uk-input light-border" id="service_id" name="service_id" type="text" placeholder="Enter User ID In Application" style="position: absolute;bottom: -80px;left: 0;background: #FFF;">
                                 <div class="uk-grid uk-grid-small uk-child-width-1-5@xl uk-child-width-1-4@m uk-child-width-1-3" data-uk-grid>
-
                                     @foreach($item->subItems as $subItem)
                                         @php
                                             $isFavorited = false;
@@ -30,37 +29,79 @@
                                             <div class="uk-card uk-card-default uk-card-hover uk-margin selectable-card"
                                                  style="cursor: pointer; position: relative;border-radius: 7px;"
                                                  data-id="{{ $subItem->id }}"
-                                                 data-price="{{ number_format($subItem->price + ($subItem->price * $config->fee / 100), 2) }}">
-                                                <div class="uk-card-header item-crd" style="padding: 10px !important;">
-                                                    <div class="uk-grid-small uk-flex-middle" data-uk-grid>
-                                                        <div class="uk-width-expand item-info">
-                                                            <h3 class="uk-card-title uk-margin-remove-bottom" style="text-align: center;font-size: 14px;padding-left: 15px;">
-                                                                {{ $subItem->amount }} {{ $subItem->name }}
-                                                                @if($subItem->getFirstMediaUrl('images'))
+                                                 data-price="{{ number_format($subItem->price + ($subItem->price * $config->fee / 100), 2) }}"
+                                                 data-is-custom="{{ $subItem->is_custom ? '1' : '0' }}"
+                                                 data-min-amount="{{ $subItem->minimum_amount ?? 0 }}"
+                                                 data-max-amount="{{ $subItem->max_amount ?? 0 }}"
+                                                 data-amount="{{ $subItem->amount ?? 0 }}"
+                                            >
+                                                @if($subItem->is_custom == 0)
+                                                    <div class="uk-card-header item-crd" style="padding: 10px !important;">
+                                                        <div class="uk-grid-small uk-flex-middle" data-uk-grid>
+                                                            <div class="uk-width-expand item-info">
+                                                                <h3 class="uk-card-title uk-margin-remove-bottom" style="text-align: center;font-size: 14px;padding-left: 15px;">
+                                                                    {{ $subItem->amount }} {{ $subItem->name }}
+                                                                    @if($subItem->getFirstMediaUrl('images'))
 
-                                                                    <img src="{{ $subItem->getFirstMediaUrl('images') }}" alt="{{ $subItem->name }}" class="uk-width-1-1"
-                                                                         style="height: 20px; width: 20px; border-radius: 5px">
-                                                                @endif
-                                                            </h3>
-                                                            <p class="uk-card-title uk-margin-remove-bottom" style="text-align: center;font-size: 14px; margin-top: 5px">{{ $subItem->description ?? "" }}</p>
+                                                                        <img src="{{ $subItem->getFirstMediaUrl('images') }}" alt="{{ $subItem->name }}" class="uk-width-1-1"
+                                                                             style="height: 20px; width: 20px; border-radius: 5px">
+                                                                    @endif
+                                                                </h3>
+                                                                <p class="uk-card-title uk-margin-remove-bottom" style="text-align: center;font-size: 14px; margin-top: 5px">{{ $subItem->description ?? "" }}</p>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="uk-card-footer" style="text-align: center;border-top: 0;padding: 10px 20px; ">
-                                                    <p>
-                                                    </p>
-                                                    <span class="uk-text-bold" style="color: #F46119; font-size: 18px;">
-                                                        {{ number_format($subItem->price + ($subItem->price * $config->fee / 100), 2) }} {{ $user->currency->currency ?? "USD" }}
-                                                    </span>
-                                                    <i class="fas fa-heart fa-1x heart-icon" style="color: {{ $isFavorited ? '#f46119' : '#ccc' }}; position: absolute; top: 10px; left: 10px;"></i>
-                                                </div>
-                                                <div class="selected-icon" style="display: none; position: absolute; top: 10px; right: 10px; color: #f46119;">
-                                                    <i class="fas fa-check-circle fa-1x"></i>
-                                                </div>
+                                                    <div class="uk-card-footer" style="text-align: center;border-top: 0;padding: 10px 20px; ">
+                                                        <p>
+                                                        </p>
+                                                        <span class="uk-text-bold" style="color: #F46119; font-size: 18px;">
+                                                            {{ number_format($subItem->price + ($subItem->price * $config->fee / 100), 2) }} {{ $user->currency->currency ?? "USD" }}
+                                                        </span>
+                                                        <i class="fas fa-heart fa-1x heart-icon" style="color: {{ $isFavorited ? '#f46119' : '#ccc' }}; position: absolute; top: 10px; left: 10px;"></i>
+                                                    </div>
+                                                    <div class="selected-icon" style="display: none; position: absolute; top: 10px; right: 10px; color: #f46119;">
+                                                        <i class="fas fa-check-circle fa-1x"></i>
+                                                    </div>
+                                                @endif
+
+                                                @if($subItem->is_custom == 1)
+                                                    <div class="uk-card-header item-crd" style="padding: 10px !important;">
+                                                        <div class="uk-grid-small uk-flex-middle" data-uk-grid>
+                                                            <div class="uk-width-expand item-info">
+                                                                <h3 class="uk-card-title uk-margin-remove-bottom" style="text-align: center;font-size: 14px;padding-left: 15px;">
+                                                                    {{ $subItem->name }}
+                                                                    @if($subItem->getFirstMediaUrl('images'))
+
+                                                                        <img src="{{ $subItem->getFirstMediaUrl('images') }}" alt="{{ $subItem->name }}" class="uk-width-1-1"
+                                                                             style="height: 20px; width: 20px; border-radius: 5px">
+                                                                    @endif
+                                                                </h3>
+                                                                <p class="uk-card-title uk-margin-remove-bottom" style="text-align: center;font-size: 14px; margin-top: 5px">{{ $subItem->description ?? "" }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="uk-card-footer" style="text-align: center;border-top: 0;padding: 10px 20px; ">
+                                                        <p>
+                                                        </p>
+                                                        <span class="uk-text-bold" style="color: #F46119; font-size: 18px;">Custom Amount</span>
+                                                        <i class="fas fa-heart fa-1x heart-icon" style="color: {{ $isFavorited ? '#f46119' : '#ccc' }}; position: absolute; top: 10px; left: 10px;"></i>
+                                                    </div>
+                                                    <div class="selected-icon" style="display: none; position: absolute; top: 10px; right: 10px; color: #f46119;">
+                                                        <i class="fas fa-check-circle fa-1x"></i>
+                                                    </div>
+                                                @endif
                                             </div>
                                         </div>
                                     @endforeach
                                 </div>
+                                <!-- Hidden Custom Amount Input (initially hidden) -->
+                                <div id="customAmountContainer" class="d-flex align-items-center justify-content-center" style="display: none; margin-top: 20px;">
+                                    <label for="customAmount" class="me-2" style="flex: 0 0 auto; white-space: nowrap; margin-right: 20px;font-weight: 600;">Custom Amount:</label>
+                                    <input type="number" id="customAmount" class="uk-input" name="custom_amount" placeholder="Enter amount"
+                                           style="flex: 1; background: #FFF;
+                                           border: 1px solid #F46119; max-width: 400px;;font-weight: 600;">
+                                </div>
+
                                 <input type="hidden" name="sub_item_id" id="selectedSubItemId">
                             </form>
                         </div>
@@ -137,10 +178,58 @@
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            const customAmountContainer = $('#customAmountContainer');
+            const customAmountInput = $('#customAmount');
+            const priceElement = $('.game-profile-price__value'); // Assuming this element shows the total price
+            let basePrice = 0; // Initialize the base price
+            let unitAmount = 0; // Initialize the base amount unit
+
+            $('.selectable-card').on('click', function() {
+                const isCustom = $(this).data('is-custom') === 1;
+                const minAmount = $(this).data('min-amount');
+                const maxAmount = $(this).data('max-amount');
+                basePrice = parseFloat($(this).data('price')); // Get the base price
+                unitAmount = parseFloat($(this).data('amount')); // Get the base unit amount
+
+                // Set selected sub-item ID
+                $('#selectedSubItemId').val($(this).data('id'));
+
+                // Show or hide the custom amount input based on is_custom
+                if (isCustom) {
+                    customAmountContainer.show();
+                    customAmountInput.attr('min', minAmount);
+                    customAmountInput.attr('max', maxAmount);
+                    customAmountInput.attr('placeholder', `Enter amount between ${minAmount} and ${maxAmount}`);
+                    customAmountInput.val(minAmount); // Set initial amount to minAmount
+
+                    // Calculate initial price based on minAmount
+                    const initialPrice = (minAmount / unitAmount) * basePrice;
+                    priceElement.text(initialPrice.toFixed(2) + " " + $(priceElement).data('currency'));
+                } else {
+                    customAmountContainer.hide();
+                    customAmountInput.val(''); // Clear the input if hidden
+                    priceElement.text(basePrice.toFixed(2) + " " + $(priceElement).data('currency'));
+                }
+            });
+
+            // Update price dynamically when custom amount changes
+            customAmountInput.on('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '');
+                const enteredAmount = parseFloat(customAmountInput.val());
+                console.log("customAmountInput", enteredAmount)
+
+                if (enteredAmount >= customAmountInput.attr('min') && enteredAmount <= customAmountInput.attr('max')) {
+                    // Calculate the updated price based on the entered custom amount
+                    const updatedPrice = (enteredAmount / unitAmount) * basePrice;
+                    priceElement.text(updatedPrice.toFixed(2) + " " + $(priceElement).data('currency'));
+                }
+            });
+
             const cards = document.querySelectorAll('.selectable-card');
-            const priceElement = document.querySelector('.game-profile-price__value');
             let currency = $(priceElement).data('currency')
             const serviceIdInput = document.getElementById('service_id');
+            const AmountInput = document.getElementById('customAmount');
+
             let selectedSubItemId = null;
 
             cards.forEach(card => {
@@ -175,6 +264,7 @@
                 const formData = new FormData();
                 formData.append('sub_item_id', selectedSubItemId);
                 formData.append('service_id', serviceIdInput.value);
+                formData.append('custom_amount', AmountInput?.value >> null);
                 formData.append('_token', document.querySelector('input[name="_token"]').value);
 
                 fetch('{{ route('purchase_order') }}', {

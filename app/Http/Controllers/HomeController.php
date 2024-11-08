@@ -518,6 +518,7 @@ class HomeController extends Controller
         $request->validate([
             'sub_item_id' => 'required|exists:sub_items,id',
             'service_id' => 'required|string',
+            'custom_amount' => 'required|integer|min:1|nullable',
         ]);
 
         $user = Auth::user();
@@ -578,6 +579,19 @@ class HomeController extends Controller
             }
         }
 
+        $order_amount = $subItem->amount;
+
+        if ($subItem->is_custom == 1) {
+            $fe_price = round($sub_price * $feePercentage / 100, 2);
+            $order_amount = $request->custom_amount;
+            $unitAmount = $subItem->amount; // Each 100 units
+            $basePrice = $subItem->price; // Price for each 100 units
+
+            // Calculate price based on custom amount
+            $sub_price = ($order_amount / $unitAmount) * $basePrice;
+            $fe_price = round($sub_price * $feePercentage / 100, 2);
+        }
+
         $totalPrice = $sub_price + $fe_price;
 
         // Check if the user has enough balance
@@ -608,7 +622,7 @@ class HomeController extends Controller
             'service_id' => $request->service_id ?? null,
             'wallet_before' => $before_balance ?? null,
             'wallet_after' => $after_balance ?? null,
-            'amount' => $subItem->amount ?? null,
+            'amount' => $order_amount,
             'currency_id' => $user->currency_id ?? null,
             'item_id' => $subItem->item->id ?? null,
             'sub_item_id' => $subItem->id ?? null,

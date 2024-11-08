@@ -87,7 +87,10 @@ class ItemController extends Controller
                     'name' => $subItemData['name'],
                     'description' => $subItemData['description'],
                     'amount' => $subItemData['amount'],
-                    'price' => $subItemData['price']
+                    'price' => $subItemData['price'],
+                    'max_amount' => $subItemData['max_amount'] ?? null,
+                    'minimum_amount' => $subItemData['minimum_amount'] ?? null,
+                    'is_custom' => $subItemData['is_custom'] ?? 0,
                 ]);
 
                 // Save the sub-item to the parent item
