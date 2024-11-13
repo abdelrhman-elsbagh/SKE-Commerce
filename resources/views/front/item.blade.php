@@ -57,7 +57,7 @@
                                                         <span class="uk-text-bold" style="color: #F46119; font-size: 18px;">
                                                             {{ number_format($subItem->price + ($subItem->price * $config->fee / 100), 2) }} {{ $user->currency->currency ?? "USD" }}
                                                         </span>
-                                                        <i class="fas fa-heart fa-1x heart-icon" style="color: {{ $isFavorited ? '#f46119' : '#ccc' }}; position: absolute; top: 10px; left: 10px;"></i>
+                                                        <i id="addToFavouritesButton" class="fas fa-heart fa-1x heart-icon favourite-item" style="color: {{ $isFavorited ? '#f46119' : '#ccc' }}; position: absolute; top: 10px; left: 10px;"></i>
                                                     </div>
                                                     <div class="selected-icon" style="display: none; position: absolute; top: 10px; right: 10px; color: #f46119;">
                                                         <i class="fas fa-check-circle fa-1x"></i>
@@ -109,7 +109,6 @@
                     <div class="game-profile-price" style="margin-top: 110px">
                         <div class="game-profile-price__value" data-currency="{{ $user->currency->currency ?? "USD" }}">0.00 {{ $user->currency->currency ?? "USD" }}</div>
                         <button id="buyNowButton" class="uk-button uk-button-danger uk-width-1-1" type="button"><span class="ico_shopping-cart"></span><span>Buy Now</span></button>
-                        <button id="addToFavouritesButton" class="uk-button uk-button-primary uk-width-1-1" type="button"><span class="ico_add-square"></span><span>Add to Favourites</span></button>
                     </div>
                 </div>
             @else

@@ -81,6 +81,40 @@
                 </div>
             @endforeach
         </div>
+
+        <footer class="page-footer" style="padding: 20px 0 5px 0; text-align: left;margin-top:20px; background: #FFF;
+position: absolute;width: 100%;left: 0;">
+            <div class="uk-container">
+                <div class="uk-grid" uk-grid>
+                    @foreach($footerItems as $tag => $items)
+                        <div class="uk-width-1-4@m footer-section">
+                            <h5>{{ ucfirst($tag) }}</h5>
+                            <ul>
+                                @foreach($items as $item)
+                                    <li>
+                                        <a href="{{ $item->link }}">
+                                            @if($item->hasMedia('images'))
+                                                <img src="{{ $item->getFirstMediaUrl('images') }}" alt="{{ $item->title }}" style="width: 20px; height: 20px;">
+                                            @endif
+                                            {{ $item->title }}
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endforeach
+                </div>
+
+                <hr />
+
+                <!-- Footer Bottom Section -->
+                <p class="mt-2" style="margin-bottom: 5px; text-align: center;">&copy;
+                    <script>document.write(new Date().getFullYear())</script>
+                    {{ $config->name }} All Rights Reserved.
+                </p>
+                <a href="#" style="text-align: center;display: block;">Terms & Conditions</a>
+            </div>
+        </footer>
     </main>
     @if(session('success'))
         @push('scripts')

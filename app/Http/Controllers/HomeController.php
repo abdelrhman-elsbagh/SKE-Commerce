@@ -6,12 +6,14 @@ use App\Models\BusinessClientWallet;
 use App\Models\BusinessPaymentMethod;
 use App\Models\Config;
 use App\Models\Currency;
+use App\Models\Footer;
 use App\Models\Item;
 use App\Models\News;
 use App\Models\Notification;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderSubItem;
+use App\Models\Page;
 use App\Models\Partner;
 use App\Models\PaymentMethod;
 use App\Models\Plan;
@@ -72,6 +74,8 @@ class HomeController extends Controller
             return $item->category->name;
         });
 
+        $footerItems = Footer::with('media')->get()->groupBy('tag');
+
         if($user){
             if( $user->status == 'inactive' ){
 
@@ -83,6 +87,7 @@ class HomeController extends Controller
                     'user' => $user,
                     'news' => $news,
                     'latestUnreadNotification' => $latestUnreadNotification,
+                    'footerItems' => $footerItems,
                 ]);
             }
         }
@@ -96,6 +101,7 @@ class HomeController extends Controller
             'user' => $user,
             'news' => $news,
             'latestUnreadNotification' => $latestUnreadNotification,
+            'footerItems' => $footerItems,
         ]);
     }
 
@@ -972,5 +978,35 @@ class HomeController extends Controller
         } else {
             return response()->json(['success' => false, 'message' => 'Invalid credentials'], 401);
         }
+    }
+
+    public function showPageBySlug(Request $request, $slug)
+    {
+        // Fetch and share config data
+        $config = Config::with('media')->first();
+        View::share('config', $config);
+
+        // Get the authenticated user, if not redirect to sign-in
+        $user = Auth::guard('web')->user();
+        if (!$user) {
+            return redirect()->route('sign-in');
+        }
+
+        // Count user's favorites if logged in
+        $favoritesCount = $user->favorites()->count();
+        View::share('favoritesCount', $favoritesCount);
+
+        // Fetch the page by slug, return 404 if not found
+        $page = Page::where('slug', $slug)->firstOrFail();
+
+        // Get active payment methods
+        $paymentMethods = PaymentMethod::where('status', 'active')->orderBy('created_at', 'DESC')->get();
+
+        // Pass data to the view
+        return view('front.page', [
+            'page' => $page,
+            'paymentMethods' => $paymentMethods,
+            'user' => $user
+        ]);
     }
 }

@@ -247,9 +247,15 @@
                             <img src="{{ asset('assets/img/profile.png')}}" alt="profile">
                         </a>
                     @elseauth('web')
+                        <div class="" style="margin-right: 50px">
+                            <a href="{{route('favourites')}}">
+                                <i class="fas fa-heart"></i><span class="count">{{$favoritesCount}}</span>
+                            </a>
+                        </div>
                         <a class="profile" href="{{route('wallet')}}" style="margin-right: 40px;">
                             <div class="activities-item__price">
                                 {{\Illuminate\Support\Facades\Auth::user()->wallet->balance ?? 0}} {{ $user->currency->currency ?? "USD" }}
+
                             </div>
                         </a>
                         <a class="profile" href="{{route('profile')}}">
@@ -291,7 +297,6 @@
                         @if(Auth::user()->hasRole('Admin'))
                             <li id="dashboard"><a href="{{route('dashboard')}}"><i class="fas fa-tachometer-alt"></i><span>Admin Dashboard</span></a></li>
                         @else
-                            <li id="profile"><a href="{{route('profile')}}"><i class="fas fa-user"></i><span>Profile</span></a></li>
                             <li id="home"><a href="{{route('home')}}"><i class="fas fa-home"></i><span>Home</span></a></li>
                             <li id="wallet"><a href="{{route('wallet')}}"><i class="fas fa-wallet"></i><span>Wallet</span></a></li>
                             <li id="purchase-request"><a href="#modal-purchase-request" data-uk-toggle>
@@ -299,7 +304,6 @@
                             <li id="payment-methods"><a href="{{ route('payments-page') }}"><i class="fas fa-credit-card"></i><span>Payment Methods</span></a></li>
                             <li id="partners"><a href="{{route('partners')}}"><i class="fas fa-id-badge"></i><span>Agents</span></a></li>
                             <li id="posts"><a href="{{route('posts')}}"><i class="fas fa-tag"></i><span>Posts</span></a></li>
-                            <li id="favourites"><a href="{{route('favourites')}}"><i class="fas fa-heart"></i><span>Favourites</span><span class="count">{{$favoritesCount}}</span></a></li>
                         @endif
                         @if(Auth::user()->is_external)
                                 <li id="favourites"><a href="{{route('api')}}"><i class="fas fa-code"></i><span>API</span></a></li>
@@ -429,15 +433,6 @@
         </div>
     @endif
 </div>
-
-<footer class="page-footer" style="padding: 20px 0 5px 0;text-align: center">
-    <div class="container text-center">
-        <p class="mt-2" style="margin-bottom: 5px">&copy;
-            <script>document.write(new Date().getFullYear())</script>
-            {{ $config->name }} All Rights Reserved.</p>
-        <a href="{{ route('terms-page') }}">Terms & Conditions</a>
-    </div>
-</footer>
 
 <script src="{{ asset('assets/js/libs.js')}}"></script>
 <script src="{{ asset('assets/js/main.js')}}"></script>

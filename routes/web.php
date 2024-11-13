@@ -4,6 +4,8 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ApiItemsController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ClientStoreController;
+use App\Http\Controllers\FooterController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
@@ -80,6 +82,7 @@ Route::middleware(['auth', 'role:User'])->group(function () {
     Route::get('wallet', [HomeController::class, 'wallet'])->name('wallet');
     Route::get('partners', [HomeController::class, 'partners'])->name('partners');
     Route::get('payment-methods', [HomeController::class, 'payment_methods'])->name('payments-page');
+    Route::get('/page/{slug}', [HomeController::class, 'showPageBySlug'])->name('page');
     Route::get('terms-conditions', [HomeController::class, 'terms_page'])->name('terms-page');
     Route::get('/item/{id}', [HomeController::class, 'item'])->name('item.show');
     Route::post('purchase', [HomeController::class, 'purchase'])->name('purchase');
@@ -152,11 +155,13 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:Admin']], func
     Route::resource('payment-methods', PaymentMethodController::class);
     Route::resource('subscriptions', SubscriptionController::class);
     Route::resource('tags', TagController::class);
+    Route::resource('footer', FooterController::class);
     Route::resource('fee-groups', FeeGroupController::class)->names('fee_groups');
     Route::resource('posts', PostController::class);
     Route::resource('partners', PartnerController::class);
     Route::resource('notifications', NotificationController::class);
     Route::resource('currencies', CurrencyController::class);
+    Route::resource('pages', PageController::class);
 
     Route::get('/order-export', [OrderController::class, 'export'])->name('orders.export');
 

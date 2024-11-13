@@ -1,9 +1,7 @@
-@extends('layouts.vertical', ['page_title' => 'Edit Terms and Conditions'])
+@extends('layouts.vertical', ['page_title' => 'Create/Edit Page'])
 
 @section('css')
-    @vite([
-        'node_modules/jquery-toast-plugin/dist/jquery.toast.min.css',
-    ])
+    @vite(['node_modules/jquery-toast-plugin/dist/jquery.toast.min.css'])
     <!-- Quill.js CSS via CDN -->
     <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
 @endsection
@@ -13,7 +11,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box">
-                    <h4 class="page-title">Edit Terms and Conditions</h4>
+                    <h4 class="page-title">{{ isset($page) ? 'Edit Page' : 'Create Page' }}</h4>
                 </div>
             </div>
         </div>
@@ -22,12 +20,22 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                            <form id="edit-terms-conditions-form" action="{{ route('terms.update', $termsConditions->id) }}" method="POST" enctype="multipart/form-data">
+                        <form id="create-edit-page-form" action="{{ isset($page) ? route('pages.update', $page->id) : route('pages.store') }}" method="POST">
                             @csrf
-                            @method('PUT')
+                            @if(isset($page))
+                                @method('PUT')
+                            @endif
                             <div class="mb-3">
-                                <label for="data" class="form-label">Terms and Conditions</label>
-                                <div id="snow-editor" style="height: 300px;">{!! $termsConditions->data !!}</div>
+                                <label for="title" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="title" name="title" value="{{ $page->title ?? '' }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="slug" class="form-label">Slug</label>
+                                <input type="text" class="form-control" id="slug" name="slug" value="{{ $page->slug ?? '' }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="data" class="form-label">Data</label>
+                                <div id="quill-editor" style="height: 300px;">{!! $page->data ?? '' !!}</div>
                                 <input type="hidden" name="data" id="data">
                             </div>
                             <button type="submit" class="btn btn-primary">Submit</button>
@@ -40,16 +48,14 @@
 @endsection
 
 @section('script')
-    @vite([
-        'node_modules/jquery-toast-plugin/dist/jquery.toast.min.js',
-    ])
+    @vite(['node_modules/jquery-toast-plugin/dist/jquery.toast.min.js'])
     <!-- Quill.js JS via CDN -->
     <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
 
     <script>
         $(document).ready(function() {
-            // Initialize Quill editor with a rich toolbar
-            var quill = new Quill('#snow-editor', {
+            // Initialize Quill editor
+            var quill = new Quill('#quill-editor', {
                 theme: 'snow',
                 modules: {
                     toolbar: [
@@ -62,21 +68,15 @@
                         [{ 'indent': '-1' }, { 'indent': '+1' }],         // outdent/indent
                         [{ 'direction': 'rtl' }],                         // text direction
                         [{ 'align': [] }],                                // text alignment
-                        ['link', 'image', 'video'],                       // link, image and video
+                        ['link', 'video'],                                // link and video
                         ['clean']                                         // remove formatting button
                     ]
                 }
             });
 
-            // Update hidden input field whenever content changes
-            quill.on('text-change', function() {
-                $('#data').val(quill.root.innerHTML);
-            });
-
-            $('#edit-terms-conditions-form').on('submit', function(e) {
+            // Set Quill's content to the hidden input on form submit
+            $('#create-edit-page-form').on('submit', function(e) {
                 e.preventDefault();
-
-                // Set the description content from the Quill editor to the hidden input field
                 $('#data').val(quill.root.innerHTML);
 
                 var formData = new FormData(this);
@@ -88,23 +88,28 @@
                     processData: false,
                     contentType: false,
                     success: function(response) {
+                        $.toast().reset('all'); // Reset previous toasts
                         $.toast({
                             heading: 'Success',
-                            text: 'Terms and Conditions updated successfully.',
+                            text: 'Page created/updated successfully.',
                             icon: 'success',
                             loader: true,
                             loaderBg: '#f96868',
                             position: 'top-right',
                             hideAfter: 3000,
                             afterHidden: function () {
-                                window.location.href = "{{ route('terms.edit', $termsConditions->id) }}";
+                                window.location.href = "{{ route('pages.index') }}";
                             }
                         });
+
+                        $('#create-edit-page-form')[0].reset();
+                        quill.setContents([]); // Clear Quill editor content after submission
                     },
                     error: function(response) {
+                        $.toast().reset('all'); // Reset previous toasts
                         $.toast({
                             heading: 'Error',
-                            text: 'There was an error updating the Terms and Conditions.',
+                            text: 'There was an error creating/updating the page.',
                             icon: 'error',
                             loader: true,
                             loaderBg: '#f96868',

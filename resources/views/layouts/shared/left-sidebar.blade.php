@@ -679,9 +679,23 @@
             </li>
 
             <li class="side-nav-item">
+                <a href="{{ route('pages.index') }}" class="side-nav-link nav-link">
+                    <i class="ri-pages-line"></i>
+                    <span>Pages</span>
+                </a>
+            </li>
+
+            <li class="side-nav-item">
                 <a href="{{ route('news.edit') }}" class="side-nav-link nav-link">
                     <i class="ri-survey-line"></i>
                     <span>M text</span>
+                </a>
+            </li>
+
+            <li class="side-nav-item">
+                <a href="{{ route('footer.index') }}" class="side-nav-link nav-link">
+                    <i class="ri-slideshow-line"></i>
+                    <span> Footer </span>
                 </a>
             </li>
 
