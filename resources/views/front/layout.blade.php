@@ -57,33 +57,9 @@
         </style>
     @endif
 
-    <style>
-        .sidebar-box ul.uk-nav li a i {
-            font-size: 16px;
-            margin-right: 10px;
-            vertical-align: middle;
-        }
-
-        .sidebar-box ul.uk-nav li a span {
-            font-size: 16px;
-            vertical-align: middle;
-        }
-
-        .sidebar-box ul.uk-nav li a i.pr8 {
-            font-size: 18px !important;
-            padding-right: 8px !important;
-        }
-
-        .sidebar-box ul.uk-nav li#partners a span,
-        .sidebar-box ul.uk-nav li#posts a span {
-            font-size: 16px !important;
-        }
-
-        .sidebar-box ul.uk-nav li a .fab {
-            font-size: 22px;
-        }
-    </style>
-
+    @if(app()->getLocale() === 'ar')
+        <link rel="stylesheet" href="{{ asset('assets/css/main-ar.css') }}">
+    @endif
 </head>
 
 <body class="page-store">
@@ -217,7 +193,6 @@
     </div>
 </div>
 <!-- Loader end-->
-
 <div class="page-wrapper">
     <header class="page-header">
         <div class="page-header__inner">
@@ -230,7 +205,6 @@
                         @else
                             <img src="{{ asset('assets/img/logo.png')}}" alt="logo">
                         @endif
-{{--                        <span class="page-header__logo_text">{{$config->name}}</span>--}}
                     </a>
                 </div>
             </div>
@@ -238,21 +212,21 @@
                 <div class="page-header__search1"></div>
                 <div class="page-header__action">
                     @auth('business_client')
-                        <a class="profile" href="{{route('business-wallet')}}" style="margin-right: 40px;">
+                        <a class="profile head-balance-icon" href="{{route('business-wallet')}}">
                             <div class="activities-item__price">
                                 {{\Illuminate\Support\Facades\Auth::user()->wallet->balance ?? 0}} {{ $user->currency->currency ?? "USD" }}
                             </div>
                         </a>
-                        <a class="profile" href="{{route('business-profile')}}" style="margin-right: 40px;">
+                        <a class="profile head-balance-icon" href="{{route('business-profile')}}">
                             <img src="{{ asset('assets/img/profile.png')}}" alt="profile">
                         </a>
                     @elseauth('web')
-                        <div class="" style="margin-right: 50px">
+                        <div class="fav-head-icon">
                             <a href="{{route('favourites')}}">
                                 <i class="fas fa-heart"></i><span class="count">{{$favoritesCount}}</span>
                             </a>
                         </div>
-                        <a class="profile" href="{{route('wallet')}}" style="margin-right: 40px;">
+                        <a class="profile head-wallet-icon" href="{{route('wallet')}}"">
                             <div class="activities-item__price">
                                 {{\Illuminate\Support\Facades\Auth::user()->wallet->balance ?? 0}} {{ $user->currency->currency ?? "USD" }}
 
@@ -266,6 +240,22 @@
                             @endif
                         </a>
                     @endauth
+
+                        <!-- Language Switcher -->
+                        <div class="language-switcher" style="margin-left: 20px; display: flex; align-items: center;">
+                            @if(app()->getLocale() === 'en')
+                                <!-- Show Arabic Language Icon -->
+                                <a href="{{ route('change-language', ['lang' => 'ar']) }}" title="Switch to Arabic" style="margin-left: 10px;">
+                                    <img src="{{ asset('assets/img/uae-flag.png') }}" alt="Arabic" style="width: 24px; height: 24px; border-radius: 50%;">
+                                </a>
+                            @elseif(app()->getLocale() === 'ar')
+                                <!-- Show English Language Icon -->
+                                <a href="{{ route('change-language', ['lang' => 'en']) }}" title="Switch to English" style="margin-left: 10px;">
+                                    <img src="{{ asset('assets/img/us.jpg') }}" alt="English" style="width: 24px; height: 24px; border-radius: 50%;">
+                                </a>
+                            @endif
+                        </div>
+
                 </div>
             </div>
         </div>
@@ -277,17 +267,17 @@
             <div class="sidebar-box">
                 <ul class="uk-nav">
                     @if(Auth::guard('web')->guest() && Auth::guard('business_client')->guest())
-                        <li id="login"><a href="{{ route('sign-in') }}"><i class="fas fa-sign-in-alt"></i><span>Login</span></a></li>
-                        <li id="register"><a href="{{ route('register-page') }}"><i class="fas fa-user-plus"></i><span>Register</span></a></li>
+                        <li id="login"><a href="{{ route('sign-in') }}"><i class="fas fa-sign-in-alt"></i><span>@lang('messages.login')</span></a></li>
+                        <li id="register"><a href="{{ route('register-page') }}"><i class="fas fa-user-plus"></i><span>@lang('messages.register')</span></a></li>
                     @endif
 
                     @auth('business_client')
-                        <li id="business-profile"><a href="{{route('business-profile')}}"><i class="fas fa-user"></i><span>Profile</span></a></li>
-                        <li id="business-wallet"><a href="{{route('business-wallet')}}"><i class="fas fa-wallet"></i><span>Wallet</span></a></li>
-                        <li id="plans"><a href="{{ route('plans-page') }}"><i class="fas fa-box-open"></i><span>Plans</span></a></li>
+                        <li id="business-profile"><a href="{{route('business-profile')}}"><i class="fas fa-user"></i><span>@lang('messages.profile')</span></a></li>
+                        <li id="business-wallet"><a href="{{route('business-wallet')}}"><i class="fas fa-wallet"></i><span>@lang('messages.wallet')</span></a></li>
+                        <li id="plans"><a href="{{ route('plans-page') }}"><i class="fas fa-box-open"></i><span>@lang('messages.plans')</span></a></li>
                         <li>
                             <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form-business').submit();">
-                                <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+                                <i class="fas fa-sign-out-alt"></i><span>@lang('messages.logout')</span>
                             </a>
                             <form id="logout-form-business" action="{{ route('business-logout') }}" method="POST" style="display: none;">
                                 @csrf
@@ -295,41 +285,42 @@
                         </li>
                     @elseauth('web')
                         @if(Auth::user()->hasRole('Admin'))
-                            <li id="dashboard"><a href="{{route('dashboard')}}"><i class="fas fa-tachometer-alt"></i><span>Admin Dashboard</span></a></li>
+                            <li id="dashboard"><a href="{{route('dashboard')}}"><i class="fas fa-tachometer-alt"></i><span>@lang('messages.admin_dashboard')</span></a></li>
                         @else
-                            <li id="home"><a href="{{route('home')}}"><i class="fas fa-home"></i><span>Home</span></a></li>
-                            <li id="wallet"><a href="{{route('wallet')}}"><i class="fas fa-wallet"></i><span>Wallet</span></a></li>
+                            <li id="home"><a href="{{route('home')}}"><i class="fas fa-home"></i><span>@lang('messages.home')</span></a></li>
+                            <li id="wallet"><a href="{{route('wallet')}}"><i class="fas fa-wallet"></i><span>@lang('messages.wallet')</span></a></li>
                             <li id="purchase-request"><a href="#modal-purchase-request" data-uk-toggle>
-                                    <i class="fas fa-money-bill-wave"></i><span>Purchase Request</span></a></li>
-                            <li id="payment-methods"><a href="{{ route('payments-page') }}"><i class="fas fa-credit-card"></i><span>Payment Methods</span></a></li>
-                            <li id="partners"><a href="{{route('partners')}}"><i class="fas fa-id-badge"></i><span>Agents</span></a></li>
-                            <li id="posts"><a href="{{route('posts')}}"><i class="fas fa-tag"></i><span>Posts</span></a></li>
+                                    <i class="fas fa-money-bill-wave"></i><span>@lang('messages.purchase_request')</span></a></li>
+                            <li id="payment-methods"><a href="{{ route('payments-page') }}"><i class="fas fa-credit-card"></i><span>@lang('messages.payment_methods')</span></a></li>
+                            <li id="partners"><a href="{{route('partners')}}"><i class="fas fa-id-badge"></i><span>@lang('messages.partners')</span></a></li>
+                            <li id="posts"><a href="{{route('posts')}}"><i class="fas fa-tag"></i><span>@lang('messages.posts')</span></a></li>
                         @endif
                         @if(Auth::user()->is_external)
-                                <li id="favourites"><a href="{{route('api')}}"><i class="fas fa-code"></i><span>API</span></a></li>
-                            @endif
+                            <li id="favourites"><a href="{{route('api')}}"><i class="fas fa-code"></i><span>@lang('messages.api')</span></a></li>
+                        @endif
                         <li>
                             <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+                                <i class="fas fa-sign-out-alt"></i><span>@lang('messages.logout')</span>
                             </a>
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                 @csrf
                             </form>
                         </li>
                         <hr />
-                        <li style="display: flex; justify-content: center; align-items: center;margin-top: 80px">
-                            <a href="https://wa.me/{{ $config->whatsapp }}?text={{ urlencode('Welcome to ' . str($config->name ?? "") ) }}" target="_blank" style="text-decoration: none; margin-right: 15px;">
+                        <li class="social-container">
+                            <a class="social-whats" href="https://wa.me/{{ $config->whatsapp }}?text={{ urlencode('Welcome to ' . str($config->name ?? "") ) }}" target="_blank">
                                 <i class="fab fa-whatsapp" style="color: #25D366;"></i>
                             </a>
-                            <a href="{{ $config->telegram }}" target="_blank" style="text-decoration: none; margin-right: 15px;">
+                            <a class="social-telegram" href="{{ $config->telegram }}" target="_blank">
                                 <i class="fab fa-telegram" style="color: #0088cc;"></i>
                             </a>
-                            <a href="{{ $config->facebook }}" target="_blank" style="text-decoration: none;">
+                            <a  class="social-facebook" href="{{ $config->facebook }}" target="_blank">
                                 <i class="fab fa-facebook" style="color: #1877F2;"></i>
                             </a>
                         </li>
                     @endauth
                 </ul>
+
             </div>
         </aside>
 
@@ -371,11 +362,11 @@
     <div class="uk-flex-top" id="modal-purchase-request" data-uk-modal>
         <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
             <button class="uk-modal-close-default" type="button" data-uk-close></button>
-            <h2 class="uk-modal-title">Purchase Request</h2>
+            <h2 class="uk-modal-title">@lang('messages.purchase_request_modal.purchase_request')</h2>
             <form id="purchaseRequestForm" method="POST" action="{{ route('purchase.request') }}" enctype="multipart/form-data">
                 @csrf
                 <div class="uk-margin">
-                    <label class="uk-form-label" for="payment_method_id">Payment Method</label>
+                    <label class="uk-form-label" for="payment_method_id">@lang('messages.purchase_request_modal.payment_method')</label>
                     <div class="uk-form-controls">
                         <select class="uk-select" id="payment_method_id" name="payment_method_id">
                             @foreach($paymentMethods as $paymentMethod)
@@ -385,23 +376,23 @@
                     </div>
                 </div>
                 <div class="uk-margin">
-                    <label class="uk-form-label" for="amount">Amount</label>
+                    <label class="uk-form-label" for="amount">@lang('messages.purchase_request_modal.amount')</label>
                     <div class="uk-form-controls">
-                        <input class="uk-input" id="amount" name="amount" type="number" step="0.01" placeholder="Enter amount">
+                        <input class="uk-input" id="amount" name="amount" type="number" step="0.01" placeholder="@lang('messages.purchase_request_modal.enter_amount')">
                     </div>
                 </div>
                 <div class="uk-margin">
-                    <label class="uk-form-label" for="notes">Notes</label>
+                    <label class="uk-form-label" for="notes">@lang('messages.purchase_request_modal.notes')</label>
                     <div class="uk-form-controls">
-                        <textarea class="uk-textarea" id="notes" name="notes" rows="3" placeholder="Enter notes"></textarea>
+                        <textarea class="uk-textarea" id="notes" name="notes" rows="3" placeholder="@lang('messages.purchase_request_modal.enter_notes')"></textarea>
                     </div>
                 </div>
                 <div class="uk-margin" style="text-align: center">
-                    <label class="uk-form-label" for="image">Upload Image</label>
+                    <label class="uk-form-label" for="image">@lang('messages.purchase_request_modal.upload_image')</label>
                     <input class="" id="image" name="image" type="file" accept="image/*">
                 </div>
                 <div class="uk-margin">
-                    <button type="submit" class="uk-button uk-button-primary uk-width-1-1">Submit</button>
+                    <button type="submit" class="uk-button uk-button-primary uk-width-1-1">@lang('messages.purchase_request_modal.submit')</button>
                 </div>
             </form>
             <div id="form-messages"></div>

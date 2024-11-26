@@ -9,9 +9,9 @@
             <div class="uk-grid uk-child-width-1-3@m uk-child-width-1-2@s uk-grid-small" data-uk-grid>
                 @foreach($paymentMethods as $method)
                     <div class="">
-                        <div class="uk-card uk-card-default uk-card-hover uk-margin uk-flex uk-flex-column">
+                        <div class="uk-card uk-card-default uk-card-hover uk-margin uk-flex uk-flex-column pay-method-card">
                             <div class="uk-card-header">
-                                <h3 class="uk-card-title">{{ $method->gateway }}</h3>
+                                <h3 class="uk-card-title pay-method-title">{{ $method->gateway }}</h3>
                             </div>
                             <div class="uk-card-body uk-flex-1">
                                 <div class="description payment-desc">{!! $method->description !!}</div>

@@ -29,6 +29,7 @@
                                 <th>ID</th>
                                 <th>Title</th>
                                 <th>Slug</th>
+                                <th>Link</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
@@ -38,6 +39,9 @@
                                     <td>{{ $page->id }}</td>
                                     <td>{{ $page->title ?? "" }}</td>
                                     <td>{{ $page->slug ?? "" }}</td>
+                                    <td>
+                                        <a href="{{ url('/page/' . $page->slug) }}" target="_blank">{{ url('/page/' . $page->slug) }}</a>
+                                    </td>
                                     <td>
                                         <a href="{{ route('pages.show', $page->id) }}" class="btn btn-info"><i class="ri-eye-line"></i></a>
                                         <a href="{{ route('pages.edit', $page->id) }}" class="btn btn-warning"><i class="ri-edit-box-fill"></i></a>

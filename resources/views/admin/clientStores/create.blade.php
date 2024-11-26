@@ -24,10 +24,6 @@
                         <label for="secret_key" class="form-label">Secret Key</label>
                         <input type="text" class="form-control" id="secret_key" name="secret_key" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="status" class="form-label">Status</label>
-                        <input type="text" class="form-control" id="status" value="pending" readonly>
-                    </div>
                     <button type="submit" class="btn btn-primary">Create</button>
                 </form>
             </div>

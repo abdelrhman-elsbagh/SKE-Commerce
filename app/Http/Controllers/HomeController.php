@@ -236,6 +236,16 @@ class HomeController extends Controller
         $currencies = Currency::where('status', 'active')->get();
         return view('front.register', compact('config', 'currencies'));
     }
+    public function register_partner_page(Request $request)
+    {
+        $config = Config::with('media')->first();
+        /*$user = Auth::user();
+        if (!$user) {
+            return redirect()->route('login'); // Redirect to login if not authenticated
+        }*/
+        $currencies = Currency::where('status', 'active')->get();
+        return view('front.register-partner', compact('config', 'currencies'));
+    }
 
     public function register(Request $request)
     {
@@ -259,7 +269,7 @@ class HomeController extends Controller
             'currency_id' => $request->currency_id,
             'address' => $request->country,
             'password' => Hash::make($request->password),
-            'status' => 'inactive',
+            'status' => 'active',
         ]);
 
         $user->assignRole('User');

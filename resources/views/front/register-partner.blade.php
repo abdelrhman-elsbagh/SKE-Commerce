@@ -58,8 +58,8 @@
                         </ul>
                     </div>
                     <div class="form-login__box">
-                        <div class="uk-heading-line uk-text-center"><span>or with Email</span></div>
-                        <form id="registrationForm" action="{{ route('register') }}" method="POST">
+                        <div class="uk-heading-line uk-text-center"><span>Partner Registration</span></div>
+                        <form id="partnerRegistrationForm" action="{{ route('partner-register') }}" method="POST">
                             @csrf
                             <div class="uk-margin">
                                 <input class="uk-input" type="text" name="name" placeholder="Name">
@@ -70,23 +70,20 @@
                                 <div class="uk-text-danger" id="error-email"></div>
                             </div>
                             <div class="uk-margin">
+                                <input class="uk-input" type="text" name="company" placeholder="Company Name">
+                                <div class="uk-text-danger" id="error-company"></div>
+                            </div>
+                            <div class="uk-margin">
+                                <input class="uk-input" type="text" name="domain" placeholder="Domain">
+                                <div class="uk-text-danger" id="error-company"></div>
+                            </div>
+                            <div class="uk-margin">
                                 <input class="uk-input" type="text" name="phone" placeholder="Whatsapp Number">
                                 <div class="uk-text-danger" id="error-phone"></div>
                             </div>
                             <div class="uk-margin">
                                 <div class="custom-select-wrapper">
-                                    <select class="uk-select custom-select" name="currency_id">
-                                        @foreach($currencies as $currency)
-                                            <option value="{{ $currency->id }}">{{ $currency->currency }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="uk-text-danger" id="error-currency_id"></div>
-                            </div>
-
-                            <div class="uk-margin">
-                                <div class="custom-select-wrapper">
-                                    <select class="uk-select custom-select country" name="country" id="country"></select>
+                                    <select class="uk-select custom-select country" name="country" id="country-partner"></select>
                                 </div>
                                 <div class="uk-text-danger" id="error-country"></div>
                             </div>
@@ -100,7 +97,7 @@
                                 <div class="uk-text-danger" id="error-password_confirmation"></div>
                             </div>
                             <div class="uk-margin">
-                                <button class="uk-button uk-button-danger uk-width-1-1" type="submit">Register</button>
+                                <button class="uk-button uk-button-danger uk-width-1-1" type="submit">Register as Partner</button>
                             </div>
                             <div class="uk-text-center">
                                 <span>Already have an account?</span>

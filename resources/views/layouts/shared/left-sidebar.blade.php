@@ -700,13 +700,6 @@
             </li>
 
             <li class="side-nav-item">
-                <a href="{{ route('terms.edit') }}" class="side-nav-link">
-                    <i class="ri-question-line"></i>
-                    <span> Terms & Conditions </span>
-                </a>
-            </li>
-
-            <li class="side-nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarCategories" aria-expanded="false" aria-controls="sidebarCategories" class="side-nav-link nav-link">
                     <i class="ri-folder-line"></i>
                     <span> Categories </span>

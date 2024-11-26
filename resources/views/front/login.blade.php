@@ -41,15 +41,12 @@
                     <img class="animation-navspinv" src="{{ asset('assets/img/logo.png')}}" alt="logo">
                 @endif
                 <span>{{$config->name ?? "Company Name"}}</span>
-                <h1>Join now and play mighty games!</h1>
             </div>
             <div>
                 <div class="form-login">
                     <div class="form-login__social">
                         <ul class="social">
                             <li><a href="http://www.google.com"><img src="{{ asset('assets/img/google.svg') }}" alt="google"></a></li>
-                            <li><a href="http://www.facebook.com"><img src="{{ asset('assets/img/facebook.svg') }}" alt="facebook"></a></li>
-                            <li><a href="http://www.twitter.com"><img src="{{ asset('assets/img/twitter.svg') }}" alt="twitter"></a></li>
                         </ul>
                     </div>
                     <div class="form-login__box">

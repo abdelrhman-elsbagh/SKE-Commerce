@@ -22,9 +22,6 @@
                             <div class="game-card__info">
                                 <a class="game-card__title" style="padding-bottom: 0; margin-bottom: 0;">{{ $post->title }}</a>
                                 <section class="post-desc">{!! \Illuminate\Support\Str::limit($post->description, 300) !!}</section>
-                                <p class="card__info" style="margin-top: 0;padding-top: 0;margin-bottom: 0">
-                                    {{ $post->created_at  }}
-                                </p>
                                 <div class="like-dislike-buttons" style="margin-top: 10px;">
                                     <button class="like-button" data-post-id="{{ $post->id }}">
                                         <i class="fas fa-thumbs-up"></i> {{ $post->likes_count }}
@@ -32,6 +29,11 @@
                                     <button class="dislike-button" data-post-id="{{ $post->id }}">
                                         <i class="fas fa-thumbs-down"></i> {{ $post->dislikes_count }}
                                     </button>
+
+                                    <p class="card__info" style="margin: 0; padding-top: 0;float: right;font-weight: 400;">
+                                        {{ $post->created_at }}
+                                    </p>
+
                                 </div>
                             </div>
                         </div>
@@ -44,7 +46,7 @@
     <!-- Modal -->
     <div id="post-modal" class="uk-modal-full" uk-modal>
         <div class="uk-modal-dialog">
-            <button class="uk-modal-close-full uk-close-large" type="button" uk-close></button>
+            <button class="uk-modal-close-full uk-close-large close-post" type="button" uk-close></button>
             <div class="uk-grid-collapse uk-child-width-1-2@s uk-flex-middle" uk-grid>
                 <div class="uk-background-cover" id="post-modal-image" style="background-image: url('');" uk-height-viewport></div>
                 <div class="uk-padding-large">
@@ -197,9 +199,9 @@
             background-position: center;
         }
 
-        .like-dislike-buttons {
-            display: flex;
-            justify-content: space-between;
+        .like-dislike-buttons button {
+            display: inline-block;
+            margin-right: 5px;
         }
 
         .like-button,

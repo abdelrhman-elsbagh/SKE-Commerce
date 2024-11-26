@@ -61,7 +61,7 @@
                             <tbody>
                             @foreach($transactions as $transaction)
                                 <tr id="transaction-{{ $transaction->id }}">
-                                    <td>{{ $transaction->uuid ?? "" }}</td>
+                                    <td>{{ $transaction->mask ?? "" }}</td>
                                     <td>
                                         @if($transaction->payment_status == 'satisfine')
                                             <span class="badge bg-success-subtle text-success rounded-pill">Satisfine</span>

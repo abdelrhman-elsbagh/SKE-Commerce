@@ -41,8 +41,8 @@
         <!-- Search Input Field -->
         <div class="uk-width-4-5@l uk-width-3-3@m uk-width-3-3@s uk-margin-auto uk-margin-top">
             <div class="search-container">
-                <input type="text" id="search-items" class="form-control uk-input" placeholder="Search items by name..." style="background: #FFF;color: #222;">
-                <i class="fa fa-search search-icon"></i>
+                <input type="text" id="search-items" class="form-control uk-input" placeholder="@lang('messages.search.placeholder')">
+                <i class="fa fa-search main-index-search-icon"></i>
             </div>
         </div>
 
@@ -82,14 +82,21 @@
             @endforeach
         </div>
 
-        <footer class="page-footer" style="padding: 20px 0 5px 0; text-align: left;margin-top:20px; background: #FFF;
-position: absolute;width: 100%;left: 0;">
+        <footer class="page-footer" style="">
             <div class="uk-container">
                 <div class="uk-grid" uk-grid>
-                    @foreach($footerItems as $tag => $items)
-                        <div class="uk-width-1-4@m footer-section">
-                            <h5>{{ ucfirst($tag) }}</h5>
-                            <ul>
+                    <div class="uk-width-1-3@m footer-section">
+                        <h5 class="footer-title">@lang('messages.footer.registration')</h5>
+                        <ul>
+                            <li>
+                                <a href="{{ route('register-partner') }}">@lang('messages.footer.partner_registration')</a>
+                            </li>
+                        </ul>
+                    </div>
+                @foreach($footerItems as $tag => $items)
+                        <div class="uk-width-1-3@m footer-section">
+                            <h5 class="footer-title">{{ ucfirst($tag) }}</h5>
+                            <ul class="footer-ul">
                                 @foreach($items as $item)
                                     <li>
                                         <a href="{{ $item->link }}">
@@ -108,11 +115,12 @@ position: absolute;width: 100%;left: 0;">
                 <hr />
 
                 <!-- Footer Bottom Section -->
-                <p class="mt-2" style="margin-bottom: 5px; text-align: center;">&copy;
+                <p class="mt-2" style="margin-bottom: 5px; text-align: center;">
+                    &copy;
                     <script>document.write(new Date().getFullYear())</script>
-                    {{ $config->name }} All Rights Reserved.
+                    {{ $config->name }} @lang('messages.footer.rights_reserved')
                 </p>
-                <a href="#" style="text-align: center;display: block;">Terms & Conditions</a>
+
             </div>
         </footer>
     </main>
@@ -152,21 +160,7 @@ position: absolute;width: 100%;left: 0;">
     @endsection
 
     <style>
-        .search-container {
-            position: relative;
-            width: 100%;
-        }
-        .search-container input {
-            width: 100%;
-            padding-right: 35px;
-        }
-        .search-icon {
-            position: absolute;
-            right: 30px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #f46119;
-        }
+
         .card-tag {
             text-align: center;
             width: 110px;

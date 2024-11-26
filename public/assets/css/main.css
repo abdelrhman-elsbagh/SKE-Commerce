@@ -5845,6 +5845,56 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
 }
 
 /**** abdel changes ****/
+#search-items{
+    background: #FFF;
+    color: #222;
+}
+.social-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 80px;
+    overflow: hidden;
+}
+.social-whats{
+    text-decoration: none;
+    margin-right: 15px;
+}
+.social-telegram{
+    text-decoration: none;
+    margin-right: 15px;
+}
+.social-facebook{
+    text-decoration: none;
+}
+.head-wallet-icon{
+    margin-right: 40px;
+}
+.head-balance-icon{
+    margin-right: 40px;
+}
+.fav-head-icon {
+    margin-right: 50px
+}
+.page-header__content
+{
+    box-shadow: none;
+}
+.search-container {
+    position: relative;
+    width: 100%;
+}
+.search-container input {
+    width: 100%;
+    padding-right: 35px;
+}
+.main-index-search-icon {
+    position: absolute;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #f46119;
+}
 .news-bar {
     position: relative;
     width: 100%;
@@ -6039,8 +6089,12 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
 .icon-search{
     vertical-align: middle;
     position: relative;
-    top: -4px;
+    top: -1px;
     font-size: 15px;
+}
+
+.wallet-filter-all{
+    padding: 7px 20px;
 }
 
 #parent-div {
@@ -6127,5 +6181,171 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
     margin-top: 0;
     margin-bottom: 0;
 }
+.page-footer {
+    padding: 20px 0 5px 0;
+    text-align: left;
+    margin-top:20px;
+    background: #FFF;
+    position: absolute;
+    width: 100%;left: 0;
+}
+body.dark-theme .page-footer{
+    background: #0c1826;
+}
 
+body.dark-theme .footer-title{
+    color: #FFF;
+}
+
+.item-detail-desc{
+    text-align: center;
+    font-size: 14px;
+    margin-top: 5px
+}
+
+body.dark-theme .item-detail-desc{
+    color: #FFF;
+}
+
+.item-detail-title{
+    text-align: center;
+    font-size: 14px;
+    padding-left: 15px;
+}
+
+body.dark-theme .item-detail-title{
+    color: #FFF;
+}
+
+.whole-item-card{
+    cursor: pointer;
+    position: relative;
+    border-radius: 7px;
+}
+body.dark-theme .whole-item-card{
+    background: #040615;
+}
+.sub-item-price {
+    color: #F46119;
+    font-size: 18px;
+    margin: auto;
+}
+
+.wallet-card{
+    text-align: center;
+    border-radius: 7px;
+}
+
+body.dark-theme .wallet-card{
+    background: #1a2634;
+}
+
+body.dark-theme .close-post {
+    background: #F46119;
+    color: #FFF;
+}
+
+body.dark-theme .custom-page-title {
+    text-align: center;
+    color: #FFF;
+}
+
+body.dark-theme .custom-page-content {
+    color: #040615;
+}
+
+body.dark-theme #post-modal-title {
+    color: #FFF;
+}
+
+.wallet-card-head{
+
+}
+
+body.dark-theme .wallet-card-head{
+    color: #FFF;
+}
+body.dark-theme .payment-desc * {
+    color: #FFF !important;
+}
+
+body.dark-theme .pay-method-title{
+    color: #FFF;
+}
+body.dark-theme .pay-method-card{
+    background: #0c1826;
+    color: #FFF;
+}
+
+body.dark-theme .uk-card-default.uk-card-hover:hover{
+    background: #0c1826;
+    color: #FFF;
+}
+
+body.dark-theme .uk-card-default.uk-card-hover{
+    background: #0c1826;
+    color: #FFF;
+}
+
+body.dark-theme .uk-card-title{
+    color: #FFF;
+}
+
+
+.content.custom-page-content{
+    width: 100%;
+    background: #FFF;
+    padding: 40px;
+    border-radius: 10px;
+}
+
+body.dark-theme .content.custom-page-content{
+    background: #0c1826;
+    color: #FFF !important;
+}
+
+body.dark-theme .content.custom-page-content *{
+    color: #FFF !important;
+}
+
+.animation-navspinv{
+    display: block;
+    margin-left: 50px;
+    max-width: 75px !important;
+}
+
+.sidebar-box ul.uk-nav li a i {
+    font-size: 16px;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+.sidebar-box ul.uk-nav li a span {
+    font-size: 16px;
+    vertical-align: middle;
+}
+
+.sidebar-box ul.uk-nav li a i.pr8 {
+    font-size: 18px !important;
+    padding-right: 8px !important;
+}
+
+.sidebar-box ul.uk-nav li#partners a span,
+.sidebar-box ul.uk-nav li#posts a span {
+    font-size: 16px !important;
+}
+
+.sidebar-box ul.uk-nav li a .fab {
+    font-size: 22px;
+}
+
+@media only screen and (max-width: 767px) {
+    .desc-item-details {
+        display: none;
+    }
+
+    .sub-item-price{
+        font-size: 14px;
+    }
+}
 

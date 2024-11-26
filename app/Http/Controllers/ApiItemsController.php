@@ -15,7 +15,9 @@ class ApiItemsController extends Controller
 {
     public function edit()
     {
-        return view('admin.api-items.edit');
+//        $users = User::where("is_external", 1)->get();
+        $users = ClientStore::all();
+        return view('admin.api-items.edit', compact('users'));
     }
 
     public function fetchSubItem(Request $request)
@@ -100,7 +102,8 @@ class ApiItemsController extends Controller
             'status' => 'active',
         ])->first();
 
-        if (!$clientStore) {
+
+        /*if (!$clientStore) {
             return response()->json(['message' => 'Invalid source key.'], 401);
         }
 
@@ -109,12 +112,16 @@ class ApiItemsController extends Controller
 
         if (!$user) {
             return response()->json(['message' => 'Invalid info.'], 401);
-        }
+        }*/
+
+        $user = $clientStore;
 
         // Fetch items related to the user identified by the destination key
-        $items = Item::with('subItems')
+        /*$items = Item::with('subItems')
             ->where('user_id', $user->id)
-            ->get();
+            ->get();*/
+
+        $items = Item::where('status', 'active')->with('subItems')->get();
 
         // Apply the clientStore's feeGroup percentage to each subItem price
         if ($clientStore->feeGroup) {

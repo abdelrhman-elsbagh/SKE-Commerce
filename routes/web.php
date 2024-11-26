@@ -5,6 +5,7 @@ use App\Http\Controllers\ApiItemsController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ClientStoreController;
 use App\Http\Controllers\FooterController;
+use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\PermissionController;
@@ -42,26 +43,16 @@ use App\Http\Controllers\RoutingController;
 
 require __DIR__ . '/auth.php';
 
-Route::get('/abdel', function () {
-    $data = [
-        'external_id' => 77,
-        'destination_key' => "893b8a57-206d-4012-a234-8d51894fd535",
-        'source_key' => "893b8a57-206d-4012-a234-8d51894f88888",
-    ];
 
-    // Send POST request with the correct headers and data
-    $response = Http::withHeaders([
-        'Content-Type' => 'application/json'
-    ])->post("http://localhost:8003/api/fetch-sub-item", $data);
+Route::get('/', [HomeController::class, 'index'])->name('home')->middleware('SetLocale');
 
-    // Log the request for debugging
 
-    dd($response->json());
-});
+Route::get('/change-language/{lang}', [LanguageController::class, 'changeLanguage'] )->name('change-language');
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
+
 
 Route::get('registration', [HomeController::class, 'register_page'])->name('register-page');
+Route::get('partner-registration', [HomeController::class, 'register_partner_page'])->name('register-partner');
 Route::get('register-business', [HomeController::class, 'register_business_page'])->name('register-business');
 Route::get('sign-in', [HomeController::class, 'login_page'])->name('sign-in');
 Route::get('business-sign-in', [HomeController::class, 'login_business_page'])->name('business-sign-in');
@@ -76,7 +67,7 @@ Route::post('register', [HomeController::class, 'register'])->name('register');
 Route::post('partner-register', [HomeController::class, 'registerPartner'])->name('partner-register');
 Route::post('register_business', [HomeController::class, 'register_business'])->name('register_business');
 
-Route::middleware(['auth', 'role:User'])->group(function () {
+Route::middleware(['auth', 'role:User', 'SetLocale'])->group(function () {
     Route::get('favourites', [HomeController::class, 'favourites'])->name('favourites');
     Route::get('posts', [HomeController::class, 'posts'])->name('posts');
     Route::get('wallet', [HomeController::class, 'wallet'])->name('wallet');

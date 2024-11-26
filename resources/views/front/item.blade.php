@@ -15,7 +15,8 @@
                         <div class="widjet__body" style="position: relative">
                             <form id="subItemForm" method="POST" action="{{ route('purchase') }}">
                                 @csrf
-                                <input class="uk-input light-border" id="service_id" name="service_id" type="text" placeholder="Enter User ID In Application" style="position: absolute;bottom: -80px;left: 0;background: #FFF;">
+                                <input class="uk-input light-border" id="service_id" name="service_id" type="text"
+                                       placeholder="Enter User ID In Application" style="position: absolute;bottom: -80px;left: 0;background: #FFF;">
                                 <div class="uk-grid uk-grid-small uk-child-width-1-5@xl uk-child-width-1-4@m uk-child-width-1-3" data-uk-grid>
                                     @foreach($item->subItems as $subItem)
                                         @php
@@ -26,8 +27,7 @@
                                             }
                                         @endphp
                                         <div>
-                                            <div class="uk-card uk-card-default uk-card-hover uk-margin selectable-card"
-                                                 style="cursor: pointer; position: relative;border-radius: 7px;"
+                                            <div class="uk-card uk-card-default uk-card-hover uk-margin selectable-card whole-item-card"
                                                  data-id="{{ $subItem->id }}"
                                                  data-price="{{ number_format($subItem->price + ($subItem->price * $config->fee / 100), 2) }}"
                                                  data-is-custom="{{ $subItem->is_custom ? '1' : '0' }}"
@@ -38,8 +38,8 @@
                                                 @if($subItem->is_custom == 0)
                                                     <div class="uk-card-header item-crd" style="padding: 10px !important;">
                                                         <div class="uk-grid-small uk-flex-middle" data-uk-grid>
-                                                            <div class="uk-width-expand item-info">
-                                                                <h3 class="uk-card-title uk-margin-remove-bottom" style="text-align: center;font-size: 14px;padding-left: 15px;">
+                                                            <div class="uk-width-expand item-info item-crd-detail">
+                                                                <h3 class="uk-card-title uk-margin-remove-bottom item-detail-title" style="">
                                                                     {{ $subItem->amount }} {{ $subItem->name }}
                                                                     @if($subItem->getFirstMediaUrl('images'))
 
@@ -47,14 +47,14 @@
                                                                              style="height: 20px; width: 20px; border-radius: 5px">
                                                                     @endif
                                                                 </h3>
-                                                                <p class="uk-card-title uk-margin-remove-bottom" style="text-align: center;font-size: 14px; margin-top: 5px">{{ $subItem->description ?? "" }}</p>
+                                                                <p class="uk-card-title uk-margin-remove-bottom item-detail-desc"> {{ $subItem->description ?? ""  }}</p>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div class="uk-card-footer" style="text-align: center;border-top: 0;padding: 10px 20px; ">
                                                         <p>
                                                         </p>
-                                                        <span class="uk-text-bold" style="color: #F46119; font-size: 18px;">
+                                                        <span class="uk-text-bold sub-item-price">
                                                             {{ number_format($subItem->price + ($subItem->price * $config->fee / 100), 2) }} {{ $user->currency->currency ?? "USD" }}
                                                         </span>
                                                         <i id="addToFavouritesButton" class="fas fa-heart fa-1x heart-icon favourite-item" style="color: {{ $isFavorited ? '#f46119' : '#ccc' }}; position: absolute; top: 10px; left: 10px;"></i>
@@ -66,9 +66,9 @@
 
                                                 @if($subItem->is_custom == 1)
                                                     <div class="uk-card-header item-crd" style="padding: 10px !important;">
-                                                        <div class="uk-grid-small uk-flex-middle" data-uk-grid>
-                                                            <div class="uk-width-expand item-info">
-                                                                <h3 class="uk-card-title uk-margin-remove-bottom" style="text-align: center;font-size: 14px;padding-left: 15px;">
+                                                        <div class="uk-grid-small uk-flex-middle " data-uk-grid>
+                                                            <div class="uk-width-expand item-info item-crd-detail">
+                                                                <h3 class="uk-card-title uk-margin-remove-bottom item-detail-title" style="text-align: center;font-size: 14px;padding-left: 15px;">
                                                                     {{ $subItem->name }}
                                                                     @if($subItem->getFirstMediaUrl('images'))
 
@@ -76,7 +76,8 @@
                                                                              style="height: 20px; width: 20px; border-radius: 5px">
                                                                     @endif
                                                                 </h3>
-                                                                <p class="uk-card-title uk-margin-remove-bottom" style="text-align: center;font-size: 14px; margin-top: 5px">{{ $subItem->description ?? "" }}</p>
+                                                                <p class="uk-card-title uk-margin-remove-bottom item-detail-desc"
+                                                                   style="">{{ $subItem->description ?? "" }}</p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -114,7 +115,7 @@
             @else
                 <p>No items found.</p>
             @endif
-            <div class="uk-width-1-3@l">
+            <div class="uk-width-1-3@l desc-item-details">
                 <div class="game-profile-card">
                     <div class="game-profile-card__media">
                         @if(isset($item) && $item->getFirstMediaUrl('images'))
@@ -140,7 +141,6 @@
 
 
                 </div>
-
                 <div class="game-profile-card__intro"  style="border-radius: 5px;background: #fff;padding: 10px;">
                     <ul>
                         <li style="color: #079992;"><i class="fas fa-lock"></i> Secure Payments</li>
@@ -149,7 +149,6 @@
                     </ul>
                     <span>Your payment security is our top priority. We use advanced encryption to protect your data, ensuring all transactions are processed safely through trusted gateways. Shop confidently with our secure payment system.</span>
                 </div>
-
             </div>
         </div>
     </main>
@@ -158,20 +157,20 @@
     <script src="{{ asset('assets/js/libs.js') }}"></script>
     <script>
         $(document).ready(function() {
-            // Find all elements with class 'item-crd'
-            var maxHeight = 0;
+            let maxHeight = 0;
 
-            $('.item-crd').each(function() {
+            $('.item-crd-detail .uk-card-title').each(function() {
                 // Update maxHeight to the tallest element
-                var currentHeight = $(this).innerHeight();
+                let currentHeight = $(this).height();
+                console.log("currentHeight => ", currentHeight)
                 if (currentHeight > maxHeight) {
                     maxHeight = currentHeight;
                 }
             });
 
-            console.log("maxHeight", maxHeight)
+            console.log("maxHeight => ", maxHeight)
             // Set all elements to the maxHeight
-            $('.item-crd').height(maxHeight);
+            $('.item-crd-detail').height(maxHeight + 25);
         });
 
     </script>

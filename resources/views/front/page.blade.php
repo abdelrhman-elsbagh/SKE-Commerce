@@ -5,10 +5,10 @@
 @section('content')
     <main class="page-main">
         <div class="">
-            <h3 class="" style="text-align: center">
+            <h3 class="custom-page-title" style="">
                 <span style="border-bottom: 2px solid; padding-bottom: 2px;">{{ $page->title ?? 'Page' }}</span>
             </h3>
-            <div class="content" style="width: 100%; background: #FFF; padding: 40px; border-radius: 10px;">
+            <div class="content custom-page-content" style="">
                 {!! $page->data ?? '' !!}
             </div>
         </div>
