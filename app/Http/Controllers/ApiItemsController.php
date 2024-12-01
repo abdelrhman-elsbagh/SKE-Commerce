@@ -15,7 +15,6 @@ class ApiItemsController extends Controller
 {
     public function edit()
     {
-//        $users = User::where("is_external", 1)->get();
         $users = ClientStore::all();
         return view('admin.api-items.edit', compact('users'));
     }
@@ -77,7 +76,7 @@ class ApiItemsController extends Controller
         }
 
         // Fetch the specific item for the user
-        $item = Item::with('subItems')
+        $item = Item::with(['subItems', 'category'])
             ->where('user_id', $user->id)
             ->where('id', $validated['item_id']) // Fetch the specific item based on ID
             ->first();
@@ -93,17 +92,20 @@ class ApiItemsController extends Controller
     {
         $validated = $request->validate([
             'source_key' => 'required',
-            'domain' => 'required|url'
+            'domain' => 'required|url',
+            'client_id' => 'required|integer',
         ]);
 
+        $client_id = $validated['client_id'];
         // Check if the source key matches a ClientStore's secret_key
         $clientStore = User::where([
             'secret_key' => $validated['source_key'],
             'status' => 'active',
+//            'id' => $client_id,
         ])->first();
 
 
-        /*if (!$clientStore) {
+        if (!$clientStore) {
             return response()->json(['message' => 'Invalid source key.'], 401);
         }
 
@@ -112,16 +114,11 @@ class ApiItemsController extends Controller
 
         if (!$user) {
             return response()->json(['message' => 'Invalid info.'], 401);
-        }*/
+        }
 
-        $user = $clientStore;
+//        $user = $clientStore;
 
-        // Fetch items related to the user identified by the destination key
-        /*$items = Item::with('subItems')
-            ->where('user_id', $user->id)
-            ->get();*/
-
-        $items = Item::where('status', 'active')->with('subItems')->get();
+        $items = Item::where('status', 'active')->with(['subItems', 'category'])->get();
 
         // Apply the clientStore's feeGroup percentage to each subItem price
         if ($clientStore->feeGroup) {
@@ -135,6 +132,7 @@ class ApiItemsController extends Controller
                     $subItem->price = round($subItem->price + $feeAmount, 2);
                     $subItem->user_id = $user->id;
                     $subItem->item_id = $item->id;
+                    $subItem->client_store_id = $client_id;
                 }
             }
         }
@@ -148,57 +146,84 @@ class ApiItemsController extends Controller
      */
     public function importItems(Request $request)
     {
+        // Validate the incoming request
         $validated = $request->validate([
             'sub_items' => 'required|array',
-            'domain' => 'string',
+            'sub_items.*.name' => 'required|string',
+            'sub_items.*.description' => 'nullable|string',
+            'sub_items.*.amount' => 'required|numeric',
+            'sub_items.*.price' => 'required|numeric',
+            'sub_items.*.external_id' => 'required|string',
+            'sub_items.*.user_id' => 'required|integer',
+            'sub_items.*.item_id' => 'required|string',
+            'sub_items.*.item_name' => 'required|string',
+            'sub_items.*.item_description' => 'nullable|string',
+            'sub_items.*.item_title' => 'nullable|string',
+            'domain' => 'nullable|string',
+            'client_id' => 'nullable|integer',
         ]);
 
-        $user = Auth::user(); // Get the authenticated user
+        // Ensure the user is authenticated
+        $user = Auth::user();
         if (!$user) {
             return response()->json(['message' => 'User must be authenticated to import items.'], 401);
         }
 
         $importedItems = [];
+        $client_id = $validated['client_id'];
 
+        // Get or create the OUT-SOURCE category for the user
         $category = Category::firstOrCreate(
-            ['name' => 'OUT-SOURCE'],
-            ['user_id' => $user->id] // Associate the category with the authenticated user
+            ['name' => 'OUT-SOURCE', 'user_id' => $user->id]
         );
 
         foreach ($validated['sub_items'] as $subItemData) {
-            $itemExternalId = $subItemData['item_external_id'];
+            $itemExternalId = $subItemData['external_id'];
+            $itemName = $subItemData['item_name'];
 
-            // Check if the parent item has already been imported in this session to avoid duplication
-            if (!isset($importedItems[$itemExternalId])) {
-                // Import the parent item only if not already imported
-                $importedItems[$itemExternalId] = Item::create([
-                    'user_id' => $user->id,
-                    'name' => $subItemData['item_name'],
+            // Check if the parent item already exists for the user based on external_id
+            $parentItem = Item::where('external_id', $itemExternalId)
+                ->where('user_id', $user->id)
+                ->first();
+
+            // If the item does not exist, create it
+            if (!$parentItem) {
+                $parentItem = Item::create([
+                    'user_id' => Auth::user()->id,
+                    'name' => $itemName,
                     'description' => $subItemData['item_description'],
                     'external_id' => $itemExternalId,
                     'price_in_diamonds' => 0,
                     'category_id' => $category->id,
                     'status' => 'active',
                     'title' => $subItemData['item_title'] ?? null,
-                    'title_type' => 'default' ?? null,
+                    'title_type' => 'default',
                     'is_outsourced' => true,
-                    'source_domain' => $request->input('domain') // Use the domain provided in the request
+                    'source_domain' => $request->input('domain'),
                 ]);
             }
 
-            // Associate sub-item with the newly imported item
-            SubItem::create([
-                'item_id' => $importedItems[$itemExternalId]->id,
-                'user_id' => $user->id,
-                'name' => $subItemData['name'],
-                'description' => $subItemData['description'],
-                'amount' => $subItemData['amount'],
-                'price' => $subItemData['price'],
-                'external_id' => $subItemData['external_id'],
-                'external_user_id' => $subItemData['user_id'],
-                'external_item_id' => $subItemData['item_id'],
-                'domain' => $request->input('domain') ?? null,
-            ]);
+            // Check if the sub-item already exists for the current parent item based on external_id and item_id
+            $subItem = SubItem::where('external_id', $subItemData['external_id'])
+                ->where('item_id', $parentItem->id)
+                ->first();
+
+            // If the sub-item does not exist, create it
+            if (!$subItem) {
+                SubItem::create([
+                    'item_id' => $parentItem->id,
+                    'user_id' => $user->id,
+                    'name' => $subItemData['name'],
+                    'description' => $subItemData['description'],
+                    'amount' => $subItemData['amount'],
+                    'price' => $subItemData['price'],
+                    'external_id' => $subItemData['external_id'],
+                    'external_user_id' => $subItemData['user_id'],
+                    'external_item_id' => $subItemData['item_id'],
+                    'domain' => $request->input('domain'),
+                    'client_store_id' => $client_id,
+                ]);
+            }
         }
 
         return response()->json(['message' => 'Sub-items and their parent items imported successfully.']);

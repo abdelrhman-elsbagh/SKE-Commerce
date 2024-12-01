@@ -26,6 +26,12 @@
     <!-- Option 1: Include in HTML -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
 
+    <style>
+        :root {
+            --main-color: {{ $mainColor ?? $config->main_color ?? '#F46119' }};
+        }
+    </style>
+
     <!-- Conditionally include Oswald font if selected -->
     @if($config->font == 'Oswald')
         <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -226,7 +232,7 @@
                                 <i class="fas fa-heart"></i><span class="count">{{$favoritesCount}}</span>
                             </a>
                         </div>
-                        <a class="profile head-wallet-icon" href="{{route('wallet')}}"">
+                        <a class="profile head-wallet-icon" href="{{route('wallet')}}">
                             <div class="activities-item__price">
                                 {{\Illuminate\Support\Facades\Auth::user()->wallet->balance ?? 0}} {{ $user->currency->currency ?? "USD" }}
 
@@ -370,7 +376,13 @@
                     <div class="uk-form-controls">
                         <select class="uk-select" id="payment_method_id" name="payment_method_id">
                             @foreach($paymentMethods as $paymentMethod)
-                                <option value="{{ $paymentMethod->id }}">{{ $paymentMethod->gateway }}</option>
+                                <option value="{{ $paymentMethod->id }}">
+                                    @if(App::getLocale() == 'ar')
+                                        {{ $paymentMethod->ar_gateway ?? $paymentMethod->gateway }}
+                                    @else
+                                        {{ $paymentMethod->gateway }}
+                                    @endif
+                                </option>
                             @endforeach
                         </select>
                     </div>

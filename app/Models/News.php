@@ -9,5 +9,5 @@ class News extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['news'];
+    protected $fillable = ['news', 'ar_news'];
 }

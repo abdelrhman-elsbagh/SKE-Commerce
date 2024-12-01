@@ -10,14 +10,19 @@
                     <div class="partner-card-container">
                         <div class="uk-card uk-card-default uk-card-hover uk-margin uk-flex uk-flex-column partner-card">
                             <div class="uk-card-header">
-                                <h3 class="uk-card-title">{{ $partner->name }}</h3>
+                                <h3 class="uk-card-title">
+                                    {{ App::getLocale() == 'ar' && $partner->ar_name ? $partner->ar_name : $partner->name }}
+                                </h3>
                             </div>
                             <div class="uk-card-body uk-flex-1">
-                                <div class="description agent-desc" style="padding: 0;margin: 0">{!! $partner->description !!}</div>
+                                <div class="description agent-desc" style="padding: 0;margin: 0">
+                                    {!! $partner->description !!}
+                                    {!! App::getLocale() == 'ar' && $partner->ar_description ? $partner->ar_description : $partner->description !!}
+                                </div>
 
                                 <p></p>
                                 @if($partner->getFirstMediaUrl('partner_images'))
-                                    <img src="{{ $partner->getFirstMediaUrl('partner_images') }}" alt="{{ $partner->name }}" class="" style="height: 250px;width: 100%;border-radius: 10px">
+                                    <img src="{{ $partner->getFirstMediaUrl('partner_images') }}" alt="{{ App::getLocale() == 'ar' && $partner->ar_name ? $partner->ar_name : $partner->name }}" class="" style="height: 250px;width: 100%;border-radius: 10px">
                                 @else
                                     <img src="{{ asset('assets/img/default-image.jpg') }}" alt="Default Image" class="uk-width-1-1">
                                 @endif

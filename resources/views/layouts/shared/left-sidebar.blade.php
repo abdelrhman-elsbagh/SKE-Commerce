@@ -7,10 +7,10 @@
     <!-- Brand Logo Light -->
     <a href="{{ route('any', 'index') }}" class="logo logo-light nav-link">
         <span class="logo-lg">
-            @if($config->getFirstMediaUrl('logos'))
+            @if($config->getFirstMediaUrl('dark_logos'))
                 <span style="font-weight: bold;color: #FFFFFF;font-size: 16px">{{ $config->name ?? "SKE APP"}}</span>
-                @if($config->getFirstMediaUrl('logos'))
-                    <img src="{{ $config->getFirstMediaUrl('logos') }}" alt="logo" style="border-radius: 50%">
+                @if($config->getFirstMediaUrl('dark_logos'))
+                    <img src="{{ $config->getFirstMediaUrl('dark_logos') }}" alt="logo" style="border-radius: 50%">
                 @else
                     <img src="{{ asset('assets/img/logo.png')}}" alt="logo">
                 @endif
@@ -20,9 +20,9 @@
             @endif
         </span>
         <span class="logo-sm">
-            @if($config->getFirstMediaUrl('logos'))
+            @if($config->getFirstMediaUrl('dark_logos'))
                 <span style="font-weight: bold;color: #FFFFFF;font-size: 16px">{{ $config->name ?? "SKE APP"}}</span>
-                <img src="{{ $config->getFirstMediaUrl('logos') }}" alt="logo">
+                <img src="{{ $config->getFirstMediaUrl('dark_logos') }}" alt="logo">
             @else
                 <span style="font-weight: bold;color: #FFFFFF;font-size: 16px">{{ $config->name ?? "SKE APP"}}</span>
                 <img src="{{ asset('assets/img/logo.png')}}" alt="logo">
@@ -33,18 +33,18 @@
     <!-- Brand Logo Dark -->
     <a href="{{ route('any', 'index') }}" class="logo logo-dark nav-link">
          <span class="logo-lg">
-            @if($config->getFirstMediaUrl('logos'))
+            @if($config->getFirstMediaUrl('dark_logos'))
                  <span style="font-weight: bold;color: #FFFFFF;font-size: 16px">{{ $config->name ?? "SKE APP"}}</span>
-                 <img src="{{ $config->getFirstMediaUrl('logos') }}" alt="logo">
+                 <img src="{{ $config->getFirstMediaUrl('dark_logos') }}" alt="logo">
              @else
                  <span style="font-weight: bold;color: #FFFFFF;font-size: 16px">{{ $config->name ?? "SKE APP"}}</span>
                  <img src="{{ asset('assets/img/logo.png')}}" alt="logo">
              @endif
         </span>
         <span class="logo-sm">
-            @if($config->getFirstMediaUrl('logos'))
+            @if($config->getFirstMediaUrl('dark_logos'))
                 <span style="font-weight: bold;color: #FFFFFF;font-size: 16px">{{ $config->name ?? "SKE APP"}}</span>
-                <img src="{{ $config->getFirstMediaUrl('logos') }}" alt="logo">
+                <img src="{{ $config->getFirstMediaUrl('dark_logos') }}" alt="logo">
             @else
                 <span style="font-weight: bold;color: #FFFFFF;font-size: 16px">{{ $config->name ?? "SKE APP"}}</span>
                 <img src="{{ asset('assets/img/logo.png')}}" alt="logo">
@@ -67,7 +67,7 @@
         <!-- Leftbar User -->
         <div class="leftbar-user">
             <a href="{{ route('second', ['pages', 'profile']) }}" class="nav-link">
-                @if($config->getFirstMediaUrl('logos'))
+                @if($config->getFirstMediaUrl('dark_logos'))
                     <img src="{{ $config->getFirstMediaUrl('logos') }}" alt="user-image" height="42" class="rounded-circle shadow-sm">
                 @else
                     <img src="{{ asset('assets/img/logo.png')}}" alt="user-image" height="42" class="rounded-circle shadow-sm">
@@ -960,68 +960,68 @@
 {{--                </div>--}}
 {{--            </li>--}}
 
-            <li class="side-nav-title">Business abdel</li>
+{{--            <li class="side-nav-title">Business</li>--}}
 
-            <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarPlans" aria-expanded="false" aria-controls="sidebarPlans" class="side-nav-link nav-link">
-                    <i class="ri-calendar-check-line"></i>
-                    <span> Plans </span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="sidebarPlans">
-                    <ul class="side-nav-second-level">
-                        <li>
-                            <a href="{{ route('plans.index') }}" class="nav-link">All Plans</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('plans.create') }}" class="nav-link">Create Plan</a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
+{{--            <li class="side-nav-item">--}}
+{{--                <a data-bs-toggle="collapse" href="#sidebarPlans" aria-expanded="false" aria-controls="sidebarPlans" class="side-nav-link nav-link">--}}
+{{--                    <i class="ri-calendar-check-line"></i>--}}
+{{--                    <span> Plans </span>--}}
+{{--                    <span class="menu-arrow"></span>--}}
+{{--                </a>--}}
+{{--                <div class="collapse" id="sidebarPlans">--}}
+{{--                    <ul class="side-nav-second-level">--}}
+{{--                        <li>--}}
+{{--                            <a href="{{ route('plans.index') }}" class="nav-link">All Plans</a>--}}
+{{--                        </li>--}}
+{{--                        <li>--}}
+{{--                            <a href="{{ route('plans.create') }}" class="nav-link">Create Plan</a>--}}
+{{--                        </li>--}}
+{{--                    </ul>--}}
+{{--                </div>--}}
+{{--            </li>--}}
 
-            <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarSubscriptions" aria-expanded="false" aria-controls="sidebarSubscriptions" class="side-nav-link nav-link">
-                    <i class="ri-coin-line"></i>
-                    <span> Subscriptions </span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="sidebarSubscriptions">
-                    <ul class="side-nav-second-level">
-                        <li>
-                            <a href="{{ route('subscriptions.index') }}" class="nav-link">All Subscriptions</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('subscriptions.create') }}" class="nav-link">Create Subscription</a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
+{{--            <li class="side-nav-item">--}}
+{{--                <a data-bs-toggle="collapse" href="#sidebarSubscriptions" aria-expanded="false" aria-controls="sidebarSubscriptions" class="side-nav-link nav-link">--}}
+{{--                    <i class="ri-coin-line"></i>--}}
+{{--                    <span> Subscriptions </span>--}}
+{{--                    <span class="menu-arrow"></span>--}}
+{{--                </a>--}}
+{{--                <div class="collapse" id="sidebarSubscriptions">--}}
+{{--                    <ul class="side-nav-second-level">--}}
+{{--                        <li>--}}
+{{--                            <a href="{{ route('subscriptions.index') }}" class="nav-link">All Subscriptions</a>--}}
+{{--                        </li>--}}
+{{--                        <li>--}}
+{{--                            <a href="{{ route('subscriptions.create') }}" class="nav-link">Create Subscription</a>--}}
+{{--                        </li>--}}
+{{--                    </ul>--}}
+{{--                </div>--}}
+{{--            </li>--}}
 
-            <li class="side-nav-item">
-                <a href="{{ route('business-purchase-requests.index') }}" class="side-nav-link">
-                    <i class="ri-file-list-line"></i>
-                    <span> B.Purchase Requests </span>
-                </a>
-            </li>
+{{--            <li class="side-nav-item">--}}
+{{--                <a href="{{ route('business-purchase-requests.index') }}" class="side-nav-link">--}}
+{{--                    <i class="ri-file-list-line"></i>--}}
+{{--                    <span> B.Purchase Requests </span>--}}
+{{--                </a>--}}
+{{--            </li>--}}
 
-            <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarBusinessClientWallets" aria-expanded="false" aria-controls="sidebarBusinessClientWallets" class="side-nav-link nav-link">
-                    <i class="ri-wallet-3-line"></i>
-                    <span> Business Client Wallets </span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="sidebarBusinessClientWallets">
-                    <ul class="side-nav-second-level">
-                        <li>
-                            <a href="{{ route('business-client-wallets.index') }}" class="nav-link">View All</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('business-client-wallets.create') }}" class="nav-link">Create New</a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
+{{--            <li class="side-nav-item">--}}
+{{--                <a data-bs-toggle="collapse" href="#sidebarBusinessClientWallets" aria-expanded="false" aria-controls="sidebarBusinessClientWallets" class="side-nav-link nav-link">--}}
+{{--                    <i class="ri-wallet-3-line"></i>--}}
+{{--                    <span> Business Client Wallets </span>--}}
+{{--                    <span class="menu-arrow"></span>--}}
+{{--                </a>--}}
+{{--                <div class="collapse" id="sidebarBusinessClientWallets">--}}
+{{--                    <ul class="side-nav-second-level">--}}
+{{--                        <li>--}}
+{{--                            <a href="{{ route('business-client-wallets.index') }}" class="nav-link">View All</a>--}}
+{{--                        </li>--}}
+{{--                        <li>--}}
+{{--                            <a href="{{ route('business-client-wallets.create') }}" class="nav-link">Create New</a>--}}
+{{--                        </li>--}}
+{{--                    </ul>--}}
+{{--                </div>--}}
+{{--            </li>--}}
         </ul>
         <!--- End Sidemenu -->
 

@@ -10,6 +10,8 @@
             <div class="card-body">
                 <h5>Tag: {{ $footer->tag }}</h5>
                 <h5>Title: {{ $footer->title }}</h5>
+                <h5>Arabic Tag: {{ $footer->ar_tag }}</h5>
+                <h5>Arabic Title: {{ $footer->ar_title }}</h5>
                 <h5>URL: <a href="{{ $footer->link }}" target="_blank">{{ $footer->link }}</a></h5>
                 <div class="mb-3">
                     @if($footer->getFirstMediaUrl('images'))

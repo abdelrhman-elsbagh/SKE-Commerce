@@ -27,8 +27,8 @@
                                 <input type="text" class="form-control" id="name" name="name" required>
                             </div>
                             <div class="mb-3">
-                                <label for="description" class="form-label">Description</label>
-                                <textarea class="form-control" id="description" name="description"></textarea>
+                                <label for="ar_name" class="form-label">Arabic Name</label>
+                                <input type="text" class="form-control" id="ar_name" name="ar_name">
                             </div>
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </form>

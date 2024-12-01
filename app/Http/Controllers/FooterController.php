@@ -31,7 +31,7 @@ class FooterController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
 
-        $footer = Footer::create($request->only('tag', 'title', 'link'));
+        $footer = Footer::create($request->only('tag', 'title', 'ar_tag', 'ar_title', 'link'));
 
         if ($request->hasFile('image')) {
             $footer->addMedia($request->file('image'))->toMediaCollection('images');
@@ -49,7 +49,7 @@ class FooterController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
 
-        $footer->update($request->only('tag', 'title', 'link'));
+        $footer->update($request->only('tag', 'title', 'ar_tag', 'ar_title', 'link'));
 
         if ($request->hasFile('image')) {
             $footer->clearMediaCollection('images');

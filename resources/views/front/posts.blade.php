@@ -161,7 +161,7 @@
             right: 30px;
             top: 50%;
             transform: translateY(-50%);
-            color: #f46119;
+            color: var(--main-color);
         }
 
         .card-tag {
@@ -209,7 +209,7 @@
             background: none;
             border: none;
             cursor: pointer;
-            color: #f46119;
+            color: var(--main-color);
         }
 
         /* Fixes for grid alignment issues */

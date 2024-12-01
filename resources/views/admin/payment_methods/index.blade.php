@@ -34,6 +34,7 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Gateway</th>
+                                <th>Ar Gateway</th>
                                 <th>Description</th>
                                 <th>Actions</th>
                             </tr>
@@ -43,6 +44,7 @@
                                 <tr id="payment-method-{{ $paymentMethod->id }}">
                                     <td>{{ $paymentMethod->id }}</td>
                                     <td>{{ $paymentMethod->gateway }}</td>
+                                    <td>{{ $paymentMethod->ar_gateway ?? "" }}</td>
                                     <td><div class="description">{!! \Illuminate\Support\Str::limit($paymentMethod->description, 100, '...') !!}</div></td>
                                     <td>
                                         <a href="{{ route('payment-methods.show', $paymentMethod->id) }}" class="btn btn-info"><i class=" ri-eye-line"></i></a>

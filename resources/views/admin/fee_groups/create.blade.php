@@ -31,7 +31,16 @@
                             </div>
                             <div class="mb-3">
                                 <label for="name" class="form-label">Name</label>
-                                <input type="text" class="form-control" id="name" name="name" value="{{ $feeGroup->name ?? '' }}">
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="name"
+                                    name="name"
+                                    value="{{ $feeGroup->name ?? '' }}"
+                                    @if(isset($feeGroup) && $feeGroup->name == "Default")
+                                        readonly disabled title="The name of the 'Default' Fee Group cannot be changed."
+                                    @endif
+                                >
                             </div>
                             <div class="mb-3">
                                 <label for="image" class="form-label">Cover Image</label>

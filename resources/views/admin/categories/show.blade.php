@@ -19,8 +19,8 @@
                             <p id="name">{{ $category->name }}</p>
                         </div>
                         <div class="mb-3">
-                            <label for="description" class="form-label">Description</label>
-                            <p id="description">{{ $category->description }}</p>
+                            <label for="ar_name" class="form-label">Arabic Name</label>
+                            <p id="ar_name">{{ $category->ar_name }}</p>
                         </div>
                         <a href="{{ route('categories.index') }}" class="btn btn-secondary">Back</a>
                     </div>

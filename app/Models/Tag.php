@@ -11,7 +11,7 @@ class Tag extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'ar_name'];
 
     public function items()
     {

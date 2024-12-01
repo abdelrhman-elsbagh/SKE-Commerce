@@ -25,7 +25,7 @@
                 @else
                     <img class="animation-navspinv" src="{{ asset('assets/img/logo.png')}}" alt="logo">
                 @endif
-                <span>{{$config->name ?? "Company Name"}}</span>
+                    <h2 class="head-login-desc">{{$config->description ?? ""}}</h2>
             </div>
             <div>
                 <div class="form-login">

@@ -24,16 +24,16 @@
                                 <div class="user-info__title">{{ $user->name }}</div>
                                 <div class="user-info__text">{{ $user->address }}, Member since {{ $user->created_at->format('F Y') }}</div>
                                 @if($user->is_external)
-                                    <div class="user-info__text" style="font-size: 16px;color: #000;font-style: italic;margin-top: 10px;"> <span class="pr-3" style="color: #F46119">Domain : </span> {{ $user->domain ?? "NA" }}</div>
+                                    <div class="user-info__text" style="font-size: 16px;color: #000;font-style: italic;margin-top: 10px;"> <span class="pr-3 main-color">Domain : </span> {{ $user->domain ?? "NA" }}</div>
                                     <div class="user-info__text" style="font-size: 16px;color: #000;font-style: italic;">
-                                        <span class="pr-3" style="color: #F46119">Secret-Key :</span>
+                                        <span class="pr-3 main-color">Secret-Key :</span>
                                         <span id="secret-key">{{ substr($user->secret_key, 0, 3) }}****</span> <!-- Show first 3 letters and hide the rest -->
 
-                                        <button id="toggle-secret-key" class="btn btn-link" style="color: #f46119; font-size: 14px; padding-left: 10px;">
+                                        <button id="toggle-secret-key" class="btn btn-link main-color" style=" font-size: 14px; padding-left: 10px;">
                                             <i class="fas fa-eye"></i> <!-- FontAwesome eye icon -->
                                         </button>
 
-                                        <button id="copy-secret-key" class="btn btn-link" style="color: #f46119; font-size: 14px;">
+                                        <button id="copy-secret-key" class="btn btn-link main-color" style="font-size: 14px;">
                                             <i class="fas fa-copy"></i> <!-- FontAwesome copy icon -->
                                         </button>
                                     </div>
@@ -61,7 +61,7 @@
                     <div class="widjet__head" style="display: flex; justify-content: space-between; align-items: center;">
                         <h3 class="uk-text-lead">Update Your Information</h3>
                         <button id="edit-icon" class="btn btn-warning" style="border: none; background: none; padding: 0;">
-                            <i class="fas fa-edit fa-lg" style="color: #f46119;"></i>
+                            <i class="fas fa-edit fa-lg main-color"></i>
                         </button>
                     </div>
                     <div class="widjet__body">

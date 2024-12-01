@@ -11,7 +11,7 @@ class Footer extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia;
 
-    protected $fillable = ['tag', 'title', 'link'];
+    protected $fillable = ['tag', 'title', 'ar_tag', 'ar_title', 'link'];
 
     /**
      * Register media collections for Footer images.

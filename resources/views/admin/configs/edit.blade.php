@@ -1,10 +1,32 @@
 @extends('layouts.vertical', ['page_title' => 'Edit Configuration'])
 
 @section('css')
+    <style>
+        #color-swatches {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .color-swatch {
+            width: 40px;
+            height: 40px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .color-swatch:hover {
+            border-color: #4c4c4c;
+        }
+
+    </style>
+
     @vite([
         'node_modules/jquery-toast-plugin/dist/jquery.toast.min.css'
     ])
 @endsection
+
 
 @section('content')
     <div class="container-fluid">
@@ -47,18 +69,34 @@
                                 <label for="facebook" class="form-label">Facebook</label>
                                 <textarea class="form-control" id="facebook" name="facebook">{{ $config->facebook }}</textarea>
                             </div>
+
                             <div class="mb-3">
-                                <label for="fee" class="form-label">Fee (%)</label>
-                                <input type="number" step="0.01" class="form-control" id="fee" name="fee" value="{{ $config->fee }}" required>
+                                <label for="main_color" class="form-label">Main Color</label>
+
+                                <!-- Predefined Color Squares -->
+                                <div id="color-swatches" class="d-flex">
+                                    <div class="color-swatch" style="background-color: #F46119;" data-color="#F46119"></div>
+                                    <div class="color-swatch" style="background-color: #3498db;" data-color="#3498db"></div>
+                                    <div class="color-swatch" style="background-color: #2ecc71;" data-color="#2ecc71"></div>
+                                    <div class="color-swatch" style="background-color: #e74c3c;" data-color="#e74c3c"></div>
+                                    <div class="color-swatch" style="background-color: #9b59b6;" data-color="#9b59b6"></div>
+                                    <!-- Add more color swatches as needed -->
+                                </div>
+
+                                <!-- Color Input (for custom color) -->
+                                <input type="color" class="form-control mt-2" id="main_color_input" name="main_color" value="{{ old('main_color', $config->main_color ?? '#F46119') }}">
                             </div>
+
+
                             <div class="mb-3">
                                 <label for="font" class="form-label">Font</label>
                                 <select class="form-control" id="font" name="font">
-                                    <option value="Nunito" {{ $config->font == 'Nunito' ? 'selected' : '' }}>Nunito</option>
-                                    <option value="Oswald" {{ $config->font == 'Oswald' ? 'selected' : '' }}>Oswald</option>
-                                    <option value="Noto Sans" {{ $config->font == 'Noto Sans' ? 'selected' : '' }}>Noto Sans</option>
-                                    <option value="Raleway" {{ $config->font == 'Raleway' ? 'selected' : '' }}>Raleway</option>
-                                    <option value="Roboto" {{ $config->font == 'Roboto' ? 'selected' : '' }}>Roboto</option>
+                                    <option value="Nunito" {{ $config->font == 'Nunito' ? 'selected' : '' }}>Nunito ( English )</option>
+                                    <option value="Oswald" {{ $config->font == 'Oswald' ? 'selected' : '' }}>Oswald ( English )</option>
+                                    <option value="Noto Sans" {{ $config->font == 'Noto Sans' ? 'selected' : '' }}>Noto Sans ( English )</option>
+                                    <option value="Raleway" {{ $config->font == 'Raleway' ? 'selected' : '' }}>Raleway ( English )</option>
+                                    <option value="Roboto" {{ $config->font == 'Roboto' ? 'selected' : '' }}>Roboto ( English )</option>
+                                    <option value="Arial" {{ $config->font == 'Arial' ? 'selected' : '' }}>Roboto ( Arabic )</option>
                                 </select>
                             </div>
                             <div class="mb-3">
@@ -70,6 +108,17 @@
                                     @endif
                                 </div>
                             </div>
+
+                            <div class="mb-3">
+                                <label for="dark_logo_input" class="form-label">Dark Logo</label>
+                                <input type="file" class="form-control" id="dark_logo_input" name="dark_logo_input" accept="image/*">
+                                <div class="mt-2" id="dark-logo-preview">
+                                    @if($config->getFirstMediaUrl('dark_logos'))
+                                        <img src="{{ $config->getFirstMediaUrl('dark_logos') }}" alt="{{ $config->name }} Dark Logo" style="max-width: 200px;">
+                                    @endif
+                                </div>
+                            </div>
+
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </form>
                     </div>
@@ -86,6 +135,20 @@
 
     <script>
         $(document).ready(function() {
+            $('.color-swatch').click(function() {
+                var selectedColor = $(this).data('color');
+                $('#main_color_input').val(selectedColor);
+            });
+
+            // Ensure the color input updates when a custom color is selected
+            $('#main_color_input').change(function() {
+                var selectedColor = $(this).val();
+                // Optionally, you can update the swatch to reflect the custom color
+                $('#color-swatches').find('.color-swatch').each(function() {
+                    $(this).removeClass('selected');
+                });
+            });
+
             $('#logo').change(function() {
                 let reader = new FileReader();
                 reader.onload = function(e) {

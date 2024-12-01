@@ -28,6 +28,7 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Name</th>
+                                <th>Ar Name</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
@@ -36,6 +37,7 @@
                                 <tr id="category-{{ $category->id }}">
                                     <td>{{ $category->id }}</td>
                                     <td>{{ $category->name }}</td>
+                                    <td>{{ $category->ar_name ?? "" }}</td>
                                     <td>
                                         <a href="{{ route('categories.show', $category->id) }}" class="btn btn-info"><i class=" ri-eye-line"></i></a>
                                         <a href="{{ route('categories.edit', $category->id) }}" class="btn btn-warning"><i class="ri-edit-box-fill"></i></a>

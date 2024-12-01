@@ -11,12 +11,16 @@
                     <div class="">
                         <div class="uk-card uk-card-default uk-card-hover uk-margin uk-flex uk-flex-column pay-method-card">
                             <div class="uk-card-header">
-                                <h3 class="uk-card-title pay-method-title">{{ $method->gateway }}</h3>
+                                <h3 class="uk-card-title pay-method-title">
+                                    {{ App::getLocale() == 'ar' && $method->ar_gateway ? $method->ar_gateway : $method->gateway }}
+                                </h3>
                             </div>
                             <div class="uk-card-body uk-flex-1">
-                                <div class="description payment-desc">{!! $method->description !!}</div>
+                                <div class="description payment-desc">
+                                    {!! App::getLocale() == 'ar' && $method->ar_description ? $method->ar_description : $method->description !!}
+                                </div>
                                 @if($method->getFirstMediaUrl('payment_method_images'))
-                                    <img src="{{ $method->getFirstMediaUrl('payment_method_images') }}" alt="{{ $method->gateway }}" class="" style="max-height: 300px;border-radius: 10px">
+                                    <img src="{{ $method->getFirstMediaUrl('payment_method_images') }}" alt="{{ App::getLocale() == 'ar' && $method->ar_gateway ? $method->ar_gateway : $method->gateway }}" class="" style="max-height: 300px;border-radius: 10px">
                                 @else
                                     <img src="{{ asset('assets/img/default-image.jpg') }}" alt="Default Image" class="uk-width-1-1">
                                 @endif

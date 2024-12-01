@@ -34,10 +34,20 @@
                                 <textarea class="form-control" id="description" name="description">{{ $item->description ?? '' }}</textarea>
                             </div>
                             <div class="mb-3">
+                                <label for="ar_name" class="form-label">Arabic Name</label>
+                                <input type="text" class="form-control" id="ar_name" name="ar_name" value="{{ $item->ar_name ?? '' }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="ar_description" class="form-label">Arabic Description</label>
+                                <textarea class="form-control" id="ar_description" name="ar_description">{{ $item->ar_description ?? '' }}</textarea>
+                            </div>
+                            <div class="mb-3">
                                 <label for="category_id" class="form-label">Category</label>
                                 <select class="form-control" id="category_id" name="category_id">
                                     @foreach($categories as $category)
-                                        <option value="{{ $category->id }}" {{ (isset($item) && $item->category_id == $category->id) ? 'selected' : '' }}>{{ $category->name }}</option>
+                                        <option value="{{ $category->id }}" {{ (isset($item) && $item->category_id == $category->id) ? 'selected' : '' }}>
+                                            {{ $category->name . ($category->ar_name ? ' - ' . $category->ar_name : '') }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
@@ -45,7 +55,9 @@
                                 <label for="tags" class="form-label">Tags</label>
                                 <select class="form-control" id="tags" name="tags[]" multiple>
                                     @foreach($tags as $tag)
-                                        <option value="{{ $tag->id }}" {{ (isset($item) && $item->tags->contains($tag->id)) ? 'selected' : '' }}>{{ $tag->name }}</option>
+                                        <option value="{{ $tag->id }}" {{ (isset($item) && $item->tags->contains($tag->id)) ? 'selected' : '' }}>
+                                            {{ $tag->name . ($tag->ar_name ? ' - ' . $tag->ar_name : '') }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
@@ -103,7 +115,7 @@
                                     </tr>
                                     </thead>
                                     <tbody id="sub-items-table-body">
-                                    @if(isset($item))
+                                    @if(isset($item) && $item->subItems->isNotEmpty())
                                         @foreach($item->subItems as $subItem)
                                             <tr data-id="{{ $subItem->id }}">
                                                 <td>
@@ -167,16 +179,20 @@
                             <label for="sub_item_description_modal" class="form-label">Sub Item Description</label>
                             <textarea class="form-control" id="sub_item_description_modal" name="sub_item_description_modal"></textarea>
                         </div>
-                        <div class="mb-3">
-                            <label for="sub_item_amount_modal" class="form-label">Sub Item Amount</label>
-                            <input type="number" class="form-control" id="sub_item_amount_modal"
-                                   name="sub_item_amount_modal" required {{ $subItem->external_id ? 'readonly' : '' }}>
-                        </div>
-                        <div class="mb-3">
-                            <label for="sub_item_price_modal" class="form-label">Sub Item Price</label>
-                            <input type="number" step="0.1" class="form-control"
-                                   id="sub_item_price_modal" name="sub_item_price_modal" required {{ $subItem->external_id ? 'readonly' : '' }}>
-                        </div>
+                        @if(isset($subItem))
+                            <div class="mb-3">
+                                <label for="sub_item_amount_modal" class="form-label">Sub Item Amount</label>
+                                <input type="number" class="form-control" id="sub_item_amount_modal"
+                                       name="sub_item_amount_modal" required {{ $subItem->external_id ? 'readonly' : '' }}>
+                            </div>
+                            <div class="mb-3">
+                                <label for="sub_item_price_modal" class="form-label">Sub Item Price</label>
+                                <input type="number" step="0.1" class="form-control"
+                                       id="sub_item_price_modal" name="sub_item_price_modal" required {{ $subItem->external_id ? 'readonly' : '' }}>
+                            </div>
+                        @endif
+
+
                         <div class="mb-3">
                             <label for="sub_item_image_modal" class="form-label">Sub Item Image</label>
                             <input type="file" class="form-control" id="sub_item_image_modal" name="sub_item_image_modal" accept="image/*">

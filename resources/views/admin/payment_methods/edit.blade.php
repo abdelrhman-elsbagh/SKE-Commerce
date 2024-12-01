@@ -43,6 +43,16 @@
                                 <div id="snow-editor" style="height: 300px;">{!! $paymentMethod->description !!}</div>
                                 <input type="hidden" name="description" id="description">
                             </div>
+
+                            <div class="mb-3">
+                                <label for="ar_gateway" class="form-label">Arabic Gateway</label>
+                                <input type="text" class="form-control" id="ar_gateway" name="ar_gateway" value="{{ $paymentMethod->ar_gateway }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="ar_description" class="form-label">Arabic Description</label>
+                                <div id="snow-editor2" style="height: 300px;">{!! $paymentMethod->ar_description !!}</div>
+                                <input type="hidden" name="ar_description" id="ar_description">
+                            </div>
                             <div class="mb-3">
                                 <label for="image" class="form-label">Image</label>
                                 <input type="file" class="form-control" id="image" name="image" accept="image/*">
@@ -93,6 +103,30 @@
             // Update hidden input field whenever content changes
             quill.on('text-change', function() {
                 $('#description').val(quill.root.innerHTML);
+            });
+
+            var quill2 = new Quill('#snow-editor2', {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        [{ 'font': [] }, { 'size': ['small', false, 'large', 'huge'] }],  // custom font and size
+                        ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+                        [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+                        [{ 'script': 'sub' }, { 'script': 'super' }],     // superscript/subscript
+                        [{ 'header': 1 }, { 'header': 2 }, 'blockquote', 'code-block'],  // headers and block quote
+                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],    // lists
+                        [{ 'indent': '-1' }, { 'indent': '+1' }],         // outdent/indent
+                        [{ 'direction': 'rtl' }],                         // text direction
+                        [{ 'align': [] }],                                // text alignment
+                        ['link', 'image', 'video'],                       // link, image and video
+                        ['clean']                                         // remove formatting button
+                    ]
+                }
+            });
+
+            // Update hidden input field whenever content changes
+            quill2.on('text-change', function() {
+                $('#ar_description').val(quill2.root.innerHTML);
             });
 
             $('#image').change(function() {

@@ -6,12 +6,12 @@
             <!-- Topbar Brand Logo -->
             <div class="logo-topbar">
                 <!-- Logo light -->
-                <a href="/" class="logo-light">
+                <a href="{{ route('dashboard') }}" class="logo-light">
                     <span class="logo-lg">
-                        <img src="/images/logo.png" alt="logo">
+                        <img src="{{ $config->getFirstMediaUrl('dark_logos') }}" alt="logo">
                     </span>
                     <span class="logo-sm">
-                        <img src="/images/logo-sm.png" alt="small logo">
+                        <img src="{{ $config->getFirstMediaUrl('dark_logos') }}" alt="small logo">
                     </span>
                 </a>
 

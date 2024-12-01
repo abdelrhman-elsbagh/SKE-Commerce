@@ -10,4 +10,9 @@ class ClientStore extends Model
     use HasFactory;
 
     protected $fillable = ['name', 'domain', 'secret_key', 'status'];
+
+    public function subItems()
+    {
+        return $this->hasMany(SubItem::class, 'client_store_id');
+    }
 }

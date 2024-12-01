@@ -28,6 +28,7 @@
                             <tr>
                                 <th>Apps ID</th>
                                 <th>Name</th>
+                                <th>Ar Name</th>
                                 <th>Type</th>
                                 <th>Customizable</th>
                                 <th>Order Active</th>
@@ -43,15 +44,16 @@
                                 <tr id="item-{{ $item->id }}">
                                     <td>{{ $item->id }}</td>
                                     <td>{{ $item->name }}</td>
+                                    <td>{{ $item->ar_name ?? "" }}</td>
                                     <td>{{ $item->is_outsourced == 1 ? 'API' : 'Manual' }}</td>
                                     <td>{{ $item->is_custom == 1 ? 'Yes' : 'No' }}</td>
                                     <td>{{ $item->activeOrdersSum }}</td>
                                     <td>{{ $item->refundedOrdersSum }}</td>
                                     <td>{{ \Illuminate\Support\Str::limit($item->description, 70, '...') }}</td>
-                                    <td>{{ $item->category->name }}</td>
+                                    <td>{{ $item->category->name . ($item->category->ar_name ? ' - ' . $item->category->ar_name : '') }}</td>
                                     <td>
                                         @foreach($item->tags as $tag)
-                                            <span class="badge bg-primary">{{ $tag->name }}</span>
+                                            <span class="badge bg-primary">{{ $tag->name . ($tag->ar_name ? ' - ' . $tag->ar_name : '') }}</span>
                                         @endforeach
                                     </td>
                                     <td>

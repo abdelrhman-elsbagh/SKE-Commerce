@@ -14,6 +14,8 @@ class Partner extends Model implements HasMedia
     protected $fillable = [
         'name',
         'description',
+        'ar_name',
+        'ar_description',
         'facebook',
         'whatsapp',
         'insta',

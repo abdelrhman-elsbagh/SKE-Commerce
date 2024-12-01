@@ -23,6 +23,8 @@ class PaymentMethodController extends Controller
         $request->validate([
             'gateway' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'ar_gateway' => 'nullable|string|max:255',
+            'ar_description' => 'nullable|string',
             'image' => 'nullable|image'
         ]);
 
@@ -52,6 +54,8 @@ class PaymentMethodController extends Controller
         $request->validate([
             'gateway' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'ar_gateway' => 'nullable|string|max:255',
+            'ar_description' => 'nullable|string',
             'image' => 'nullable|image'
         ]);
 
@@ -62,6 +66,8 @@ class PaymentMethodController extends Controller
             $paymentMethod->clearMediaCollection('payment_method_images');
             $paymentMethod->addMedia($request->file('image'))->toMediaCollection('payment_method_images');
         }
+
+        $paymentMethod->save();
 
         return redirect()->route('payment-methods.index')->with('success', 'Payment Method updated successfully.');
     }

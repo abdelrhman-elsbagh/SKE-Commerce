@@ -23,6 +23,14 @@
                             <p id="description">{!! $partner->description !!}</p>
                         </div>
                         <div class="mb-3">
+                            <label for="name" class="form-label">Arabic Name</label>
+                            <p id="name">{{ $partner->ar_name ?? "" }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Arabic Description</label>
+                            <p id="description">{!! $partner->ar_description ?? "" !!}</p>
+                        </div>
+                        <div class="mb-3">
                             <label for="facebook" class="form-label">Facebook</label>
                             <p id="facebook">{{ $partner->facebook }}</p>
                         </div>

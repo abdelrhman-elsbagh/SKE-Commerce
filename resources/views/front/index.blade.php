@@ -35,8 +35,11 @@
         </div>
 
         <div class="news-bar">
-            <span class="rotated" id="news-text">{{ $news->news ?? "" }}</span>
+            <span class="rotated" id="news-text">
+                {{ App::getLocale() === 'ar' ? $news->ar_news : $news->news ?? "" }}
+            </span>
         </div>
+
 
         <!-- Search Input Field -->
         <div class="uk-width-4-5@l uk-width-3-3@m uk-width-3-3@s uk-margin-auto uk-margin-top">

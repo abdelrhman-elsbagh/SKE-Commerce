@@ -28,6 +28,8 @@
                                 <th>ID</th>
                                 <th>Tag</th>
                                 <th>Title</th>
+                                <th>Ar Tag</th>
+                                <th>Ar Title</th>
                                 <th>URL</th>
                                 <th>Image</th>
                                 <th>Actions</th>
@@ -39,6 +41,8 @@
                                     <td>{{ $link->id }}</td>
                                     <td>{{ $link->tag }}</td>
                                     <td>{{ $link->title }}</td>
+                                    <td>{{ $link->ar_tag ?? "" }}</td>
+                                    <td>{{ $link->ar_title ?? "" }}</td>
                                     <td>{{ $link->link }}</td>
                                     <td>
                                         @if($link->getFirstMediaUrl('images'))

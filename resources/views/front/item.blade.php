@@ -16,7 +16,7 @@
                             <form id="subItemForm" method="POST" action="{{ route('purchase') }}">
                                 @csrf
                                 <input class="uk-input light-border" id="service_id" name="service_id" type="text"
-                                       placeholder="Enter User ID In Application" style="position: absolute;bottom: -80px;left: 0;background: #FFF;">
+                                       placeholder="{{ __('messages.enter_user_id_in_application') }}" style="position: absolute;bottom: -80px;left: 0;background: #FFF;">
                                 <div class="uk-grid uk-grid-small uk-child-width-1-5@xl uk-child-width-1-4@m uk-child-width-1-3" data-uk-grid>
                                     @foreach($item->subItems as $subItem)
                                         @php
@@ -57,9 +57,9 @@
                                                         <span class="uk-text-bold sub-item-price">
                                                             {{ number_format($subItem->price + ($subItem->price * $config->fee / 100), 2) }} {{ $user->currency->currency ?? "USD" }}
                                                         </span>
-                                                        <i id="addToFavouritesButton" class="fas fa-heart fa-1x heart-icon favourite-item" style="color: {{ $isFavorited ? '#f46119' : '#ccc' }}; position: absolute; top: 10px; left: 10px;"></i>
+                                                        <i id="addToFavouritesButton" class="fas fa-heart fa-1x heart-icon favourite-item" style="color: {{ $isFavorited ? 'var(--main-color)' : '#ccc' }}; position: absolute; top: 10px; left: 10px;"></i>
                                                     </div>
-                                                    <div class="selected-icon" style="display: none; position: absolute; top: 10px; right: 10px; color: #f46119;">
+                                                    <div class="selected-icon main-color" style="display: none; position: absolute; top: 10px; right: 10px;">
                                                         <i class="fas fa-check-circle fa-1x"></i>
                                                     </div>
                                                 @endif
@@ -84,7 +84,7 @@
                                                     <div class="uk-card-footer" style="text-align: center;border-top: 0;padding: 10px 20px; ">
                                                         <p>
                                                         </p>
-                                                        <span class="uk-text-bold" style="color: #F46119; font-size: 18px;">Custom Amount</span>
+                                                        <span class="uk-text-bold main-color" style=" font-size: 18px;">Custom Amount</span>
                                                         <i class="fas fa-heart fa-1x heart-icon" style="color: {{ $isFavorited ? '#f46119' : '#ccc' }}; position: absolute; top: 10px; left: 10px;"></i>
                                                     </div>
                                                     <div class="selected-icon" style="display: none; position: absolute; top: 10px; right: 10px; color: #f46119;">
@@ -123,14 +123,14 @@
                         @endif
                     </div>
                     <div class="game-profile-card__intro">
-                        <span>{{$item->description}}</span>
+                        <span>{{ App::getLocale() == 'ar' && $item->ar_description ? $item->ar_description : $item->name }}</span>
                     </div>
                     <ul class="game-profile-card__list list-inline">
                         @foreach($item->tags as $tag)
                             <li class="list-inline-item" style="width: auto">
                                 <span style="background: #F46119; margin-right: 5px; color: #FFF; padding: 5px; border-radius: 7px; font-size: 12px; font-weight: 900;">
-                                    {{ $tag->name }}
-                                    @if($tag->getFirstMediaUrl('images'))
+                                    {{ App::getLocale() == 'ar' && $tag->ar_name ? $tag->ar_name : $tag->name }}
+                                @if($tag->getFirstMediaUrl('images'))
                                         <img src="{{ $tag->getFirstMediaUrl('images') }}" alt="Item" width="15">
                                     @endif
                                 </span>
@@ -143,9 +143,16 @@
                 </div>
                 <div class="game-profile-card__intro"  style="border-radius: 5px;background: #fff;padding: 10px;">
                     <ul>
-                        <li style="color: #079992;"><i class="fas fa-lock"></i> Secure Payments</li>
-                        <li style="color: #079992;"><i class="fas fa-shield-alt"></i> Advanced Encryption</li>
-                        <li style="color: #079992;"><i class="fas fa-check-circle"></i> Trusted Gateways</li>
+                        @if(App::getLocale() == 'ar')
+                            <li style="color: #079992;"><i class="fas fa-lock"></i> مدفوعات آمنة</li>
+                            <li style="color: #079992;"><i class="fas fa-shield-alt"></i> تشفير متقدم</li>
+                            <li style="color: #079992;"><i class="fas fa-check-circle"></i> بوابات موثوقة</li>
+                        @else
+                            <li style="color: #079992;"><i class="fas fa-lock"></i> Secure Payments</li>
+                            <li style="color: #079992;"><i class="fas fa-shield-alt"></i> Advanced Encryption</li>
+                            <li style="color: #079992;"><i class="fas fa-check-circle"></i> Trusted Gateways</li>
+                        @endif
+
                     </ul>
                     <span>Your payment security is our top priority. We use advanced encryption to protect your data, ensuring all transactions are processed safely through trusted gateways. Shop confidently with our secure payment system.</span>
                 </div>
@@ -175,6 +182,12 @@
 
     </script>
     <script>
+        const messages = {
+            enterUserId: "{{ __('messages.enter_user_id') }}",
+            selectProductFirst: "{{ __('messages.select_product_first') }}",
+            errorProcessingRequest: "{{ __('messages.error_processing_request') }}"
+
+        };
         document.addEventListener('DOMContentLoaded', function () {
             const customAmountContainer = $('#customAmountContainer');
             const customAmountInput = $('#customAmount');
@@ -246,12 +259,12 @@
 
             document.getElementById('buyNowButton').addEventListener('click', function () {
                 if (!selectedSubItemId) {
-                    toastr.error('Please select a product first.');
+                    toastr.error(messages.selectProductFirst);
                     return;
                 }
 
                 if (!serviceIdInput.value.trim()) {
-                    toastr.error('Please enter User ID In Application.');
+                    toastr.error(messages.enterUserId);
                     return;
                 }
 
@@ -286,8 +299,7 @@
                         }
                     })
                     .catch(error => {
-                        console.error('Error:', error);
-                        toastr.error('There was an error processing your request.');
+                        toastr.error(messages.errorProcessingRequest);
                         buyNowButton.disabled = false;
                     });
             });

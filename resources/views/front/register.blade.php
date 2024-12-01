@@ -18,6 +18,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
     <style>
+        :root {
+            --main-color: {{ $mainColor ?? $config->main_color ?? '#F46119' }};
+        }
+    </style>
+
+    <style>
         .js-select{
             width: 100% !important;
         }
@@ -29,11 +35,11 @@
 
 
         .custom-tab li.uk-active a {
-            color: #F46119; /* Active tab color */
+            color: var(--main-color) /* Active tab color */
         }
 
         .custom-tab li a:hover {
-            color: #F46119; /* Hover effect on inactive tabs */
+            color: var(--main-color); /* Hover effect on inactive tabs */
         }
     </style>
 
@@ -48,7 +54,7 @@
                 @else
                     <img class="animation-navspinv" src="{{ asset('assets/img/logo.png')}}" alt="logo">
                 @endif
-                <span>{{$config->name ?? "Company Name"}}</span>
+                    <h2 class="head-login-desc">{{$config->description ?? ""}}</h2>
             </div>
             <div>
                 <div class="form-login">

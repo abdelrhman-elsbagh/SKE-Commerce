@@ -28,6 +28,7 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Name</th>
+                                <th>Ar Name</th>
                                 <th>Description</th>
                                 <th>Facebook <i class="ri-facebook-circle-fill" style="color: #3b5998;"></i></th>
                                 <th>Whatsapp <i class="ri-whatsapp-line" style="color: #25D366;"></i></th>
@@ -41,6 +42,7 @@
                                 <tr id="partner-{{ $partner->id }}">
                                     <td>{{ $partner->id }}</td>
                                     <td>{{ $partner->name ?? "" }}</td>
+                                    <td>{{ $partner->ar_name ?? "" }}</td>
                                     <td>{!! \Illuminate\Support\Str::limit($partner->description, 70, '...') !!}</td>
                                     <td>
                                         @if($partner->facebook)

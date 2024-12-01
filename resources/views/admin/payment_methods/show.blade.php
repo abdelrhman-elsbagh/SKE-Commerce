@@ -42,6 +42,17 @@
                                     <div class="description">{!! $paymentMethod->description !!}</div>
                                 </td>
                             </tr>
+
+                            <tr>
+                                <th>Arabic Gateway</th>
+                                <td>{{ $paymentMethod->ar_gateway ?? "" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Arabic Description</th>
+                                <td>
+                                    <div class="description">{!! $paymentMethod->ar_description ?? "" !!}</div>
+                                </td>
+                            </tr>
                             <tr>
                                 <th>Image</th>
                                 <td>

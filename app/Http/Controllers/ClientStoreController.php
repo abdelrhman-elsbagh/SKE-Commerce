@@ -29,16 +29,25 @@ class ClientStoreController extends Controller
      */
     public function store(Request $request)
     {
+        // Sanitize the domain to remove trailing slash if present
+        $request->merge([
+            'domain' => rtrim($request->input('domain'), '/')
+        ]);
+
+        // Validate the input data
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'domain' => 'required|url|unique:client_stores,domain',
             'secret_key' => 'required|string|max:255'
         ]);
 
+        // Create the client store
         ClientStore::create($validatedData);
 
+        // Redirect with success message
         return redirect()->route('clientStores.index')->with('success', 'Client store created successfully.');
     }
+
 
     /**
      * Display the specified resource.
@@ -61,14 +70,22 @@ class ClientStoreController extends Controller
      */
     public function update(Request $request, ClientStore $clientStore)
     {
+        // Sanitize the domain to remove trailing slash if present
+        $request->merge([
+            'domain' => rtrim($request->input('domain'), '/')
+        ]);
+
+        // Validate the input data
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'domain' => 'required|url|unique:client_stores,domain,' . $clientStore->id,
             'secret_key' => 'required|string|max:255'
         ]);
 
+        // Update the client store
         $clientStore->update($validatedData);
 
+        // Redirect with success message
         return redirect()->route('clientStores.index')->with('success', 'Client store updated successfully.');
     }
 

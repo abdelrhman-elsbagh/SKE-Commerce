@@ -14,6 +14,12 @@
     <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Marcellus&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --main-color: {{ $mainColor ?? $config->main_color ?? '#F46119' }};
+        }
+    </style>
 </head>
 <body class="page-login">
 <div id="page-preloader">
@@ -40,7 +46,7 @@
                 @else
                     <img class="animation-navspinv" src="{{ asset('assets/img/logo.png')}}" alt="logo">
                 @endif
-                <span>{{$config->name ?? "Company Name"}}</span>
+                    <h2 class="head-login-desc">{{$config->description ?? ""}}</h2>
             </div>
             <div>
                 <div class="form-login">

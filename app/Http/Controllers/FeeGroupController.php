@@ -62,6 +62,12 @@ class FeeGroupController extends Controller
         ]);
 
         $feeGroup = FeeGroup::findOrFail($id);
+
+        // Prevent updating the "name" if the Fee Group is "Default"
+        /*if (strtolower($feeGroup->name) == 'default' && strtolower($request->input('name'))  != strtolower($feeGroup->name) ) {
+            return redirect()->route('fee_groups.index')->with('error', 'The name of the "Default" Fee Group cannot be changed.');
+        }*/
+
         $feeGroup->update($request->only('fee', 'name'));
 
         if ($request->hasFile('image')) {
@@ -81,10 +87,22 @@ class FeeGroupController extends Controller
     {
         try {
             $feeGroup = FeeGroup::findOrFail($id);
+
+            // Prevent deletion if the fee group's name is "Default"
+            if ($feeGroup->name === 'Default') {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'The "Default" Fee Group cannot be deleted.'
+                ], 403); // HTTP 403 Forbidden
+            }
+
             $feeGroup->delete();
             return response()->json(['status' => 'success', 'message' => 'Fee Group deleted successfully.']);
         } catch (\Exception $e) {
-            return response()->json(['status' => 'error', 'message' => 'An error occurred while deleting the Fee Group.']);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'An error occurred while deleting the Fee Group.'
+            ], 500); // HTTP 500 Internal Server Error
         }
     }
 }

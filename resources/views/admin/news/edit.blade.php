@@ -27,6 +27,10 @@
                                 <label for="news" class="form-label">News</label>
                                 <textarea class="form-control" id="news" name="news" rows="5">{{ $news->news }}</textarea>
                             </div>
+                            <div class="mb-3">
+                                <label for="ar_news" class="form-label">Arabic News</label>
+                                <textarea class="form-control text-right" id="ar_news" name="ar_news" rows="5" style="text-align: right">{{ $news->ar_news }}</textarea>
+                            </div>
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </form>
                     </div>

@@ -34,6 +34,15 @@
                                 <input type="hidden" name="description" id="description">
                             </div>
                             <div class="mb-3">
+                                <label for="ar_name" class="form-label">Arabic Name</label>
+                                <input type="text" class="form-control" id="ar_name" name="ar_name">
+                            </div>
+                            <div class="mb-3">
+                                <label for="ar_description" class="form-label">Arabic Description</label>
+                                <div id="snow-editor2" style="height: 300px;"></div>
+                                <input type="hidden" name="ar_description" id="ar_description">
+                            </div>
+                            <div class="mb-3">
                                 <label for="facebook" class="form-label">Facebook</label>
                                 <input type="url" class="form-control" id="facebook" name="facebook">
                             </div>
@@ -92,6 +101,25 @@
                 }
             });
 
+            var quill2 = new Quill('#snow-editor2', {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        [{ 'font': [] }, { 'size': ['small', false, 'large', 'huge'] }],  // custom font and size
+                        ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+                        [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+                        [{ 'script': 'sub' }, { 'script': 'super' }],     // superscript/subscript
+                        [{ 'header': 1 }, { 'header': 2 }, 'blockquote', 'code-block'],  // headers and block quote
+                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],    // lists
+                        [{ 'indent': '-1' }, { 'indent': '+1' }],         // outdent/indent
+                        [{ 'direction': 'rtl' }],                         // text direction
+                        [{ 'align': [] }],                                // text alignment
+                        ['link', 'image', 'video'],                       // link, image and video
+                        ['clean']                                         // remove formatting button
+                    ]
+                }
+            });
+
             $('#partner_image').change(function() {
                 let reader = new FileReader();
                 reader.onload = function(e) {
@@ -107,8 +135,9 @@
                 var quillContent = quill.root.innerHTML;
                 $('#description').val(quillContent); // Set the value of the hidden input
 
-                // Debugging: Log the captured description
-                console.log('Description set to:', $('#description').val());
+
+                var ar_quillContent = quill2.root.innerHTML;
+                $('#ar_description').val(ar_quillContent); // Set the value of the hidden input
 
                 var formData = new FormData(this);
 

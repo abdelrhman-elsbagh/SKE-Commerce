@@ -6,6 +6,7 @@ use App\Models\BusinessClientWallet;
 use App\Models\BusinessPaymentMethod;
 use App\Models\Config;
 use App\Models\Currency;
+use App\Models\FeeGroup;
 use App\Models\Footer;
 use App\Models\Item;
 use App\Models\News;
@@ -25,6 +26,7 @@ use App\Models\User;
 use App\Models\UserWallet;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
@@ -71,7 +73,9 @@ class HomeController extends Controller
         View::share('favoritesCount', $favoritesCount);
 
         $categorizedItems = $items->groupBy(function ($item) {
-            return $item->category->name;
+            return App::getLocale() === 'ar' && $item->category->ar_name
+                ? $item->category->ar_name // Use Arabic category name if the language is Arabic
+                : $item->category->name;
         });
 
         $footerItems = Footer::with('media')->get()->groupBy('tag');
@@ -262,11 +266,14 @@ class HomeController extends Controller
             throw new ValidationException($validator);
         }
 
+        $fee = FeeGroup::where('name', 'Default')->firstOrFail();
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
             'currency_id' => $request->currency_id,
+            'fee_group_id' => $fee->id, // Default
             'address' => $request->country,
             'password' => Hash::make($request->password),
             'status' => 'active',
@@ -301,15 +308,19 @@ class HomeController extends Controller
         }
 
         $usd = Currency::where('currency', 'USD')->firstOrFail();
+        $fee = FeeGroup::where('name', 'Default')->firstOrFail();
+
+        $normalizedDomain = rtrim($request->domain, '/');
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
             'currency_id' => $usd->id, // USD
+            'fee_group_id' => $fee->id, // Default
             'address' => $request->country,
             'company' => $request->company,
-            'domain' => $request->domain,
+            'domain' => $normalizedDomain,
             'password' => Hash::make($request->password),
             'status' => 'inactive',
             'is_external' => true,
@@ -852,7 +863,8 @@ class HomeController extends Controller
                     // Construct the full URL by combining the domain and the API path
                     $url = $subItem->domain . '/api/fetch-sub-item';
 
-                    $external_usr_secret = User::where('id', $subItem->external_user_id)->first()->secret_key;
+//                    $external_usr_secret = User::where('id', $subItem->external_user_id)->first()->secret_key;
+                    $external_usr_secret = $subItem->clientStore->secret_key;
                     $external_usr_fee = User::where('id', $subItem->external_user_id)->first()->feeGroup->fee;
                     $own_usr_secret = User::where('id', $subItem->user_id)->first()->secret_key;
                     $fe_amount = round($subItem->price * $user->feeGroup->fee / 100, 2);

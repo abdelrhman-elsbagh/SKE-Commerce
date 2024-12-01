@@ -41,7 +41,9 @@
                                     <td>
                                         <a href="{{ route('fee_groups.show', $feeGroup->id) }}" class="btn btn-info"><i class=" ri-eye-line"></i></a>
                                         <a href="{{ route('fee_groups.edit', $feeGroup->id) }}" class="btn btn-warning"><i class="ri-edit-box-fill"></i></a>
-                                        <button class="btn btn-danger btn-delete" data-id="{{ $feeGroup->id }}"><i class="ri-delete-bin-5-line"></i></button>
+                                        @if($feeGroup->name !== 'Default')
+                                            <button class="btn btn-danger btn-delete" data-id="{{ $feeGroup->id }}"><i class="ri-delete-bin-5-line"></i></button>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach

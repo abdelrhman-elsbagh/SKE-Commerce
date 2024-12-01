@@ -23,6 +23,15 @@
                         <label for="title" class="form-label">Title</label>
                         <input type="text" class="form-control" id="title" name="title" value="{{ old('title', $footer->title) }}" required>
                     </div>
+
+                    <div class="mb-3">
+                        <label for="ar_tag" class="form-label">Arabic Tag</label>
+                        <input type="text" class="form-control" id="ar_tag" name="ar_tag" value="{{ old('tag', $footer->ar_tag) }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="ar_title" class="form-label">Arabic Title</label>
+                        <input type="text" class="form-control" id="title" name="ar_title" value="{{ old('title', $footer->ar_title) }}">
+                    </div>
                     <div class="mb-3">
                         <label for="link" class="form-label">Link</label>
                         <input type="url" class="form-control" id="link" name="link" value="{{ old('link', $footer->link) }}" required>

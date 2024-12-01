@@ -12,7 +12,9 @@ class PaymentMethod extends Model implements HasMedia
 
     protected $fillable = [
         'gateway',
-        'description'
+        'description',
+        'ar_gateway',
+        'ar_description'
     ];
 
     public function registerMediaCollections(): void

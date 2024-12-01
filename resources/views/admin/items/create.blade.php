@@ -34,10 +34,20 @@
                                 <textarea class="form-control" id="description" name="description">{{ $item->description ?? '' }}</textarea>
                             </div>
                             <div class="mb-3">
+                                <label for="ar_name" class="form-label">Arabic Name</label>
+                                <input type="text" class="form-control" id="ar_name" name="ar_name" value="{{ $item->ar_name ?? '' }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="ar_description" class="form-label">Arabic Description</label>
+                                <textarea class="form-control" id="description" name="ar_description">{{ $item->ar_description ?? '' }}</textarea>
+                            </div>
+                            <div class="mb-3">
                                 <label for="category_id" class="form-label">Category</label>
                                 <select class="form-control" id="category_id" name="category_id">
                                     @foreach($categories as $category)
-                                        <option value="{{ $category->id }}" {{ (isset($item) && $item->category_id == $category->id) ? 'selected' : '' }}>{{ $category->name }}</option>
+                                        <option value="{{ $category->id }}" {{ (isset($item) && $item->category_id == $category->id) ? 'selected' : '' }}>
+                                            {{ $category->name . ($category->ar_name ? ' - ' . $category->ar_name : '') }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
@@ -45,7 +55,9 @@
                                 <label for="tags" class="form-label">Tags</label>
                                 <select class="form-control" id="tags" name="tags[]" multiple>
                                     @foreach($tags as $tag)
-                                        <option value="{{ $tag->id }}" {{ (isset($item) && $item->tags->contains($tag->id)) ? 'selected' : '' }}>{{ $tag->name }}</option>
+                                        <option value="{{ $tag->id }}" {{ (isset($item) && $item->tags->contains($tag->id)) ? 'selected' : '' }}>
+                                            {{ $tag->name . ($tag->ar_name ? ' - ' . $tag->ar_name : '') }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>

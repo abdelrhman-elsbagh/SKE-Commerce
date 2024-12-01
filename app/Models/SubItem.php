@@ -30,7 +30,13 @@ class SubItem extends Model implements HasMedia
         'max_amount',
         'custom_price',
         'custom_amount',
+        'client_store_id',
     ];
+
+    public function clientStore()
+    {
+        return $this->belongsTo(ClientStore::class, 'client_store_id');
+    }
 
     public function user()
     {

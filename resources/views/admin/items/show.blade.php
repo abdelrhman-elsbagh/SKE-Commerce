@@ -23,6 +23,14 @@
                             <p id="description">{{ $item->description }}</p>
                         </div>
                         <div class="mb-3">
+                            <label for="ar_name" class="form-label">Arabic Name</label>
+                            <p id="ar_name">{{ $item->ar_name ?? '' }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ar_description" class="form-label">Arabic Description</label>
+                            <p id="ar_description">{{ $item->ar_description ?? '' }}</p>
+                        </div>
+                        <div class="mb-3">
                             <label for="price_in_diamonds" class="form-label">Price in Diamonds</label>
                             <p id="price_in_diamonds">{{ $item->price_in_diamonds }}</p>
                         </div>

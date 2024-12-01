@@ -32,6 +32,8 @@ class PartnerController extends Controller
         $request->validate([
             'name' => 'nullable|string',
             'description' => 'nullable|string',
+            'ar_name' => 'nullable|string',
+            'ar_description' => 'nullable|string',
             'facebook' => 'nullable|string',
             'whatsapp' => 'nullable|string',
             'insta' => 'nullable|string',
@@ -42,6 +44,8 @@ class PartnerController extends Controller
         $partner = Partner::create([
             'name' => $request->name,
             'description' => $request->description,
+            'ar_name' => $request->ar_name,
+            'ar_description' => $request->ar_description,
             'facebook' => $request->facebook,
             'whatsapp' => $request->whatsapp,
             'insta' => $request->insta,
@@ -72,6 +76,8 @@ class PartnerController extends Controller
         $request->validate([
             'name' => 'nullable|string',
             'description' => 'nullable|string',
+            'ar_name' => 'nullable|string',
+            'ar_description' => 'nullable|string',
             'facebook' => 'nullable|string',
             'whatsapp' => 'nullable|string',
             'insta' => 'nullable|string',
@@ -84,6 +90,8 @@ class PartnerController extends Controller
         $partner->update([
             'name' => $request->name,
             'description' => $request->description,
+            'ar_name' => $request->ar_name,
+            'ar_description' => $request->ar_description,
             'facebook' => $request->facebook,
             'whatsapp' => $request->whatsapp,
             'insta' => $request->insta,
@@ -94,6 +102,8 @@ class PartnerController extends Controller
             $partner->clearMediaCollection('partner_images');
             $partner->addMedia($request->file('partner_image'))->toMediaCollection('partner_images');
         }
+
+        $partner->save();
 
         return redirect()->route('partners.index')->with('success', 'Agent updated successfully.');
     }
