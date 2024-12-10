@@ -31,8 +31,10 @@ class PageController extends Controller
     {
         $validatedData = $request->validate([
             'data' => 'nullable|string',
+            'ar_data' => 'nullable|string',
             'slug' => 'nullable|string|unique:pages,slug',
             'title' => 'nullable|string|max:255',
+            'ar_title' => 'nullable|string|max:255',
         ]);
 
         $page = Page::create($validatedData);
@@ -68,8 +70,10 @@ class PageController extends Controller
     {
         $validatedData = $request->validate([
             'data' => 'nullable|string',
+            'ar_data' => 'nullable|string',
             'slug' => 'nullable|string|unique:pages,slug,' . $page->id,
             'title' => 'nullable|string|max:255',
+            'ar_title' => 'nullable|string|max:255',
         ]);
 
         $page->update($validatedData);

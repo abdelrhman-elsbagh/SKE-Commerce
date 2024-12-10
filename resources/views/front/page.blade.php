@@ -6,10 +6,10 @@
     <main class="page-main">
         <div class="">
             <h3 class="custom-page-title" style="">
-                <span style="border-bottom: 2px solid; padding-bottom: 2px;">{{ $page->title ?? 'Page' }}</span>
+                <span style="border-bottom: 2px solid; padding-bottom: 2px;">{{ App::getLocale() === 'ar' ? $page->ar_title : $page->title ?? "Page" }}</span>
             </h3>
             <div class="content custom-page-content" style="">
-                {!! $page->data ?? '' !!}
+                {!! App::getLocale() === 'ar' ? $page->ar_data : $page->data ?? "" !!}
             </div>
         </div>
     </main>

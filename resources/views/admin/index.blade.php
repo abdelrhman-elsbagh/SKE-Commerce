@@ -32,15 +32,26 @@
                                 <h4 class="text-muted fw-normal mt-0" title="Total Customers">Customers</h4>
                                 <h2 class="mt-0" title="Number of Customers">{{ $customersCount }}</h2>
                                 <h5 class=""> <span class="badge bg-success-subtle text-success rounded-pill">Active:</span>  {{ $activeUsersCount }}</h5>
-                                <h5 class=""><span class="badge bg-info-subtle text-info rounded-pill">Partner:</span> 0</h5>
                                 <h5 class="mb-0"><span class="badge bg-danger-subtle text-danger rounded-pill">Inactive:</span> {{ $inactiveUsersCount }}</h5>
                             </div>
-{{--                            <div class="flex-shrink-0">--}}
-{{--                                <div id="widget-customers" class="apex-charts" data-colors="#47ad77,#e3e9ee"></div>--}}
-{{--                            </div>--}}
                         </div>
-                    </div> <!-- end card-body-->
-                </div> <!-- end card-->
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card">
+                    <div class="card-body statstic-card">
+                        <div class="d-flex justify-content-between">
+                            <div class="flex-grow-1 overflow-hidden">
+                                <h4 class="text-muted fw-normal mt-0" title="Total Partners">Partners</h4>
+                                <h2 class="mt-0" title="Number of Partners">{{ $partnersCount }}</h2>
+                                <h5 class=""> <span class="badge bg-success-subtle text-success rounded-pill">Active:</span>  {{ $activePartnersCount }}</h5>
+                                <h5 class="mb-0"><span class="badge bg-danger-subtle text-danger rounded-pill">Inactive:</span> {{ $inactivePartnersCount }}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="col">
@@ -54,9 +65,6 @@
                                 <h5 class=""><span class="badge bg-danger-subtle text-danger rounded-pill">Refunded:</span> {{ $refundedOrdersCount }}</h5>
                                 <h5 class="mb-0"><span class="badge bg-warning-subtle text-warning rounded-pill">Pending:</span> {{ $pendingOrdersCount }}</h5>
                             </div>
-{{--                            <div class="flex-shrink-0">--}}
-{{--                                <div id="widget-orders" class="apex-charts" data-colors="#3e60d5,#e3e9ee"></div>--}}
-{{--                            </div>--}}
                         </div>
                     </div> <!-- end card-body-->
                 </div> <!-- end card-->

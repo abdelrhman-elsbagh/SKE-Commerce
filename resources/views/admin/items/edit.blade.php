@@ -110,6 +110,9 @@
                                         <th>Description</th>
                                         <th>Amount</th>
                                         <th>Price</th>
+                                        <th>Min Amount</th>
+                                        <th>Max Amount</th>
+                                        <th>Status</th>
                                         <th class="text-center">Image</th>
                                         <th>Actions</th>
                                     </tr>
@@ -136,6 +139,22 @@
                                                     <input type="hidden" name="sub_items[{{ $loop->index }}][price]"
                                                            value="{{ $subItem->price }}">
                                                     <span>{{ $subItem->price }}</span>
+                                                </td>
+
+                                                <td>
+                                                    <input type="hidden" name="sub_items[{{ $loop->index }}][minimum_amount]"
+                                                           value="{{ $subItem->minimum_amount }}">
+                                                    <span>{{ $subItem->minimum_amount }}</span>
+                                                </td>
+                                                <td>
+                                                    <input type="hidden" name="sub_items[{{ $loop->index }}][max_amount]"
+                                                           value="{{ $subItem->max_amount }}">
+                                                    <span>{{ $subItem->max_amount }}</span>
+                                                </td>
+                                                <td>
+                                                    <input type="hidden" name="sub_items[{{ $loop->index }}][status]"
+                                                           value="{{ $subItem->status }}">
+                                                    <span>{{ $subItem->status }}</span>
                                                 </td>
                                                 <td style="text-align: center">
                                                     <input type="file" name="sub_items[{{ $loop->index }}][image]" class="sub-item-image-file" data-index="{{ $loop->index }}" style="display: none;">
@@ -190,8 +209,33 @@
                                 <input type="number" step="0.1" class="form-control"
                                        id="sub_item_price_modal" name="sub_item_price_modal" required {{ $subItem->external_id ? 'readonly' : '' }}>
                             </div>
+
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="is_custom" name="is_custom"
+                                    {{ $subItem->is_custom ? 'checked' : '' }}>
+                                <label class="form-check-label" for="is_custom">Custom</label>
+                            </div>
+                            <div id="customFields" class="row" style="{{ !$subItem->is_custom ? 'display: none;' : '' }}">
+                                <div class="mb-3 col-sm-12 col-md-6">
+                                    <label for="sub_item_minimum_amount_modal" class="form-label">Minimum Amount</label>
+                                    <input type="number" class="form-control" id="sub_item_minimum_amount_modal" name="sub_item_minimum_amount_modal" value="{{$subItem->minimum_amount}}">
+                                </div>
+                                <div class="mb-3 col-sm-12 col-md-6">
+                                    <label for="sub_item_max_amount_modal" class="form-label">Maximum Amount</label>
+                                    <input type="number" class="form-control" id="sub_item_max_amount_modal" name="sub_item_max_amount_modal" value="{{$subItem->max_amount}}">
+                                </div>
+                            </div>
+
                         @endif
 
+                        <div class="mb-3 col-sm-12 col-md-12">
+                            <label for="sub_item_sub_status_modal" class="form-label">Status</label>
+
+                            <select class="form-control" id="sub_item_sub_status_modal" name="sub_item_sub_status_modal">
+                                <option value="active" {{$subItem->status == 'active' ? 'selected': ''}} selected>Active</option>
+                                <option value="inactive" {{ $subItem->status == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                            </select>
+                        </div>
 
                         <div class="mb-3">
                             <label for="sub_item_image_modal" class="form-label">Sub Item Image</label>
@@ -213,6 +257,13 @@
 
     <script>
         $(document).ready(function() {
+            $('#is_custom').change(function() {
+                if ($(this).is(':checked')) {
+                    $('#customFields').show();
+                } else {
+                    $('#customFields').hide();
+                }
+            });
             // Image previews
             $('#image').change(function() {
                 let reader = new FileReader();
@@ -255,6 +306,13 @@
                 let subItemDescription = $('#sub_item_description_modal').val();
                 let subItemAmount = $('#sub_item_amount_modal').val();
                 let subItemPrice = $('#sub_item_price_modal').val();
+
+                let subItemMinAmount = $('#sub_item_minimum_amount_modal').val();
+                let subItemMaxAmount = $('#sub_item_max_amount_modal').val();
+                let subItemSubStatus = $('#sub_item_sub_status_modal').val();
+
+                console.log("subItemSubStatus", subItemSubStatus)
+
                 let subItemImage = $('#sub_item_image_modal')[0].files[0];
                 let subItemIndex = $('#sub_item_index_modal').val();
 
@@ -269,11 +327,20 @@
                         subItemRow.find('input[name^="sub_items"][name$="[description]"]').val(subItemDescription);
                         subItemRow.find('input[name^="sub_items"][name$="[amount]"]').val(subItemAmount);
                         subItemRow.find('input[name^="sub_items"][name$="[price]"]').val(subItemPrice);
+
+                        subItemRow.find('input[name^="sub_items"][name$="[minimum_amount]"]').val(subItemMinAmount);
+                        subItemRow.find('input[name^="sub_items"][name$="[max_amount]"]').val(subItemMaxAmount);
+                        subItemRow.find('input[name^="sub_items"][name$="[status]"]').val(subItemSubStatus);
+
                         subItemRow.find('input[name^="sub_items"][name$="[image_url]"]').val(imageSrc);
                         subItemRow.find('span').eq(0).text(subItemName);
                         subItemRow.find('span').eq(1).text(subItemDescription);
                         subItemRow.find('span').eq(2).text(subItemAmount);
                         subItemRow.find('span').eq(3).text(subItemPrice);
+
+                        subItemRow.find('span').eq(4).text(subItemMaxAmount);
+                        subItemRow.find('span').eq(5).text(subItemMinAmount);
+                        subItemRow.find('span').eq(6).text(subItemSubStatus);
 
                         if (subItemImage) {
                             subItemRow.find('.sub-item-image-preview').attr('src', imageSrc);
@@ -303,6 +370,21 @@
                                     <input type="hidden" name="sub_items[${subItemCount}][price]" value="${subItemPrice}">
                                     <span>${subItemPrice}</span>
                                 </td>
+
+                                <td>
+                                    <input type="hidden" name="sub_items[${subItemCount}][minimum_amount]" value="${subItemMinAmount}">
+                                    <span>${subItemMinAmount}</span>
+                                </td>
+                                <td>
+                                    <input type="hidden" name="sub_items[${subItemCount}][max_amount]" value="${subItemMaxAmount}">
+                                    <span>${subItemMaxAmount}</span>
+                                </td>
+                                 <td>
+                                    <input type="hidden" name="sub_items[${subItemCount}][status]" value="${subItemSubStatus}">
+                                    <span>${subItemSubStatus}</span>
+                                </td>
+
+
                                 <td>
                                     <input type="hidden" name="sub_items[${subItemCount}][image_url]" value="${imageSrc}">
                                     <input type="file" name="sub_items[${subItemCount}][image]" class="sub-item-image-file" data-index="${subItemCount}" style="display: none;">
@@ -366,7 +448,7 @@
                             loader: true,
                             loaderBg: '#f96868',
                             position: 'top-right',
-                            hideAfter: 3000,
+                            hideAfter: 3000000,
                             afterHidden: function () {
                                 window.location.href = "{{ route('items.index') }}";
                             }
@@ -411,6 +493,17 @@
                 let subItemAmount = subItemRow.find('input[name^="sub_items"][name$="[amount]"]').val();
                 let subItemPrice = subItemRow.find('input[name^="sub_items"][name$="[price]"]').val();
 
+                let subItemMaxAmount = subItemRow.find('input[name^="sub_items"][name$="[max_amount]"]').val();
+                let subItemMinAmount = subItemRow.find('input[name^="sub_items"][name$="[minimum_amount]"]').val();
+
+                let subItemStatus = subItemRow.find('input[name^="sub_items"][name$="[status]"]').val();
+
+
+
+                console.log("subItemStatus1", subItemStatus)
+                // console.log("subItemStatus1", subItemRow.html())
+
+
                 $('#create-sub-item-form')[0].reset();  // Reset form fields
 
                 $('#sub_item_name_modal').val(subItemName);
@@ -418,6 +511,10 @@
                 $('#sub_item_amount_modal').val(subItemAmount);
                 $('#sub_item_price_modal').val(subItemPrice);
                 $('#sub_item_index_modal').val(subItemIndex);
+
+                $('#sub_item_max_amount_modal').val(subItemMaxAmount);
+                $('#sub_item_minimum_amount_modal').val(subItemMinAmount);
+                // $('#sub_item_sub_status_modal').val(subItemStatus);
 
                 let subItemImageSrc = subItemRow.find('.sub-item-image-preview').attr('src');
                 if (subItemImageSrc) {

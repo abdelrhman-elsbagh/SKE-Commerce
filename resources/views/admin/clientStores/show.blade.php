@@ -10,16 +10,16 @@
                     <p class="form-control-plaintext">{{ $clientStore->name }}</p>
                 </div>
                 <div class="mb-3">
+                    <label class="form-label">Email:</label>
+                    <p class="form-control-plaintext">{{ $clientStore->email }}</p>
+                </div>
+                <div class="mb-3">
                     <label class="form-label">Domain:</label>
                     <p class="form-control-plaintext">{{ $clientStore->domain }}</p>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Secret Key:</label>
                     <p class="form-control-plaintext">{{ $clientStore->secret_key }}</p>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Status:</label>
-                    <p class="form-control-plaintext">{{ $clientStore->status }}</p>
                 </div>
                 <a href="{{ route('clientStores.index') }}" class="btn btn-secondary">Back to List</a>
                 <a href="{{ route('clientStores.edit', $clientStore->id) }}" class="btn btn-primary">Edit</a>

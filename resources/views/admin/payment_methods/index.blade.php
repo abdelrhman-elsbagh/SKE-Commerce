@@ -4,8 +4,7 @@
     @vite([
         'node_modules/datatables.net-bs5/css/dataTables.bootstrap5.min.css',
         'node_modules/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css',
-        'node_modules/jquery-toast-plugin/dist/jquery.toast.min.css',
-        'node_modules/quill/dist/quill.snow.css'
+        'node_modules/jquery-toast-plugin/dist/jquery.toast.min.css'
     ])
     <style>
         .description {
@@ -45,7 +44,7 @@
                                     <td>{{ $paymentMethod->id }}</td>
                                     <td>{{ $paymentMethod->gateway }}</td>
                                     <td>{{ $paymentMethod->ar_gateway ?? "" }}</td>
-                                    <td><div class="description">{!! \Illuminate\Support\Str::limit($paymentMethod->description, 100, '...') !!}</div></td>
+                                    <td><div class="description">{!! $paymentMethod->description !!}</div></td>
                                     <td>
                                         <a href="{{ route('payment-methods.show', $paymentMethod->id) }}" class="btn btn-info"><i class=" ri-eye-line"></i></a>
                                         <a href="{{ route('payment-methods.edit', $paymentMethod->id) }}" class="btn btn-warning"><i class="ri-edit-box-fill"></i></a>
@@ -87,7 +86,6 @@
     @vite([
         'resources/js/pages/demo.datatable-init.js',
         'node_modules/jquery-toast-plugin/dist/jquery.toast.min.js',
-//        'node_modules/quill/dist/quill.min.js'
     ])
 
     <script>

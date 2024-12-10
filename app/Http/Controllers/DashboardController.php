@@ -17,17 +17,31 @@ class DashboardController extends Controller
     public function index()
     {
         // Count of users with the "User" role
-        $customersCount = User::whereHas('roles', function ($query) {
+        $customersCount = User::where('is_external', 0)->whereHas('roles', function ($query) {
             $query->where('name', 'User');
         })->count();
 
         // Count of active users with the "User" role
-        $activeUsersCount = User::whereHas('roles', function ($query) {
+        $activeUsersCount = User::where('is_external', 0)->whereHas('roles', function ($query) {
             $query->where('name', 'User');
         })->where('status', 'active')->count();
 
         // Count of inactive users with the "User" role
-        $inactiveUsersCount = User::whereHas('roles', function ($query) {
+        $inactiveUsersCount = User::where('is_external', 0)->whereHas('roles', function ($query) {
+            $query->where('name', 'User');
+        })->where('status', 'inactive')->count();
+
+        $partnersCount = User::where('is_external', 1)->whereHas('roles', function ($query) {
+            $query->where('name', 'User');
+        })->count();
+
+        // Count of active users with the "User" role
+        $activePartnersCount = User::where('is_external', 1)->whereHas('roles', function ($query) {
+            $query->where('name', 'User');
+        })->where('status', 'active')->count();
+
+        // Count of inactive users with the "User" role
+        $inactivePartnersCount = User::where('is_external', 1)->whereHas('roles', function ($query) {
             $query->where('name', 'User');
         })->where('status', 'inactive')->count();
 
@@ -94,6 +108,9 @@ class DashboardController extends Controller
             'recentOrders',
             'topSellingSubItems',
             'revenueByLocations',
+            'partnersCount',
+            'activePartnersCount',
+            'inactivePartnersCount',
         ));
     }
 
@@ -123,6 +140,8 @@ class DashboardController extends Controller
             $revenue = Order::whereHas('user', function($query) use ($currency) {
                 $query->where('currency_id', $currency->id);
             })->whereIn('status', ['active', 'pending'])->sum('revenue');
+
+//            dd($revenue);
 
             $totalOrders = Order::whereHas('user', function($query) use ($currency) {
                 $query->where('currency_id', $currency->id);

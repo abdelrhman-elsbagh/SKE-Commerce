@@ -71,6 +71,7 @@
                                 <th>Amount</th>
                                 <th>Created At</th>
                                 <th>Order Type</th>
+                                <th>Domain</th>
                                 <th>Currency</th>
                                 <th>Price</th>
                                 <th>Fee</th>
@@ -112,6 +113,8 @@
                                     <td>{{ $order->created_at->format('Y-m-d H:i:s') }}</td>
 
                                     <td>{{ $order->order_type }}</td>
+
+                                    <td>{{ $order->subItem->clientStore->domain ?? "-" }}</td>
 
                                     <td>{{ $order->user->currency->currency ?? "USD" }}</td>
                                     <td>{{ $order->item_price ?? "" }}</td>

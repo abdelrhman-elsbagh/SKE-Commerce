@@ -32,14 +32,16 @@
                                 <label for="total" class="form-label">Total</label>
                                 <input type="number" step="0.01" class="form-control" id="total" name="total" value="{{ $order->total }}" readonly>
                             </div>
+                            @if(!isset($order->subItem->clientStore))
                             <div class="mb-3">
                                 <label for="order_status" class="form-label">Status</label>
-                                <select class="form-control" id="order_status" name="status" required>
+                                <select class="form-control" id="order_status" name="status" required  {{$order->status == 'active' || $order->status ==  'refunded' ? 'disabled': ''}}>
                                     <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Pending</option>
                                     <option value="active" {{ $order->status == 'active' ? 'selected' : '' }}>Active</option>
                                     <option value="refunded" {{ $order->status == 'refunded' ? 'selected' : '' }}>Refunded</option>
                                 </select>
                             </div>
+                            @endif
                             <button type="submit" class="btn btn-primary">Update</button>
                         </form>
                     </div>

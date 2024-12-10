@@ -9,7 +9,7 @@ class ClientStore extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'domain', 'secret_key', 'status'];
+    protected $fillable = ['name', 'domain', 'secret_key', 'status', 'email'];
 
     public function subItems()
     {

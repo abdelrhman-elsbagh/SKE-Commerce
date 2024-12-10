@@ -44,6 +44,11 @@ use App\Http\Controllers\RoutingController;
 require __DIR__ . '/auth.php';
 
 
+//Route::get('/abdel', [PermissionController::class, 'syncAdminGroupPermissions']);
+
+
+
+
 Route::get('/', [HomeController::class, 'index'])->name('home')->middleware('SetLocale');
 
 
@@ -96,6 +101,10 @@ Route::put('users/{id}', [UserController::class, 'profile_update'])->name('profi
 Route::get('/items', [ApiItemsController::class, 'allItems'])->name('api-items-all');
 
 Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:Admin']], function () {
+
+    Route::get('/permissions/sync-admin', [PermissionController::class, 'syncAdminGroupPermissions'])
+        ->name('permissions.sync.admin')
+        ->middleware(['auth', 'role:Admin']);
 
     Route::get('', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('index', [DashboardController::class, 'index'])->name('dashboard');

@@ -3,10 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Exports\OrdersExport;
+use App\Models\Config;
 use App\Models\Order;
 use App\Models\OrderSubItem;
+use App\Models\SubItem;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -28,12 +32,24 @@ class OrderController extends Controller
 
         $orders = $query->get();
 
+        foreach ($orders as $order) {
+            if ($order->is_external == 1) {
+                // Check if the related subItem and clientStore exists, then update the external order
+                $domain = $order->subItems->first()->subItem->clientStore->domain ?? "";
+                if ($domain) {
+                    $response = self::updateOrder($domain, $order->id, $order->external_order_id);
+                }
+            }
+        }
+
         return view('admin.orders.index', compact('orders'))->with([
             'statusFilter' => $request->status,
             'startDate' => $request->start_date,
             'endDate' => $request->end_date
         ]);
     }
+
+
 
     public function show($id)
     {
@@ -100,70 +116,180 @@ class OrderController extends Controller
     }
 
 
+    public static function updateStatues(Request $request)
+    {
+        // Step 1: Validate the request
+        $validated = $request->validate([
+            'secret' => 'required|string',
+            'order_id' => 'required|integer|exists:orders,id',
+            'status' => 'required|string|in:pending,processing,active,canceled',
+        ]);
+
+        // Step 2: Check if the secret is valid (example: compare with a predefined secret or some logic)
+        if ($validated['secret'] !== 'your_secret_key') {
+            return response()->json(['error' => 'Invalid secret'], 403); // Unauthorized
+        }
+
+        // Step 3: Find the order by order_id
+        $order = Order::find($validated['order_id']);
+        if (!$order) {
+            return response()->json(['error' => 'Order not found'], 404); // Not Found
+        }
+
+        // Step 4: Update the status of the order
+        $order->status = $validated['status'];  // Assuming status is a column in the orders table
+        $order->save();
+
+        // Step 5: Return a response
+        return response()->json(['success' => 'Order status updated successfully'], 200);
+    }
+
+    public static function getStatues(Request $request)
+    {
+        $validated = $request->validate([
+            'secret' => 'required|string',
+            'order_id' => 'required|integer|exists:orders,id',
+        ]);
+
+//        if ($validated['secret'] !== 'your_secret_key') {
+//            return response()->json(['error' => 'Invalid secret'], 403); // Unauthorized
+//        }
+
+        $order = Order::find($validated['order_id']);
+
+        return response()->json(['success' => true, 'status' => $order->status], 200);
+    }
+
     public static function storeApiOrder(Request $request)
     {
         $data = $request->all();
         try {
-            // Find the user by external user ID or some identifier provided in the API request
-            $user = User::with('currency')->findOrFail($data['user_id']);
-            $external_user = User::with('currency')->findOrFail($data['external_user_id']);
+            $user = User::with(['currency', 'feeGroup'])->where('secret_key', $data['secret_key'])->first();
+            $subItem = SubItem::with('item')->findOrFail($data['external_id']);
 
-            $totalPrice = $data['total'];
+            $currencyPrice = 1;
+            if ($user && $user->currency) {
+                $currencyPrice = $user->currency->price;
+            }
+            $config = Config::first();
+            $fee_name = "Default";
+            if($user->feeGroup){
+                $config->fee = $user->feeGroup->fee;
+                $fee_name = $user->feeGroup->name ?? "";
+            }
+            $feePercentage = $config->fee;
 
-            if ($external_user->wallet->balance < $totalPrice) {
+            $sub_price = $subItem->price * $currencyPrice;
+            $fe_price = 0;
+
+            $fe_price = round($sub_price * $feePercentage / 100, 2);
+            $totalPrice = $sub_price + $fe_price;
+            $order_amount = $subItem->amount;
+
+            if ($user->wallet->balance < $totalPrice) {
                 return response()->json(['success' => false, 'message' => 'Insufficient balance in wallet'], 400);
             }
 
             // Deduct the amount from the user's wallet
-            $before_balance = $external_user->wallet->balance;
-            $external_user->wallet->balance -= $totalPrice;
-            $external_user->wallet->save();
+            $before_balance = $user->wallet->balance;
+            $user->wallet->balance -= $totalPrice;
+            $user->wallet->save();
 
-            $after_balance = $external_user->wallet->balance;
+            $after_balance = $user->wallet->balance;
+
+
 
 
             $order_details = [
-                'user_id' => $external_user->id,
+                'user_id' => $user->id,
                 'total' => $totalPrice,
-                'status' => 'active',
-                'user_email' => $external_user->email ?? $data['user_email'],
-                'user_name' => $external_user->name ?? $data['user_name'],
-                'user_phone' => $external_user->phone ?? $data['user_phone'],
-                'item_price' => $data['item_price'] ?? null,
-                'item_fee' => $data['revenue'],
-                'fee_name' => $data['fee_name'] ?? "",
+                'status' => $data['status'],
+                'user_email' => $user->email ?? null,
+                'user_name' => $user->name ?? null,
+                'user_phone' => $user->phone ?? null,
+                'item_price' => $sub_price ?? 0,
+                'item_fee' => $fe_price ?? 0,
+                'fee_name' => $user->feeGroup->name ?? "",
                 'item_name' => $data['item_name'] ?? null,
-                'sub_item_name' => $data['sub_item_name'] ?? "NA",
-                'service_id' => $data['service_id']?? "NA",
-                'amount' => $data['amount']?? 0,
+                'sub_item_name' => $subItem->name ?? null,
+                'service_id' => $data['service_id'] ?? null,
+                'amount' => $order_amount ?? 0,
                 'wallet_before' => $before_balance ,
                 'wallet_after' => $after_balance,
-                'currency_id' => $external_user->currency->id ?? null,
-                'item_id' => $data['item_id'] ?? null,
-                'sub_item_id' => $data['sub_item_id'],
-                'revenue' => $data['revenue'],
-                'is_external' => true
+                'currency_id' => $user->currency->id ?? null,
+                'item_id' => $subItem->item->id ?? null,
+                'sub_item_id' => $subItem->id,
+                'revenue' => $fe_price,
+                'is_external' => true,
+                'order_type' => $data['order_type'],
             ];
 
-            // Create a new order
-            $order = Order::create($order_details);
+        // Create a new order
+        $order = Order::create($order_details);
 
-            // Handle any related sub-items if provided
+        // Handle any related sub-items if provided
             if (!empty($data['sub_items'])) {
                 foreach ($data['sub_items'] as $subItemData) {
                     OrderSubItem::create([
                         'order_id' => $order->id,
-                        'sub_item_id' => $subItemData['sub_item_id'],
+                        'sub_item_id' => $subItem->id,
                         'price' => $subItemData['price'],
-                        'service_id' => $subItemData['service_id']
+                        'service_id' => $subItemData['service_id'] ?? null,
                     ]);
                 }
             }
+
+        return response()->json(['status' => 'success', 'message' => 'Order created successfully.', 'data' => ['order_id' => $order->id]], 200);
 
         } catch (\Exception $e) {
             Log::error('Failed to store external order', ['error' => $e->getMessage()]);
             return null; // Or handle the error as needed
         }
     }
+
+
+    protected function updateOrder($domain, $order_id, $external_order_id)
+    {
+        $payload = [
+            'secret' => Auth::user()->secret_key,
+            'order_id' => $external_order_id
+        ];
+
+        $url = $domain . '/api/get-order-status';
+        // Send the request to the external API using the domain from SubItem
+        try {
+
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json'
+            ])->get($url, $payload);
+            // Check if the response was successful
+            if ($response->successful()) {
+                $responseData = $response->json();
+                if (isset($responseData['success']) && $responseData['success']) {
+                    $order = Order::find($order_id);
+                    $originalStatus = $order->status;
+                    $order->status = $responseData['status'];
+                    $order->save();
+
+                    if (($originalStatus === 'active' && $responseData['status'] === 'refunded') ||
+                        ($originalStatus === 'pending' && $responseData['status'] === 'refunded')) {
+                        $this->refundOrderAmount($order);
+                    }
+
+                    return ['success' => true, 'message' => 'External order processed successfully'];
+                }
+                return ['success' => false, 'message' => 'Failed to process external order'];
+
+            } else {
+                Log::error('Failed to process external order', ['response' => $response->body()]);
+                return ['success' => false, 'message' => 'Failed to process external order'];
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Error processing external order', ['error' => $e->getMessage()]);
+            return ['success' => false, 'message' => 'Error processing external order'];
+        }
+    }
+
 
 }

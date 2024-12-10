@@ -28,6 +28,7 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Title</th>
+                                <th>Ar Title</th>
                                 <th>Slug</th>
                                 <th>Link</th>
                                 <th>Actions</th>
@@ -38,6 +39,7 @@
                                 <tr id="page-{{ $page->id }}">
                                     <td>{{ $page->id }}</td>
                                     <td>{{ $page->title ?? "" }}</td>
+                                    <td>{{ $page->ar_title ?? "" }}</td>
                                     <td>{{ $page->slug ?? "" }}</td>
                                     <td>
                                         <a href="{{ url('/page/' . $page->slug) }}" target="_blank">{{ url('/page/' . $page->slug) }}</a>

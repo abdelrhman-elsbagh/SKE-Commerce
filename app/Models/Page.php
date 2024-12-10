@@ -11,7 +11,7 @@ class Page extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia;
 
-    protected $fillable = ['data', 'slug', 'title'];
+    protected $fillable = ['data', 'slug', 'title', 'ar_title', 'ar_data'];
 
 
     public function registerMediaCollections(): void

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
@@ -94,4 +95,114 @@ class PermissionController extends Controller
 
         return redirect()->back()->with('success', 'Permissions assigned successfully.');
     }
+
+    /**
+     * Sync all 'admin' prefixed routes with 'auth' and 'role:Admin' middleware as permissions,
+     * adding only the ones that don't exist, with readable permission names.
+     * Optionally skips specific route families.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function syncAdminGroupPermissions()
+    {
+        // List of route families to skip (e.g., 'users', 'settings', etc.)
+        $skipFamilies = ['plans', 'business-client-wallets', 'subscriptions', 'ClientStores'];
+
+        $routes = collect(Route::getRoutes())->filter(function ($route) use ($skipFamilies) {
+            // Filter routes with 'admin' prefix and the required middlewares
+            $isAdminPrefix = str_starts_with($route->uri, 'admin');
+            $hasAuthMiddleware = in_array('auth', $route->middleware());
+            $hasRoleAdminMiddleware = in_array('role:Admin', $route->middleware());
+
+            // Check if the route URI starts with any of the skip families
+            $shouldSkip = false;
+            foreach ($skipFamilies as $family) {
+                if (str_starts_with($route->uri, "admin/$family")) {
+                    $shouldSkip = true;
+                    break;
+                }
+            }
+
+            return $isAdminPrefix && $hasAuthMiddleware && $hasRoleAdminMiddleware && !$shouldSkip;
+        });
+
+        // Get existing permissions
+        $existingPermissions = Permission::pluck('name')->toArray();
+
+        $newPermissions = [];
+        $routes = [
+            'dashboard' => ['view'],
+            'clientStores' => ['create', 'view', 'update', 'delete'],
+            'api-items' => ['edit', 'import'],
+            'permissions' => ['view', 'create', 'update', 'delete'],
+            'purchase-requests' => ['create', 'view', 'update', 'delete'],
+            'clients' => ['create', 'view', 'update', 'delete'],
+            'accounts' => ['create', 'view', 'update', 'delete'],
+            'user-wallets' => ['create', 'view', 'update', 'delete'],
+            'users' => ['create', 'view', 'update', 'delete'],
+            'sliders' => ['create', 'view', 'update', 'delete'],
+            'orders' => ['create', 'view', 'update', 'delete'],
+            'configs' => ['edit', 'update'],
+            'terms' => ['edit', 'update'],
+            'business-client-wallets' => ['create', 'view', 'update', 'delete'],
+            'categories' => ['create', 'view', 'update', 'delete'],
+            'diamond-rates' => ['create', 'view', 'update', 'delete'],
+            'items' => ['create', 'view', 'update', 'delete'],
+            'plans' => ['create', 'view', 'update', 'delete'],
+            'payment-methods' => ['create', 'view', 'update', 'delete'],
+            'subscriptions' => ['create', 'view', 'update', 'delete'],
+            'tags' => ['create', 'view', 'update', 'delete'],
+            'footer' => ['create', 'view', 'update', 'delete'],
+            'fee-groups' => ['create', 'view', 'update', 'delete'],
+            'posts' => ['create', 'view', 'update', 'delete'],
+            'partners' => ['create', 'view', 'update', 'delete'],
+            'notifications' => ['create', 'view', 'update', 'delete'],
+            'currencies' => ['create', 'view', 'update', 'delete'],
+            'pages' => ['create', 'view', 'update', 'delete'],
+            'news' => ['edit', 'update'],
+            'profile' => ['edit', 'update'],
+        ];
+
+        foreach ($routes as $resource => $actions) {
+            foreach ($actions as $action) {
+                $permissionName = "{$action} {$resource}";
+                if (!Permission::where('name', $permissionName)->exists()) {
+                    Permission::create([
+                        'name' => $permissionName,
+                        'guard_name' => 'web',
+                    ]);
+                }
+            }
+        }
+
+        // Insert new permissions
+        Permission::insert($newPermissions);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => count($newPermissions) . ' new permissions added.',
+            'new_permissions' => $newPermissions,
+        ]);
+    }
+
+    /**
+     * Generate a human-readable permission name from a route URI.
+     *
+     * @param string $uri
+     * @return string
+     */
+    private function generateReadablePermissionName($uri)
+    {
+        // Remove the 'admin/' prefix
+        $cleanUri = preg_replace('/^admin\//', '', $uri);
+
+        // Replace dashes and slashes with spaces and convert to lowercase
+        $readableName = str_replace(['-', '/'], ' ', $cleanUri);
+
+        // Optionally capitalize the first letter of each word
+        return ucwords($readableName);
+    }
+
+
+
 }

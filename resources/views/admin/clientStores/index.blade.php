@@ -13,18 +13,20 @@
                 <a href="{{ route('clientStores.create') }}" class="btn btn-primary mb-3">Add New Client Store</a>
                 <table class="table table-bordered dt-responsive nowrap">
                     <thead>
-                    <tr id="client-{{ $clientStore->id }}">
+                    <tr>
                         <th>ID</th>
                         <th>Name</th>
+                        <th>Email</th>
                         <th>Domain</th>
                         <th>Actions</th>
                     </tr>
                     </thead>
                     <tbody>
                     @foreach($clientStores as $clientStore)
-                        <tr>
+                        <tr id="client-{{ $clientStore->id }}">
                             <td>{{ $clientStore->id }}</td>
                             <td>{{ $clientStore->name }}</td>
+                            <td>{{ $clientStore->email ?? "" }}</td>
                             <td>{{ $clientStore->domain }}</td>
                             <td>
                                 <a href="{{ route('clientStores.show', $clientStore->id) }}" class="btn btn-info">View</a>

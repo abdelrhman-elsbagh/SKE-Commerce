@@ -22,6 +22,9 @@ Route::post('/fetch-items', [ApiItemsController::class, 'fetchItems'])->name('ap
 Route::post('/fetch-item', [ApiItemsController::class, 'fetchItem'])->name('api-items.fetchItem');
 Route::post('/fetch-sub-item', [ApiItemsController::class, 'fetchSubItem'])->name('api-items.fetchSubItem');
 Route::post('/store-api-order', [OrderController::class, 'storeApiOrder']);
+Route::put('/update-order-status', [OrderController::class, 'updateStatues']);
+Route::get('/get-order-status', [OrderController::class, 'getStatues']);
+
 
 
 //Route::post('/items/import', [ApiItemsController::class, 'importItems'])->name('api-items.import');

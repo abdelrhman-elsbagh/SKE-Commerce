@@ -199,7 +199,13 @@
                                 <input type="number" class="form-control" id="max_amount" name="max_amount">
                             </div>
                         </div>
-
+                        <div class="mb-3 col-sm-12 col-md-12">
+                            <label for="sub_status" class="form-label">Status</label>
+                            <select class="form-control" id="sub_status" name="sub_status">
+                                <option value="active" selected>Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
                         <div class="mb-3">
                             <label for="sub_item_image_modal" class="form-label">Sub Item Image</label>
                             <input type="file" class="form-control" id="sub_item_image_modal" name="sub_item_image_modal" accept="image/*">
@@ -260,6 +266,7 @@
                 let subItemDescription = $('#sub_item_description_modal').val();
                 let subItemAmount = $('#sub_item_amount_modal').val();
                 let max_amount = $('#max_amount').val();
+                let sub_status = $('#sub_status').val();
                 let minimum_amount = $('#minimum_amount').val();
                 let is_custom = $('#is_custom').is(':checked') ? 1 : 0;
                 let subItemPrice = $('#sub_item_price_modal').val();
@@ -272,6 +279,10 @@
                         <td>
                             <input type="hidden" name="sub_items[${subItemCount}][name]" value="${subItemName}">
                             ${subItemName}
+                        </td>
+                        <td>
+                            <input type="hidden" name="sub_items[${subItemCount}][sub_status]" value="${sub_status}">
+                            ${sub_status}
                         </td>
                         <td>
                             <input type="hidden" name="sub_items[${subItemCount}][description]" value="${subItemDescription}">
@@ -353,7 +364,7 @@
                             loader: true,
                             loaderBg: '#f96868',
                             position: 'top-right',
-                            hideAfter: 3000,
+                            hideAfter: 3000000,
                             afterHidden: function () {
                                 window.location.href = "{{ route('items.index') }}";
                             }

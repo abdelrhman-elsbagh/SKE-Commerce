@@ -25,6 +25,7 @@
 
                                             $isFavorited = Auth::user()->favorites()->where('sub_item_id', $subItem->id)->exists();
                                             }
+                                            $isInactive = $subItem->status == 'inactive';9
                                         @endphp
                                         <div>
                                             <div class="uk-card uk-card-default uk-card-hover uk-margin selectable-card whole-item-card"
@@ -34,7 +35,7 @@
                                                  data-min-amount="{{ $subItem->minimum_amount ?? 0 }}"
                                                  data-max-amount="{{ $subItem->max_amount ?? 0 }}"
                                                  data-amount="{{ $subItem->amount ?? 0 }}"
-                                            >
+                                                 @if($isInactive) style="pointer-events: none; opacity: 0.5;" @endif>
                                                 @if($subItem->is_custom == 0)
                                                     <div class="uk-card-header item-crd" style="padding: 10px !important;">
                                                         <div class="uk-grid-small uk-flex-middle" data-uk-grid>
@@ -196,6 +197,9 @@
             let unitAmount = 0; // Initialize the base amount unit
 
             $('.selectable-card').on('click', function() {
+                if ($(this).css('pointer-events') === 'none') {
+                    return;
+                }
                 const isCustom = $(this).data('is-custom') === 1;
                 const minAmount = $(this).data('min-amount');
                 const maxAmount = $(this).data('max-amount');

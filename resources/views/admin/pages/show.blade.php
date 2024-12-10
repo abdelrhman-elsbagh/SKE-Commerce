@@ -19,12 +19,20 @@
                             <p id="title">{{ $page->title ?? '' }}</p>
                         </div>
                         <div class="mb-3">
+                            <label for="title" class="form-label">Arabic Title</label>
+                            <p id="title">{{ $page->ar_title ?? '' }}</p>
+                        </div>
+                        <div class="mb-3">
                             <label for="slug" class="form-label">Slug</label>
                             <p id="slug">{{ $page->slug ?? '' }}</p>
                         </div>
                         <div class="mb-3">
                             <label for="data" class="form-label">Content</label>
                             <div id="data">{!! $page->data ?? '' !!}</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="data" class="form-label">Arabic Content</label>
+                            <div id="data">{!! $page->ar_data ?? '' !!}</div>
                         </div>
                         <a href="{{ route('pages.index') }}" class="btn btn-secondary">Back</a>
                     </div>

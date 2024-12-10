@@ -17,6 +17,10 @@
                         <input type="text" class="form-control" id="name" name="name" required>
                     </div>
                     <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="name" name="email" required>
+                    </div>
+                    <div class="mb-3">
                         <label for="domain" class="form-label">Domain</label>
                         <input type="url" class="form-control" id="domain" name="domain" required>
                     </div>

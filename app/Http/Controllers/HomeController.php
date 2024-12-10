@@ -441,116 +441,24 @@ class HomeController extends Controller
         return view('front.favourites', compact('userFavorites', 'paymentMethods', 'user'));
     }
 
-//    public function purchase_order(Request $request)
-//    {
-//        $request->validate([
-//            'sub_item_id' => 'required|exists:sub_items,id',
-//            'service_id' => 'required|string',
-//        ]);
-//
-//        $user = Auth::user();
-//        if (!$user) {
-//            return response()->json(['success' => false, 'message' => 'User not authenticated'], 401);
-//        }
-//
-//        // Retrieve the user's wallet
-//        $wallet = UserWallet::where('user_id', $user->id)->first();
-//        if (!$wallet) {
-//            return response()->json(['success' => false, 'message' => 'Wallet not found'], 404);
-//        }
-//
-//        $currencyPrice = 1;
-//        if ($user && $user->currency) {
-//            $currencyPrice = $user->currency->price;
-//        }
-//
-//        // Retrieve the selected sub-item
-//        $subItem = SubItem::findOrFail($request->sub_item_id);
-//
-//        // Retrieve the fee percentage from the config
-//        $config = Config::first(); // Assuming you have a Config model to fetch the fee percentage
-//        $fee_name = "System/Default";
-//        if($user->feeGroup){
-//            $config->fee = $user->feeGroup->fee;
-//            $fee_name = $user->feeGroup->name ?? "";
-//        }
-//
-//        $feePercentage = $config->fee;
-//
-//        // Calculate the total price including the fee
-//        $sub_price = $subItem->price * $currencyPrice;
-//        $fe_price = 0;
-//
-//        try {
-//            $fe_price = round($sub_price * $feePercentage / 100, 2);
-//        }
-//        catch (\Exception $e) {
-//            Log::error($e->getMessage());
-//        }
-//
-//        $totalPrice = $sub_price + $fe_price;
-//
-//        // Check if the user has enough balance
-//        if ($wallet->balance < $totalPrice) {
-//            return response()->json(['success' => false, 'message' => 'Insufficient balance in wallet'], 400);
-//        }
-//
-//        // Deduct the amount from the user's wallet
-//        $before_balance = $wallet->balance;
-//        $wallet->balance -= $totalPrice;
-//        $wallet->save();
-//
-//        $after_balance = $wallet->balance;
-//
-//
-//
-//        // Create the order
-//        $order = Order::create([
-//            'user_id' => $user->id,
-//            'total' => $totalPrice,
-//            'status' => 'pending',
-//            'user_email' => $user->email ?? null,
-//            'user_name' => $user->name ?? null,
-//            'user_phone' => $user->phone ?? null,
-//            'item_price' =>  $sub_price ?? null,
-//            'item_fee' => $config->fee ?? null,
-//            'fee_name' => $fee_name ?? null,
-//            'item_name' => $subItem->item->name ?? null,
-//            'sub_item_name' => $subItem->name ?? null,
-//            'service_id' => $request->service_id ?? null,
-//            'wallet_before' => $before_balance ?? null,
-//            'wallet_after' => $after_balance  ?? null,
-//            'amount' => $subItem->amount ?? null,
-//            'currency_id' => $user->currency_id ?? null,
-//            'item_id' => $subItem->item->id ?? null,
-//            'sub_item_id' => $subItem->id ?? null,
-//            'revenue' => $fe_price ?? null,
-//        ]);
-//
-//
-//
-//        // Create the order sub item
-//        $order_sub_item = OrderSubItem::create([
-//            'order_id' => $order->id,
-//            'sub_item_id' => $subItem->id,
-//            'price' => $subItem->price + ($subItem->price * $feePercentage / 100),
-//            'service_id' => $request->service_id ?? null,
-//        ]);
-//
-//        return response()->json(['success' => true, 'message' => 'Purchase successful', 'order' => $order], 200);
-//    }
-
     public function purchase_order(Request $request)
     {
         $request->validate([
             'sub_item_id' => 'required|exists:sub_items,id',
             'service_id' => 'required|string',
-            'custom_amount' => 'required|integer|min:1|nullable',
+            'custom_amount' => 'required|integer|min:0|nullable',
         ]);
+
+        // Retrieve the selected sub-item
+        $subItem = SubItem::findOrFail($request->sub_item_id);
 
         $user = Auth::user();
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'User not authenticated'], 401);
+        }
+
+        if ($subItem->status !== 'active') {
+            return response()->json(['success' => false, 'message' => 'This sub-item is inactive and cannot be purchased'], 400);
         }
 
         // Retrieve the user's wallet
@@ -564,12 +472,11 @@ class HomeController extends Controller
             $currencyPrice = $user->currency->price;
         }
 
-        // Retrieve the selected sub-item
-        $subItem = SubItem::findOrFail($request->sub_item_id);
+
 
         // Retrieve the fee percentage from the config
         $config = Config::first();
-        $fee_name = "System/Default";
+        $fee_name = "Default";
         if($user->feeGroup){
             $config->fee = $user->feeGroup->fee;
             $fee_name = $user->feeGroup->name ?? "";
@@ -577,35 +484,27 @@ class HomeController extends Controller
         $feePercentage = $config->fee;
 
         $sub_price = $subItem->price * $currencyPrice;
-        $fe_price = 0;
+        $fe_price = round($sub_price * $feePercentage / 100, 2);
 
+        $external_order_id = 0;
         // Check if the sub-item is external
         if ($subItem->external_id) {
             // External item logic
             try {
-
                 // Call the external API (storeApiOrder)
                 $response = $this->sendExternalOrder($subItem, $request->service_id);
-
-
                 if (!$response['success']) {
                     return response()->json(['success' => false, 'message' => 'Failed to process external order'], 400);
                 }
+
+                $external_data = $response['data'];
+                $external_order_id = $external_data['order_id'];
 
             } catch (\Exception $e) {
                 Log::error($e->getMessage());
                 return response()->json(['success' => false, 'message' => 'Error processing external sub-item'], 500);
             }
-        } else {
-            // Normal internal item logic
-            try {
-                // Calculate fee price
-                $fe_price = round($sub_price * $feePercentage / 100, 2);
-            } catch (\Exception $e) {
-                Log::error($e->getMessage());
-            }
         }
-
         $order_amount = $subItem->amount;
 
         if ($subItem->is_custom == 1) {
@@ -633,8 +532,9 @@ class HomeController extends Controller
 
         $after_balance = $wallet->balance;
 
-        // Create the order
-        $order = Order::create([
+        $order_type = $subItem->external_id ? "API Order" : "Client Order";
+
+        $prepared_order = [
             'user_id' => $user->id,
             'total' => $totalPrice,
             'status' => 'pending',
@@ -642,7 +542,7 @@ class HomeController extends Controller
             'user_name' => $user->name ?? null,
             'user_phone' => $user->phone ?? null,
             'item_price' => $sub_price ?? null,
-            'item_fee' => $subItem->fee_amount ?? null,
+            'item_fee' => $fe_price ?? null,
             'fee_name' => $fee_name ?? null,
             'item_name' => $subItem->item->name ?? null,
             'sub_item_name' => $subItem->name ?? null,
@@ -653,9 +553,15 @@ class HomeController extends Controller
             'currency_id' => $user->currency_id ?? null,
             'item_id' => $subItem->item->id ?? null,
             'sub_item_id' => $subItem->id ?? null,
-            'revenue' => $subItem->fee_amount ?? null,
-            'is_external' => $subItem->external_id ? true : false // Flag as external if external_id exists
-        ]);
+            'revenue' => $fe_price ?? null,
+            'is_external' => $subItem->external_id ? true : false,
+            'order_type' => $order_type,
+            'external_order_id' => $external_order_id ?? null,
+
+        ];
+
+        // Create the order
+        $order = Order::create($prepared_order);
 
         // Create the order sub-item
         $order_sub_item = OrderSubItem::create([
@@ -670,19 +576,6 @@ class HomeController extends Controller
 
     protected function sendExternalOrder($subItem, $service_id)
     {
-        // Fetch the external user using the external_user_id from SubItem
-        $externalUser = User::find($subItem->external_user_id); // API USER
-
-        if (!$externalUser) {
-            return ['success' => false, 'message' => 'External user not found'];
-        }
-
-        // Retrieve the secret key and other necessary info from the external user
-        $secretKey = $externalUser->secret_key;
-        $externalUserName = $externalUser->name;
-        $externalUserEmail = $externalUser->email;
-        $externalUserPhone = $externalUser->phone;
-
         // Use the user associated with the SubItem as the "local user" for the external system
         $localUser = $subItem->user;
 
@@ -692,28 +585,24 @@ class HomeController extends Controller
 
         $revenue = floatval($subItem->price - $subItem->original_price);
 
-
         // Prepare the payload for the external API request
         $payload = [
-            'user_id' => $localUser->id,
-            'external_user_id' => $externalUser->id,
+            'secret_key' => $subItem->clientStore->secret_key,
+            'external_user_id' => $subItem->external_user_id,
             'service_id' => $service_id,
-            'external_id' => $subItem->external_id,
-            'user_email' => $localUser->email,
-            'user_name' => $localUser->name,
-            'user_phone' => $localUser->phone,
+            'external_id' => $subItem->external_id, // sub item external_id
             'is_external' => true,
             'order_type' => "API Order",
-            'status' => "active",
+            'status' => "pending",
             'amount' => $subItem->amount,
             'sub_item_name' => $subItem->name,
             'sub_item_id' => $subItem->id,
             'item_id' => null ?? $subItem->item->id,
             'item_name' => $subItem->item->name,
-            'fee_name' => $localUser->feeGroup->name,
             'revenue' => $revenue,
             'total' => floatval($subItem->price),
         ];
+
 
         $url = $subItem->domain . '/api/store-api-order';
         // Send the request to the external API using the domain from SubItem
@@ -722,9 +611,15 @@ class HomeController extends Controller
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json'
             ])->post($url, $payload);
+
             // Check if the response was successful
             if ($response->successful()) {
-                return ['success' => true, 'message' => 'External order processed successfully'];
+                $responseData = $response->json();
+                if (isset($responseData['status']) && $responseData['status'] == 'success') {
+                    return ['success' => true, 'message' => 'External order processed successfully', 'data' => $responseData['data']];
+                }
+                return ['success' => false, 'message' => 'Failed to process external order'];
+
             } else {
                 Log::error('Failed to process external order', ['response' => $response->body()]);
                 return ['success' => false, 'message' => 'Failed to process external order'];
@@ -804,39 +699,6 @@ class HomeController extends Controller
         return view('front.partners', ['partners' => $partners, 'user' => $user, 'paymentMethods' => $paymentMethods]);
     }
 
-
-//    public function item(Request $request, $id)
-//    {
-//        $config = Config::with('media')->first();
-//        $user = Auth::user();
-//        $favoritesCount = 0;
-//
-//        if ($user) {
-//            $favoritesCount = $user->favorites()->count();
-//            if($user->feeGroup){
-//                $config->fee = $user->feeGroup->fee;
-//            }
-//        }
-//        View::share('favoritesCount', $favoritesCount);
-//
-//        $item = Item::with(['subItems.orderSubItem', 'subItems.media', 'media', 'tags'])->findOrFail($id);
-//        // Check if user has a currency and adjust sub_item prices accordingly
-//        if ($user && $user->currency) {
-//            $currencyPrice = $user->currency->price;
-//            foreach ($item->subItems as $subItem) {
-//                $subItem->price = $subItem->price * $currencyPrice;
-//            }
-//        }
-//        $userFavorites = [];
-//        if (Auth::check()) {
-//            $userFavorites = Auth::user()->favorites->pluck('sub_item_id')->toArray();
-//        }
-//
-//        $paymentMethods = PaymentMethod::where('status', 'active')->get();
-//
-//        return view('front.item', compact('item', 'config', 'userFavorites', 'paymentMethods', 'user'));
-//    }
-
     public function item(Request $request, $id)
     {
         $config = Config::with('media')->first();
@@ -856,6 +718,7 @@ class HomeController extends Controller
 
         // Check if user has a currency and adjust sub_item prices accordingly
         if ($user && $user->currency) {
+            $config->fee = $user->feeGroup->fee;
             $currencyPrice = $user->currency->price;
             foreach ($item->subItems as $subItem) {
                 // If the subItem has an external_id, fetch price and amount from external API
@@ -863,12 +726,9 @@ class HomeController extends Controller
                     // Construct the full URL by combining the domain and the API path
                     $url = $subItem->domain . '/api/fetch-sub-item';
 
-//                    $external_usr_secret = User::where('id', $subItem->external_user_id)->first()->secret_key;
                     $external_usr_secret = $subItem->clientStore->secret_key;
-                    $external_usr_fee = User::where('id', $subItem->external_user_id)->first()->feeGroup->fee;
                     $own_usr_secret = User::where('id', $subItem->user_id)->first()->secret_key;
-                    $fe_amount = round($subItem->price * $user->feeGroup->fee / 100, 2);
-
+                    $fe_amount = round($subItem->fee_amount, 2);
 
                     // Prepare the data to match the cURL request format
                     $data = [
@@ -883,18 +743,15 @@ class HomeController extends Controller
                     ])->post($url, $data);
 
                     // Log the request for debugging
-
-
                     if ($response->successful()) {
-                        $data = $response->json('sub_item');
-                        $subItem->price = $data['price'] * $currencyPrice;
-                        $subItem->amount = $data['amount'];
+                        $updated_data = $response->json('sub_item');
+                        $subItem->price = $updated_data['price'] * $currencyPrice;
+                        $subItem->status = $updated_data['status'];
+                        $subItem->amount = $updated_data['amount'];
                         $subItem->fee_amount = $fe_amount;
-                        $subItem->original_price = $data['origin_price'];
-                        $subItem->external_item_id = $data['external_item_id'];
+                        $subItem->original_price = $updated_data['origin_price'];
+                        $subItem->external_item_id = $updated_data['item_id'];
                         $subItem->save();
-                    }
-                    else {
                     }
                 } else {
                     // Regular price adjustment based on user currency

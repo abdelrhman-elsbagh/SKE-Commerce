@@ -35,7 +35,8 @@ class ApiItemsController extends Controller
 
         // Fetch sub-item by external_id
         $subItem = SubItem::where('id', $validated['external_id'])
-            ->select('id', 'price', 'amount', 'user_id', 'item_id')
+            ->select('id', 'price', 'amount', 'user_id', 'item_id', 'is_custom', 'minimum_amount',
+                'max_amount', 'custom_price', 'custom_amount', 'client_store_id', 'fee_amount', 'status')
             ->first();
 
         if (!$subItem) {
@@ -126,10 +127,10 @@ class ApiItemsController extends Controller
             foreach ($items as $item) {
                 foreach ($item->subItems as $subItem) {
                     // Calculate the additional fee amount as a percentage of the original price
-                    $feeAmount = round($subItem->price * $feePercentage / 10, 2);
+                    $feeAmount = round(($subItem->price * $feePercentage ) / 100, 2) ?? 0;
                     // Add the fee amount to the original price
                     $subItem->fee = $feeAmount;
-                    $subItem->price = round($subItem->price + $feeAmount, 2);
+                    $subItem->price = round((floatval($subItem->price) + floatval($feeAmount)), 2);
                     $subItem->user_id = $user->id;
                     $subItem->item_id = $item->id;
                     $subItem->client_store_id = $client_id;

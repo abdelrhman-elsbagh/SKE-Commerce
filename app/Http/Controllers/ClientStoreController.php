@@ -37,6 +37,7 @@ class ClientStoreController extends Controller
         // Validate the input data
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
             'domain' => 'required|url|unique:client_stores,domain',
             'secret_key' => 'required|string|max:255'
         ]);
@@ -78,6 +79,7 @@ class ClientStoreController extends Controller
         // Validate the input data
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
             'domain' => 'required|url|unique:client_stores,domain,' . $clientStore->id,
             'secret_key' => 'required|string|max:255'
         ]);

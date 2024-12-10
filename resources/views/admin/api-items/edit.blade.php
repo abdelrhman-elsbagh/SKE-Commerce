@@ -162,7 +162,11 @@
                                         <td>${sub.amount || 'N/A'}</td>
                                         <td>${item.name || 'N/A'}</td>
                                         <td class="text-center">
-                                            <input type="checkbox" name="sub_items" value="${sub.id}" data-sub-item-id="${sub.id}" data-item-id="${item.id}" data-item-name="${item.name}" data-item-description="${item.description}" data-sub-user-id="${sub.user_id}" class="select-checkbox">
+                                            <input type="checkbox" name="sub_items" value="${sub.id}" data-sub-item-id="${sub.id}" data-item-id="${item.id}"
+                                            data-item-name="${item.name}" data-item-description="${item.description}"
+                                            data-sub-user-id="${sub.user_id}" data-sub-item-price="${sub.price}"
+                                            data-sub-item-amount="${sub.amount}" data-sub-item-name="${sub.name}"
+                                            data-sub-item-description="${sub.description}" class="select-checkbox">
                                         </td>
                                     </tr>`;
                                 });
@@ -199,17 +203,29 @@
                 const clientId = getClientId();
                 const selectedSubItems = document.querySelectorAll('input[name="sub_items"]:checked');
                 const subItemsToImport = Array.from(selectedSubItems).map(subItem => {
-                    const subItemRow = subItem.closest('tr');
+                    // const subItemRow = subItem.closest('tr');
+                    let item_id = subItem.getAttribute('data-item-id');
+                    let user_id = subItem.getAttribute('data-sub-user-id');
+                    let external_id = subItem.getAttribute('data-sub-item-id').trim();
+                    let price = parseFloat(subItem.getAttribute('data-sub-item-price') || 0).toFixed(2);
+                    let name = subItem.getAttribute('data-sub-item-name') || "";
+                    let item_name = subItem.getAttribute('data-item-name') || "";
+                    let item_description = subItem.getAttribute('data-item-description') || "";
+                    let amount = parseInt(subItem.getAttribute('data-sub-item-amount') || 0, 10);
+                    let description = subItem.getAttribute('data-sub-item-description') || "";
+
+                    console.log("price => " , subItem.getAttribute('data-sub-item-amount'));
+
                     return {
-                        external_id: subItem.getAttribute('data-sub-item-id').trim(),
-                        item_id: subItem.getAttribute('data-item-id'),
-                        user_id: subItem.getAttribute('data-sub-user-id'),
-                        item_name: subItem.getAttribute('data-item-name') || "",
-                        item_description: subItem.getAttribute('data-item-description') || "",
-                        name: subItemRow.cells[0]?.innerText || "",
-                        price: subItemRow.cells[1]?.innerText?.split(':')[1]?.trim() || 0,
-                        amount: subItemRow.cells[2]?.innerText?.split(':')[1]?.trim() || 0,
-                        description: subItemRow.cells[3]?.innerText?.split(':')[1]?.trim() || "",
+                        external_id: external_id,
+                        item_id: item_id,
+                        user_id: user_id,
+                        item_name: item_name,
+                        item_description: item_description,
+                        name: name,
+                        price: price,
+                        amount: amount,
+                        description: description,
                     };
                 });
 
@@ -217,6 +233,7 @@
                     sub_items: subItemsToImport,
                     domain: domainInput.value,
                     client_id: clientId,
+
                 }, {
                     headers: {
                         'Content-Type': 'application/json'

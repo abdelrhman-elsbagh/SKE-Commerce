@@ -91,6 +91,7 @@ class ItemController extends Controller
                     'max_amount' => $subItemData['max_amount'] ?? null,
                     'minimum_amount' => $subItemData['minimum_amount'] ?? null,
                     'is_custom' => $subItemData['is_custom'] ?? 0,
+                    'status' => $subItemData['sub_status'] ?? 'active',
                 ]);
 
                 // Save the sub-item to the parent item
@@ -149,6 +150,12 @@ class ItemController extends Controller
                     $subItem = SubItem::findOrFail($subItemData['id']);
                     $origin_price =  $subItem->price;
                     $origin_amount =  $subItem->amount;
+
+                    if (isset($subItemData['sub_status'])) {
+                        $subItemData['status'] = $subItemData['sub_status'];
+                        unset($subItemData['sub_status']);
+                    }
+
                     $subItem->update($subItemData);
 
                     // Only override amount and price if external_id is null
