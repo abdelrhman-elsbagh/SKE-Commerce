@@ -163,7 +163,11 @@
                                         <td>${item.name || 'N/A'}</td>
                                         <td class="text-center">
                                             <input type="checkbox" name="sub_items" value="${sub.id}" data-sub-item-id="${sub.id}" data-item-id="${item.id}"
+
+                                            data-sub-is-custom="${sub.is_custom}" data-sub-minimum-amount="${sub.minimum_amount}" data-sub-max-amount="${sub.max_amount}"
+
                                             data-item-name="${item.name}" data-item-description="${item.description}"
+                                            data-item-ar-name="${item.ar_name}" data-item-ar-description="${item.ar_description}"
                                             data-sub-user-id="${sub.user_id}" data-sub-item-price="${sub.price}"
                                             data-sub-item-amount="${sub.amount}" data-sub-item-name="${sub.name}"
                                             data-sub-item-description="${sub.description}" class="select-checkbox">
@@ -207,12 +211,21 @@
                     let item_id = subItem.getAttribute('data-item-id');
                     let user_id = subItem.getAttribute('data-sub-user-id');
                     let external_id = subItem.getAttribute('data-sub-item-id').trim();
+
+                    let is_custom = subItem.getAttribute('data-sub-is-custom').trim();
+                    let minimum_amount = parseInt(subItem.getAttribute('data-sub-minimum-amount').trim()) ?? 0;
+                    let max_amount = parseInt(subItem.getAttribute('data-sub-max-amount').trim()) ?? 0;
+
                     let price = parseFloat(subItem.getAttribute('data-sub-item-price') || 0).toFixed(2);
-                    let name = subItem.getAttribute('data-sub-item-name') || "";
-                    let item_name = subItem.getAttribute('data-item-name') || "";
-                    let item_description = subItem.getAttribute('data-item-description') || "";
-                    let amount = parseInt(subItem.getAttribute('data-sub-item-amount') || 0, 10);
-                    let description = subItem.getAttribute('data-sub-item-description') || "";
+                    let name = subItem.getAttribute('data-sub-item-name') ?? "";
+                    let item_name = subItem.getAttribute('data-item-name') ?? "";
+
+                    let ar_name = subItem.getAttribute('data-item-ar-name') ?? "";
+                    let ar_description = subItem.getAttribute('data-item-ar-description') ?? "";
+
+                    let item_description = subItem.getAttribute('data-item-description') ?? "";
+                    let amount = parseInt(subItem.getAttribute('data-sub-item-amount') ?? 0, 10);
+                    let description = subItem.getAttribute('data-sub-item-description') ?? "";
 
                     console.log("price => " , subItem.getAttribute('data-sub-item-amount'));
 
@@ -221,6 +234,14 @@
                         item_id: item_id,
                         user_id: user_id,
                         item_name: item_name,
+
+                        is_custom: is_custom,
+                        minimum_amount: minimum_amount,
+                        max_amount: max_amount,
+
+                        ar_name: ar_name,
+                        ar_description: ar_description,
+
                         item_description: item_description,
                         name: name,
                         price: price,

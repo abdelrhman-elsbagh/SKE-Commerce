@@ -47,7 +47,7 @@
     <main class="page-first-screen">
         <div class="uk-grid uk-grid-small uk-child-width-1-2@s uk-flex-middle uk-width-1-1" data-uk-grid>
             <div class="logo-big">
-                @if($config->getFirstMediaUrl('logos'))
+                @if(optional($config)->getFirstMediaUrl('logos'))
                     <img class="animation-navspinv" src="{{ $config->getFirstMediaUrl('logos') }}" alt="logo">
                 @else
                     <img class="animation-navspinv" src="{{ asset('assets/img/logo.png')}}" alt="logo">

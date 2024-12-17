@@ -45,7 +45,7 @@
                                     <td>{{ $item->id }}</td>
                                     <td>{{ $item->name }}</td>
                                     <td>{{ $item->ar_name ?? "" }}</td>
-                                    <td>{{ $item->is_outsourced == 1 ? 'API' : 'Manual' }}</td>
+                                    <td>{{ $item->is_outsourced == 1 ? 'API ( ' . ( $item->source_domain ?? "") . ' )'  : 'Manual' }}</td>
                                     <td>{{ $item->is_custom == 1 ? 'Yes' : 'No' }}</td>
                                     <td>{{ $item->activeOrdersSum }}</td>
                                     <td>{{ $item->refundedOrdersSum }}</td>

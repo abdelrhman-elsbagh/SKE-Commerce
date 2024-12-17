@@ -42,7 +42,7 @@
                                                             <div class="uk-width-expand item-info item-crd-detail">
                                                                 <h3 class="uk-card-title uk-margin-remove-bottom item-detail-title" style="">
                                                                     {{ $subItem->amount }} {{ $subItem->name }}
-                                                                    @if($subItem->getFirstMediaUrl('images'))
+                                                                    @if(optional($subItem)->getFirstMediaUrl('images'))
 
                                                                         <img src="{{ $subItem->getFirstMediaUrl('images') }}" alt="{{ $subItem->name }}" class="uk-width-1-1"
                                                                              style="height: 20px; width: 20px; border-radius: 5px">
@@ -71,7 +71,7 @@
                                                             <div class="uk-width-expand item-info item-crd-detail">
                                                                 <h3 class="uk-card-title uk-margin-remove-bottom item-detail-title" style="text-align: center;font-size: 14px;padding-left: 15px;">
                                                                     {{ $subItem->name }}
-                                                                    @if($subItem->getFirstMediaUrl('images'))
+                                                                    @if(optional($subItem)->getFirstMediaUrl('images'))
 
                                                                         <img src="{{ $subItem->getFirstMediaUrl('images') }}" alt="{{ $subItem->name }}" class="uk-width-1-1"
                                                                              style="height: 20px; width: 20px; border-radius: 5px">
@@ -131,7 +131,7 @@
                             <li class="list-inline-item" style="width: auto">
                                 <span style="background: #F46119; margin-right: 5px; color: #FFF; padding: 5px; border-radius: 7px; font-size: 12px; font-weight: 900;">
                                     {{ App::getLocale() == 'ar' && $tag->ar_name ? $tag->ar_name : $tag->name }}
-                                @if($tag->getFirstMediaUrl('images'))
+                                @if(optional($tag)->getFirstMediaUrl('images'))
                                         <img src="{{ $tag->getFirstMediaUrl('images') }}" alt="Item" width="15">
                                     @endif
                                 </span>
@@ -192,7 +192,7 @@
         document.addEventListener('DOMContentLoaded', function () {
             const customAmountContainer = $('#customAmountContainer');
             const customAmountInput = $('#customAmount');
-            const priceElement = $('.game-profile-price__value'); // Assuming this element shows the total price
+            const priceElement = $('.game-profile-price__value');
             let basePrice = 0; // Initialize the base price
             let unitAmount = 0; // Initialize the base amount unit
 
@@ -211,6 +211,7 @@
 
                 // Show or hide the custom amount input based on is_custom
                 if (isCustom) {
+                    console.log("it's custom")
                     customAmountContainer.show();
                     customAmountInput.attr('min', minAmount);
                     customAmountInput.attr('max', maxAmount);

@@ -155,9 +155,18 @@ class ApiItemsController extends Controller
             'sub_items.*.amount' => 'required|numeric',
             'sub_items.*.price' => 'required|numeric',
             'sub_items.*.external_id' => 'required|string',
+
+            'sub_items.*.is_custom' => 'nullable|integer',
+            'sub_items.*.minimum_amount' => 'nullable|integer',
+            'sub_items.*.max_amount' => 'nullable|integer',
+
             'sub_items.*.user_id' => 'required|integer',
             'sub_items.*.item_id' => 'required|string',
             'sub_items.*.item_name' => 'required|string',
+
+            'sub_items.*.item_ar_name' => 'nullable|string',
+            'sub_items.*.item_ar_description' => 'nullable|string',
+
             'sub_items.*.item_description' => 'nullable|string',
             'sub_items.*.item_title' => 'nullable|string',
             'domain' => 'nullable|string',
@@ -181,11 +190,15 @@ class ApiItemsController extends Controller
         foreach ($validated['sub_items'] as $subItemData) {
             $itemExternalId = $subItemData['external_id'];
             $itemName = $subItemData['item_name'];
+            $itemDesc = $subItemData['description'] ?? "";
+            $itemArName = $subItemData['ar_name'] ?? "";
+            $itemArDesc = $subItemData['ar_description'] ?? "";
 
-            // Check if the parent item already exists for the user based on external_id
-            $parentItem = Item::where('external_id', $itemExternalId)
-                ->where('user_id', $user->id)
-                ->first();
+
+            $parentItem = Item::where(function ($query) use ($itemExternalId, $itemName, $user) {
+                $query->where('external_id', $itemExternalId)
+                    ->orWhere('name', $itemName);
+            })->first();
 
             // If the item does not exist, create it
             if (!$parentItem) {
@@ -217,6 +230,9 @@ class ApiItemsController extends Controller
                     'name' => $subItemData['name'],
                     'description' => $subItemData['description'],
                     'amount' => $subItemData['amount'],
+                    'is_custom' => $subItemData['is_custom'],
+                    'minimum_amount' => $subItemData['minimum_amount'],
+                    'max_amount' => $subItemData['max_amount'],
                     'price' => $subItemData['price'],
                     'external_id' => $subItemData['external_id'],
                     'external_user_id' => $subItemData['user_id'],

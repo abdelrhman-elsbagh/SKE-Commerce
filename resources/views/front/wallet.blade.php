@@ -138,7 +138,7 @@
                                 <li class="activities-item" data-id="{{ $order->id }}" data-name="{{ $item->name ?? 'Unknown Item' }}" data-status="{{ $order->status }}">
                                     <div class="activities-item__logo">
 
-                                        @if($item->getFirstMediaUrl('front_image'))
+                                        @if(optional($item)->getFirstMediaUrl('front_image'))
                                             <a href="{{ route('item.show', ['id' => $item->id]) }}">
                                                 @if($item->getFirstMediaUrl('front_image'))
                                                     <img src="{{ $item->getFirstMediaUrl('front_image') }}" alt="{{ $order->item_name ?? "" }}" style="height: 100%">

@@ -112,6 +112,7 @@
                                         <th>Price</th>
                                         <th>Min Amount</th>
                                         <th>Max Amount</th>
+                                        <th>Dynamic</th>
                                         <th>Status</th>
                                         <th class="text-center">Image</th>
                                         <th>Actions</th>
@@ -152,8 +153,11 @@
                                                     <span>{{ $subItem->max_amount }}</span>
                                                 </td>
                                                 <td>
-                                                    <input type="hidden" name="sub_items[{{ $loop->index }}][status]"
-                                                           value="{{ $subItem->status }}">
+                                                    <input type="hidden" name="sub_items[{{ $loop->index }}][is_custom]" value="{{ $subItem->is_custom }}">
+                                                    <span>{{ $subItem->is_custom ? "Yes" : "No"  }}</span>
+                                                </td>
+                                                <td>
+                                                    <input type="hidden" name="sub_items[{{ $loop->index }}][status]" value="{{ $subItem->status }}">
                                                     <span>{{ $subItem->status }}</span>
                                                 </td>
                                                 <td style="text-align: center">
@@ -202,36 +206,36 @@
                             <div class="mb-3">
                                 <label for="sub_item_amount_modal" class="form-label">Sub Item Amount</label>
                                 <input type="number" class="form-control" id="sub_item_amount_modal"
-                                       name="sub_item_amount_modal" required {{ $subItem->external_id ? 'readonly' : '' }}>
+                                       name="sub_item_amount_modal" required {{ $subItem->external_id ? 'readonly disabled' : '' }}>
                             </div>
                             <div class="mb-3">
                                 <label for="sub_item_price_modal" class="form-label">Sub Item Price</label>
                                 <input type="number" step="0.1" class="form-control"
-                                       id="sub_item_price_modal" name="sub_item_price_modal" required {{ $subItem->external_id ? 'readonly' : '' }}>
+                                       id="sub_item_price_modal" name="sub_item_price_modal" required {{ $subItem->external_id ? 'readonly disabled' : '' }}>
                             </div>
 
                             <div class="mb-3 form-check">
-                                <input type="checkbox" class="form-check-input" id="is_custom" name="is_custom"
-                                    {{ $subItem->is_custom ? 'checked' : '' }}>
-                                <label class="form-check-label" for="is_custom">Custom</label>
+                                <input type="checkbox" class="form-check-input" id="sub_item_is_custom_modal" name="sub_item_is_custom_modal"
+                                    {{ $subItem->is_custom ? 'checked' : '' }} value="{{$subItem->is_custom}}" {{ $subItem->external_id ? 'readonly disabled' : '' }} >
+                                <label class="form-check-label" for="sub_item_is_custom_modal">Custom</label>
                             </div>
                             <div id="customFields" class="row" style="{{ !$subItem->is_custom ? 'display: none;' : '' }}">
                                 <div class="mb-3 col-sm-12 col-md-6">
                                     <label for="sub_item_minimum_amount_modal" class="form-label">Minimum Amount</label>
-                                    <input type="number" class="form-control" id="sub_item_minimum_amount_modal" name="sub_item_minimum_amount_modal" value="{{$subItem->minimum_amount}}">
+                                    <input type="number" class="form-control" id="sub_item_minimum_amount_modal" name="sub_item_minimum_amount_modal" value="{{$subItem->minimum_amount}}" {{ $subItem->external_id ? 'readonly disabled' : '' }} >
                                 </div>
                                 <div class="mb-3 col-sm-12 col-md-6">
                                     <label for="sub_item_max_amount_modal" class="form-label">Maximum Amount</label>
-                                    <input type="number" class="form-control" id="sub_item_max_amount_modal" name="sub_item_max_amount_modal" value="{{$subItem->max_amount}}">
+                                    <input type="number" class="form-control" id="sub_item_max_amount_modal" name="sub_item_max_amount_modal" value="{{$subItem->max_amount}}" {{ $subItem->external_id ? 'readonly disabled' : '' }} >
                                 </div>
                             </div>
 
                         @endif
 
                         <div class="mb-3 col-sm-12 col-md-12">
-                            <label for="sub_item_sub_status_modal" class="form-label">Status</label>
+                            <label for="sub_item_sub_status_modal" class="form-label" {{ $subItem->external_id ? 'readonly disabled' : '' }} >Status</label>
 
-                            <select class="form-control" id="sub_item_sub_status_modal" name="sub_item_sub_status_modal">
+                            <select class="form-control" id="sub_item_sub_status_modal" name="sub_item_sub_status_modal" {{ $subItem->external_id ? 'readonly disabled' : '' }} >
                                 <option value="active" {{$subItem->status == 'active' ? 'selected': ''}} selected>Active</option>
                                 <option value="inactive" {{ $subItem->status == 'inactive' ? 'selected' : '' }}>Inactive</option>
                             </select>
@@ -257,7 +261,8 @@
 
     <script>
         $(document).ready(function() {
-            $('#is_custom').change(function() {
+            $('#sub_item_is_custom_modal').change(function() {
+                console.log("custom val", $(this).is(':checked'))
                 if ($(this).is(':checked')) {
                     $('#customFields').show();
                 } else {
@@ -301,7 +306,6 @@
             // Handle sub-item form submission
             $('#create-sub-item-form').on('submit', function(e) {
                 e.preventDefault();
-
                 let subItemName = $('#sub_item_name_modal').val();
                 let subItemDescription = $('#sub_item_description_modal').val();
                 let subItemAmount = $('#sub_item_amount_modal').val();
@@ -310,8 +314,9 @@
                 let subItemMinAmount = $('#sub_item_minimum_amount_modal').val();
                 let subItemMaxAmount = $('#sub_item_max_amount_modal').val();
                 let subItemSubStatus = $('#sub_item_sub_status_modal').val();
+                let subItemSubIsCustom = $('#sub_item_is_custom_modal').is(':checked') ? 1 : 0;
 
-                console.log("subItemSubStatus", subItemSubStatus)
+                console.log("subItemSubIsCustom", subItemSubIsCustom)
 
                 let subItemImage = $('#sub_item_image_modal')[0].files[0];
                 let subItemIndex = $('#sub_item_index_modal').val();
@@ -331,6 +336,7 @@
                         subItemRow.find('input[name^="sub_items"][name$="[minimum_amount]"]').val(subItemMinAmount);
                         subItemRow.find('input[name^="sub_items"][name$="[max_amount]"]').val(subItemMaxAmount);
                         subItemRow.find('input[name^="sub_items"][name$="[status]"]').val(subItemSubStatus);
+                        subItemRow.find('input[name^="sub_items"][name$="[is_custom]"]').val(subItemSubIsCustom);
 
                         subItemRow.find('input[name^="sub_items"][name$="[image_url]"]').val(imageSrc);
                         subItemRow.find('span').eq(0).text(subItemName);
@@ -338,8 +344,8 @@
                         subItemRow.find('span').eq(2).text(subItemAmount);
                         subItemRow.find('span').eq(3).text(subItemPrice);
 
-                        subItemRow.find('span').eq(4).text(subItemMaxAmount);
-                        subItemRow.find('span').eq(5).text(subItemMinAmount);
+                        subItemRow.find('span').eq(4).text(subItemMinAmount);
+                        subItemRow.find('span').eq(5).text(subItemMaxAmount);
                         subItemRow.find('span').eq(6).text(subItemSubStatus);
 
                         if (subItemImage) {
@@ -380,6 +386,10 @@
                                     <span>${subItemMaxAmount}</span>
                                 </td>
                                  <td>
+                                    <input type="hidden" name="sub_items[${subItemCount}][is_custom]" value="${subItemSubIsCustom}">
+                                    <span>${subItemSubIsCustom ? "Yes" : "No"}</span>
+                                </td>
+                                <td>
                                     <input type="hidden" name="sub_items[${subItemCount}][status]" value="${subItemSubStatus}">
                                     <span>${subItemSubStatus}</span>
                                 </td>
@@ -497,10 +507,11 @@
                 let subItemMinAmount = subItemRow.find('input[name^="sub_items"][name$="[minimum_amount]"]').val();
 
                 let subItemStatus = subItemRow.find('input[name^="sub_items"][name$="[status]"]').val();
+                let subItemIsCustom = subItemRow.find('input[name^="sub_items"][name$="[is_custom]"]').val();
 
 
 
-                console.log("subItemStatus1", subItemStatus)
+                console.log("subItemIsCustom", subItemIsCustom)
                 // console.log("subItemStatus1", subItemRow.html())
 
 
@@ -515,6 +526,7 @@
                 $('#sub_item_max_amount_modal').val(subItemMaxAmount);
                 $('#sub_item_minimum_amount_modal').val(subItemMinAmount);
                 // $('#sub_item_sub_status_modal').val(subItemStatus);
+                $('#sub_item_is_custom_modal').val(subItemIsCustom);
 
                 let subItemImageSrc = subItemRow.find('.sub-item-image-preview').attr('src');
                 if (subItemImageSrc) {
