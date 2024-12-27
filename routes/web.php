@@ -5,6 +5,7 @@ use App\Http\Controllers\ApiItemsController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ClientStoreController;
 use App\Http\Controllers\FooterController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PartnerController;
@@ -143,12 +144,15 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:Admin']], func
     Route::resource('users', UserController::class);
     Route::resource('sliders', SliderController::class);
     Route::resource('orders', OrderController::class);
+    Route::get('orders-analytics', [OrderController::class, 'order_analytics'])->name('orders.analytics');
+
     Route::get('configs/edit', [ConfigController::class, 'edit'])->name('configs.edit');
     Route::put('configs/{id}', [ConfigController::class, 'update'])->name('configs.update');
     Route::get('terms/edit', [TermsController::class, 'edit'])->name('terms.edit');
     Route::put('terms/{id}', [TermsController::class, 'update'])->name('terms.update');
     Route::resource('business-client-wallets', BusinessClientWalletController::class)->names('business-client-wallets');
     Route::resource('categories', CategoryController::class);
+    Route::resource('invoices', InvoiceController::class);
     Route::resource('diamond-rates', DiamondRatesController::class)->names('diamond_rates');
     Route::resource('items', ItemController::class);
     Route::resource('plans', PlanController::class);

@@ -48,20 +48,61 @@
         'node_modules/jquery-toast-plugin/dist/jquery.toast.min.js'
     ])
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
+            // Initialize Select2
             $('#permissions').select2({
                 theme: 'default'
             });
 
-            $('#create-role-form').on('submit', function(e) {
+            // Store selected options
+            let hiddenOptions = [];
+
+            // Hide options when selected
+            $('#permissions').on('select2:select', function (e) {
+                let selectedValue = e.params.data.id;
+
+                // Add to hidden options
+                hiddenOptions.push(selectedValue);
+
+                // Filter out hidden options in the dropdown
+                refreshSelect2();
+            });
+
+            // Show options when unselected
+            $('#permissions').on('select2:unselect', function (e) {
+                let unselectedValue = e.params.data.id;
+
+                // Remove from hidden options
+                hiddenOptions = hiddenOptions.filter(value => value !== unselectedValue);
+
+                // Refresh Select2 dropdown
+                refreshSelect2();
+            });
+
+            // Refresh Select2 dropdown to filter hidden options
+            function refreshSelect2() {
+                $('#permissions').select2('destroy').select2({
+                    theme: 'default',
+                    templateResult: function (data) {
+                        // Return null for hidden options
+                        if (hiddenOptions.includes(data.id)) {
+                            return null;
+                        }
+                        return data.text;
+                    }
+                });
+            }
+
+            // Handle form submission via AJAX
+            $('#create-role-form').on('submit', function (e) {
                 e.preventDefault();
 
                 $.ajax({
                     url: $(this).attr('action'),
                     method: $(this).attr('method'),
                     data: $(this).serialize(),
-                    success: function(response) {
-                        $.toast().reset('all'); // Reset previous toasts
+                    success: function (response) {
+                        $.toast().reset('all');
                         $.toast({
                             heading: 'Success',
                             text: 'Role created successfully.',
@@ -75,8 +116,8 @@
                             }
                         });
                     },
-                    error: function(response) {
-                        $.toast().reset('all'); // Reset previous toasts
+                    error: function (response) {
+                        $.toast().reset('all');
                         $.toast({
                             heading: 'Error',
                             text: 'There was an error creating the role.',

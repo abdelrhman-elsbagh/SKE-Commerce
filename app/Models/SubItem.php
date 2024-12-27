@@ -49,6 +49,13 @@ class SubItem extends Model implements HasMedia
         return $this->belongsTo(Item::class);
     }
 
+    // In SubItem model
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
+
+
     public function orderSubItem()
     {
         return $this->hasOne(OrderSubItem::class, 'sub_item_id');
@@ -69,4 +76,10 @@ class SubItem extends Model implements HasMedia
     {
         $this->addMediaCollection('images')->singleFile();
     }
+
+    public function invoice()
+    {
+        return $this->belongsTo(Invoice::class);
+    }
+
 }

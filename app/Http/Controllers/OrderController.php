@@ -8,8 +8,10 @@ use App\Models\Order;
 use App\Models\OrderSubItem;
 use App\Models\SubItem;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
@@ -291,5 +293,72 @@ class OrderController extends Controller
         }
     }
 
+    public function order_analytics()
+    {
+        // Get total counts and revenues for orders
+        $totalOrdersCount = Order::count();
+        $totalOrdersRevenue = Order::sum('amount');
+
+        // Count sub_items where external_id is NULL (manual)
+        $manualOrdersCount = SubItem::whereNull('external_id')->count();
+        $manualOrdersRevenue = SubItem::whereNull('external_id')->sum('amount');
+
+        // Count sub_items where external_id is NOT NULL (API)
+        $apiOrdersCount = SubItem::whereNotNull('external_id')->count();
+        $apiOrdersRevenue = SubItem::whereNotNull('external_id')->sum('amount');
+
+        // Orders grouped by status
+        $ordersByStatus = Order::select('status', DB::raw('count(*) as count'))
+            ->groupBy('status')
+            ->get();
+
+        // Count SubItems grouped by external_id (manual/API distinction)
+        $subItemsCountByExternalId = SubItem::select(DB::raw('
+        CASE
+            WHEN external_id IS NULL THEN "manual"
+            ELSE "API"
+        END AS external_type,
+        COUNT(*) AS count
+    '))
+            ->groupBy(DB::raw('
+            CASE
+                WHEN external_id IS NULL THEN "manual"
+                ELSE "API"
+            END
+        '))
+            ->get();
+
+        // Top 3 manual SubItems based on revenue
+        $topManualOrders = SubItem::whereNull('external_id')
+            ->orderBy('amount', 'desc')
+            ->take(3)
+            ->get(['name', 'amount']);
+
+        // Top 3 API SubItems based on revenue
+        $topApiOrders = SubItem::whereNotNull('external_id')
+            ->orderBy('amount', 'desc')
+            ->take(3)
+            ->get(['name', 'amount']);
+
+        // Orders grouped by sub_item_id
+        $ordersGroupedBySubItem = SubItem::select('sub_item_id', 'name', DB::raw('COUNT(*) as order_count'))
+            ->join('orders', 'sub_items.id', '=', 'orders.sub_item_id') // Assuming orders table has sub_item_id
+            ->groupBy('sub_item_id', 'name')
+            ->get();
+
+
+        // Pass data to the view
+        return view('admin.orders.orders_analytics', compact(
+            'totalOrdersCount', 'totalOrdersRevenue',
+            'manualOrdersCount', 'manualOrdersRevenue',
+            'apiOrdersCount', 'apiOrdersRevenue',
+            'ordersByStatus',
+            'subItemsCountByExternalId',
+            'topManualOrders',
+            'topApiOrders',
+            'ordersGroupedBySubItem'
+        ));
+    }
 
 }
+

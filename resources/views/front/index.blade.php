@@ -104,9 +104,9 @@
                                     <li>
                                         <a href="{{ $item->link }}">
                                             @if($item->hasMedia('images'))
-                                                <img src="{{ $item->getFirstMediaUrl('images') }}" alt="{{ $item->title }}" style="width: 20px; height: 20px;">
+                                                <img src="{{ $item->getFirstMediaUrl('images') }}" alt="{{ App::getLocale() === 'ar' ? $item->ar_title : $item->title ?? "" }}" style="width: 20px; height: 20px;">
                                             @endif
-                                            {{ $item->title }}
+                                                {{ App::getLocale() === 'ar' ? $item->ar_title : $item->title ?? "" }}
                                         </a>
                                     </li>
                                 @endforeach

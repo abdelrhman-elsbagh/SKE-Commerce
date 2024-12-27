@@ -78,7 +78,10 @@ class HomeController extends Controller
                 : $item->category->name;
         });
 
-        $footerItems = Footer::with('media')->get()->groupBy('tag');
+        $locale = app()->getLocale(); // Get the current locale
+        $footerItems = Footer::with('media')->get()->groupBy(function ($item) use ($locale) {
+            return $locale === 'ar' ? $item->ar_tag : $item->tag;
+        });
 
         if($user){
             if( $user->status == 'inactive' ){

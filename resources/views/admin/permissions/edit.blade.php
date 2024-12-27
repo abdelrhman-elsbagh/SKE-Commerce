@@ -33,7 +33,12 @@
                                 <label for="permissions" class="form-label">Select Permissions</label>
                                 <select name="permissions[]" id="permissions" class="form-control" multiple="multiple" required>
                                     @foreach($permissions as $permission)
-                                        <option value="{{ $permission->id }}" @if($role->permissions->contains($permission->id)) selected @endif>{{ $permission->name }}</option>
+                                        <option value="{{ $permission->id }}"
+                                                @if($role->permissions->contains($permission->id))
+                                                    selected
+                                            @endif>
+                                            {{ $permission->name }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
@@ -52,10 +57,62 @@
     ])
     <script>
         $(document).ready(function() {
+            // Initialize Select2
             $('#permissions').select2({
                 theme: 'default'
             });
 
+            // Store pre-selected options
+            let hiddenOptions = $('#permissions').val() || [];
+
+            // Hide already selected options on page load
+            $('#permissions option:selected').each(function() {
+                hiddenOptions.push($(this).val());
+            });
+
+            // Refresh Select2 dropdown to apply initial hidden options
+            refreshSelect2();
+
+            // Hide options when selected
+            $('#permissions').on('select2:select', function(e) {
+                let selectedValue = e.params.data.id;
+
+                // Add to hidden options
+                hiddenOptions.push(selectedValue);
+
+                // Refresh Select2 dropdown
+                refreshSelect2();
+            });
+
+            // Show options when unselected
+            $('#permissions').on('select2:unselect', function(e) {
+                let unselectedValue = e.params.data.id;
+
+                // Remove from hidden options
+                hiddenOptions = hiddenOptions.filter(value => value !== unselectedValue);
+
+                // Refresh Select2 dropdown
+                refreshSelect2();
+            });
+
+            // Refresh Select2 dropdown to filter hidden options
+            function refreshSelect2() {
+                $('#permissions').select2('destroy').select2({
+                    theme: 'default',
+                    templateResult: function(data) {
+                        // Skip rendering for hidden options
+                        if (hiddenOptions.includes(data.id)) {
+                            return null;
+                        }
+                        return data.text;
+                    },
+                    templateSelection: function(data) {
+                        return data.text;
+                    }
+                });
+            }
+
+            // Handle form submission via AJAX
             $('#edit-role-form').on('submit', function(e) {
                 e.preventDefault();
 
@@ -73,7 +130,7 @@
                             loaderBg: '#f96868',
                             position: 'top-right',
                             hideAfter: 3000,
-                            afterHidden: function () {
+                            afterHidden: function() {
                                 window.location.href = "{{ route('permissions.index') }}";
                             }
                         });

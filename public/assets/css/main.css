@@ -6390,7 +6390,10 @@ body.dark-theme .content.custom-page-content *{
     }
 
     .head-login-desc{
-        margin-top: 0;
+        margin-top: 20px;
+        text-align: center;
+        margin-left: 0;
+        max-width: 100%;
     }
 
     .animation-navspinv{
@@ -6398,6 +6401,9 @@ body.dark-theme .content.custom-page-content *{
         margin: auto;
         padding-bottom: 10px;
         border-radius: 8px;
+    }
+    .logo-big{
+        padding-left: 0;
     }
 }
 

@@ -50,10 +50,6 @@
                                 </select>
                             </div>
                             <div class="mb-3">
-                                <label for="date_of_birth" class="form-label">Date of Birth</label>
-                                <input type="date" class="form-control" id="date_of_birth" name="date_of_birth">
-                            </div>
-                            <div class="mb-3">
                                 <label for="role_status" class="form-label">Status</label>
                                 <select class="form-control" id="role_status" name="status">
                                     <option value="active">Active</option>

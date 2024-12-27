@@ -66,7 +66,7 @@
     <div class="h-100" id="leftside-menu-container" data-simplebar>
         <!-- Leftbar User -->
         <div class="leftbar-user">
-            <a href="{{ route('second', ['pages', 'profile']) }}" class="nav-link">
+            <a href="{{ route('dashboard') }}" class="nav-link">
                 @if($config->getFirstMediaUrl('dark_logos'))
                     <img src="{{ $config->getFirstMediaUrl('logos') }}" alt="user-image" height="42" class="rounded-circle shadow-sm">
                 @else
@@ -463,6 +463,13 @@
             </li>
 
             <li class="side-nav-item">
+                <a href="{{ route('orders.analytics') }}" class="side-nav-link">
+                    <i class="ri-bar-chart-line"></i>
+                    <span> Order Statistics </span>
+                </a>
+            </li>
+
+            <li class="side-nav-item">
                 <a href="{{ route('purchase-requests.index') }}" class="side-nav-link">
                     <i class="ri-file-list-line"></i>
                     <span> Purchase Requests </span>
@@ -716,6 +723,25 @@
                     </ul>
                 </div>
             </li>
+
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarInvoices" aria-expanded="false" aria-controls="sidebarInvoices" class="side-nav-link nav-link">
+                    <i class="ri-file-list-line"></i>
+                    <span> Invoices </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarInvoices">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('invoices.index') }}" class="nav-link">All Invoices</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('invoices.create') }}" class="nav-link">Create Invoice</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
 
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarPosts" aria-expanded="false" aria-controls="sidebarItems" class="side-nav-link nav-link">
