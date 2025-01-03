@@ -101,11 +101,15 @@ Route::put('users/{id}', [UserController::class, 'profile_update'])->name('profi
 
 Route::get('/items', [ApiItemsController::class, 'allItems'])->name('api-items-all');
 
-Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:Admin']], function () {
+Route::get('/import-eko-products', [ItemController::class, 'fetchAndImportEkoStoreProducts'])->name('import.eko.products');
+
+
+Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'permission:admin']], function () {
+
 
     Route::get('/permissions/sync-admin', [PermissionController::class, 'syncAdminGroupPermissions'])
         ->name('permissions.sync.admin')
-        ->middleware(['auth', 'role:Admin']);
+        ->middleware(['auth', 'permission:admin']);
 
     Route::get('', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('index', [DashboardController::class, 'index'])->name('dashboard');
@@ -132,6 +136,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:Admin']], func
     Route::resource('business-purchase-requests', BusinessPurchaseRequestController::class);
 
     Route::resource('clients', ClientController::class)->names('clients');
+//    Route::delete('/clients/{id}', [ClientController::class, 'destroy'])->name('clients.destroy');
     Route::resource('accounts', AccountController::class)->names('accounts');
     Route::get('/export', [AccountController::class, 'export'])->name(name: 'accounts.export');
     Route::get('/accounts/{id}/data', [AccountController::class, 'getAccountData'])->name('accounts.getData');

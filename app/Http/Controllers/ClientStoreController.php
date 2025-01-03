@@ -12,7 +12,24 @@ class ClientStoreController extends Controller
      */
     public function index()
     {
-        $clientStores = ClientStore::all();
+        // Get client stores with external orders count and total, and total SubItems count
+        $clientStores = ClientStore::withCount([
+            'subItems as external_orders_count' => function ($query) {
+                $query->whereHas('orders', function ($orderQuery) {
+                    $orderQuery->where('is_external', true);
+                });
+            },
+            'subItems as total_sub_items_count' // Total count of SubItems
+        ])->get();
+
+        // Add a custom attribute for the total of external orders
+        foreach ($clientStores as $store) {
+            $store->external_orders_total = $store->subItems()
+                ->whereHas('orders', function ($query) {
+                    $query->where('is_external', true);
+                })->withSum('orders', 'total')->get()->sum('orders_sum_total');
+        }
+
         return view('admin.clientStores.index', compact('clientStores'));
     }
 
@@ -55,8 +72,28 @@ class ClientStoreController extends Controller
      */
     public function show(ClientStore $clientStore)
     {
+        // Load related data: external orders count, total sum, and total sub-items count
+        $clientStore->loadCount([
+            'subItems as external_orders_count' => function ($query) {
+                $query->whereHas('orders', function ($orderQuery) {
+                    $orderQuery->where('is_external', true);
+                });
+            },
+            'subItems as total_sub_items_count' // Total count of SubItems
+        ])->load([
+            'subItems' => function ($query) {
+                $query->whereHas('orders', function ($orderQuery) {
+                    $orderQuery->where('is_external', true);
+                })->withSum('orders', 'total');
+            }
+        ]);
+
+        // Calculate the total external orders sum
+        $clientStore->external_orders_total = $clientStore->subItems->sum('orders_sum_total');
+
         return view('admin.clientStores.show', compact('clientStore'));
     }
+
 
     /**
      * Show the form for editing the specified resource.

@@ -11,6 +11,7 @@ use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 
 class ItemController extends Controller
 {
@@ -191,5 +192,74 @@ class ItemController extends Controller
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => 'An error occurred while deleting the item.']);
         }
+    }
+
+    ###############################
+    public function fetchAndImportEkoStoreProducts()
+    {
+        $apiUrl = 'https://api.ekostore.co/client/api/products';
+        $apiToken = 'bc249492922515e340088aafc560ff67720ab65ef478ba33';
+
+        $eko_category = Category::firstOrCreate(['name' => 'EkoStore'],
+            ['description' => 'Imported from EkoStore API', 'status' => 'active', 'name' => 'EkoStore']);
+
+        // Fetch data from the API
+        $response = Http::withHeaders([
+            'api-token' => $apiToken,
+        ])->get($apiUrl);
+
+        if ($response->failed()) {
+            return response()->json(['success' => false, 'message' => 'Failed to fetch data from the EkoStore API'], 500);
+        }
+
+        $products = $response->json();
+
+        foreach ($products as $product) {
+            // Handle the category (Item in your app)
+            $categoryName = $product['category_name'] ?? 'Uncategorized';
+            $categoryImage = $product['category_img'];
+
+            // Find or create the category (Item)
+            $item = Item::firstOrCreate(
+                ['name' => $categoryName],
+                [
+                    'category_id' => $eko_category->id,
+                    'description' => 'Imported from EkoStore API',
+                    'status' => 'active',
+                    'is_outsourced' => true,
+                    'source_domain' => 'https://api.ekostore.co',
+                ]
+            );
+
+            // Attach category image if available
+            if ($categoryImage && !$item->getFirstMediaUrl('images')) {
+                $item->addMediaFromUrl($categoryImage)->toMediaCollection('images');
+            }
+
+            if ($categoryImage && !$item->getFirstMediaUrl('front_image')) {
+                $item->addMediaFromUrl($categoryImage)->toMediaCollection('front_image');
+            }
+
+            // Handle the sub-item
+            SubItem::updateOrCreate(
+                ['external_id' => $product['id']], // Match by external ID
+                [
+                    'item_id' => $item->id,
+                    'name' => $product['name'],
+                    'description' => implode(', ', $product['params']),
+                    'amount' => $product['qty_values']['min'] ?? 0,
+                    'price' => $product['price'],
+                    'original_price' => $product['base_price'],
+                    'status' => $product['available'] ? 'active' : 'inactive',
+                    'is_custom' => $product['product_type'] === 'amount' ? 1 : 0,
+                    'minimum_amount' => $product['qty_values']['min'] ?? null,
+                    'max_amount' => $product['qty_values']['max'] ?? null,
+                    'product_type' => $product['product_type']?? null,
+                    'domain' => 'https://api.ekostore.co',
+                ]
+            );
+        }
+
+        return response()->json(['success' => true, 'message' => 'EkoStore products imported successfully']);
     }
 }

@@ -18,6 +18,9 @@
                         <th>Name</th>
                         <th>Email</th>
                         <th>Domain</th>
+                        <th>Orders Count</th>
+                        <th>Cost Orders Total (USD)</th>
+                        <th>Imported Items</th> <!-- New column for total sub-items -->
                         <th>Actions</th>
                     </tr>
                     </thead>
@@ -28,6 +31,9 @@
                             <td>{{ $clientStore->name }}</td>
                             <td>{{ $clientStore->email ?? "" }}</td>
                             <td>{{ $clientStore->domain }}</td>
+                            <td>{{ $clientStore->external_orders_count ?? 0 }}</td>
+                            <td>USD {{ number_format($clientStore->external_orders_total ?? 0, 2) }}</td>
+                            <td>{{ $clientStore->total_sub_items_count ?? 0 }}</td> <!-- Display total sub-items -->
                             <td>
                                 <a href="{{ route('clientStores.show', $clientStore->id) }}" class="btn btn-info">View</a>
                                 <a href="{{ route('clientStores.edit', $clientStore->id) }}" class="btn btn-warning">Edit</a>

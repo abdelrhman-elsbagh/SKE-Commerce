@@ -3,6 +3,7 @@
 namespace App\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
+use Spatie\Permission\Middleware\PermissionMiddleware;
 
 class Kernel extends HttpKernel
 {
@@ -38,6 +39,7 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\SetLocale::class,
         ],
 
         'api' => [
@@ -66,6 +68,7 @@ class Kernel extends HttpKernel
         'business_client' => \App\Http\Middleware\RedirectIfNotBusinessClient::class,
         'role' => \App\Http\Middleware\RoleMiddleware::class,
         'SetLocale' => \App\Http\Middleware\SetLocale::class,
+        'permission' => PermissionMiddleware::class,
 
     ];
 }

@@ -101,13 +101,13 @@
 
         <!-- Additional rows for other stats like Revenue and Total Sales -->
         <div class="row">
-            <div class="col-xl-5">
+            <div class="col-xl-6">
                 <div class="card">
                     <div class="d-flex card-header justify-content-between align-items-center">
                         <h4 class="header-title">Top Selling Products</h4>
                     </div>
                     <div class="card-body p-0">
-                        <div class="table-responsive">
+                        <div class="table-responsive" style="min-height: 340px;">
                             <table class="table table-borderless table-hover table-nowrap table-centered m-0">
                                 <thead class="border-top border-bottom bg-light-subtle border-light">
                                 <tr>
@@ -154,7 +154,67 @@
                 </div>
             </div>
 
-            <div class="col-xl-7">
+            <div class="col-xl-6">
+                <div class="card">
+                    <div class="d-flex card-header justify-content-between align-items-center">
+                        <h4 class="header-title">Top Selling External Items</h4>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive" style="min-height: 340px;">
+                            <table class="table table-borderless table-hover table-nowrap table-centered m-0" >
+                                <thead class="border-top border-bottom bg-light-subtle border-light">
+                                <tr>
+                                    <th class="py-1">Item</th>
+                                    <th class="py-1">Sub Item</th>
+                                    <th class="py-1">Price (USD)</th>
+                                    <th class="py-1">Type</th>
+                                    <th class="py-1">Client / Store</th>
+                                    <th class="py-1">Status</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach ($topSellingApiSubItems as $subItem)
+                                    <tr>
+                                        <td>{{ $subItem->item->name ?? "" }}</td>
+                                        <td>{{ $subItem->name ?? "" }}</td>
+                                        <td>USD {{ number_format($subItem->price, 2) }}</td>
+                                        <td>API</td>
+                                        <td>{{ $subItem->clientStore->domain ?? "" }}</td>
+                                        <td>
+                                            @if($subItem->item->status == 'canceled' || $subItem->item->status == 'refunded')
+                                                <span class="badge bg-danger-subtle text-danger rounded-pill">
+                                            {{ ucfirst($subItem->item->status) }}
+                                            <i class="ri-close-circle-line ms-1 fs-14"></i>
+                                        </span>
+                                            @elseif($subItem->item->status == 'active')
+                                                <span class="badge bg-success-subtle text-success rounded-pill">
+                                            {{ ucfirst($subItem->item->status) }}
+                                            <i class="bi bi-check2-circle ms-1 fs-14"></i>
+                                        </span>
+                                            @else
+                                                <span class="badge bg-secondary-subtle text-warning rounded-pill">
+                                            {{ ucfirst($subItem->item->status) }}
+                                            <i class="bi bi-clock-history ms-1 fs-14"></i>
+                                        </span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-center">
+                            <a href="{{ route('items.index') }}" class="text-primary text-decoration-underline fw-bold btn mb-2">View All</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end row -->
+
+        <!-- Recent Orders -->
+        <div class="row">
+            <div class="col-xl-6">
                 <div class="card">
                     <div class="d-flex card-header justify-content-between align-items-center">
                         <h4 class="header-title">Revenue By Locations</h4>
@@ -190,11 +250,8 @@
                     </div>
                 </div> <!-- end card-->
             </div> <!-- end col -->
-        </div> <!-- end row -->
 
-        <!-- Recent Orders -->
-        <div class="row">
-            <div class="col-xl-12">
+            <div class="col-xl-6">
                 <div class="card">
                     <div class="d-flex card-header justify-content-between align-items-center">
                         <h4 class="header-title">Recent Orders</h4>

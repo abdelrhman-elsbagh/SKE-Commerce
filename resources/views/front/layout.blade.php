@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang={{ app()->getLocale() }}>
 
 <head>
     <meta charset="utf-8">
@@ -32,35 +32,77 @@
         }
     </style>
 
-    <!-- Conditionally include Oswald font if selected -->
-    @if($config->font == 'Oswald')
-        <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-        <style>
-            body, h1,h2,h3,h4,h5,h6, p, div, a {
-                font-family: 'Oswald', sans-serif !important;
-            }
-        </style>
-    @elseif($config->font == 'Noto Sans')
-        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
-        <style>
-            body, h1,h2,h3,h4,h5,h6, p, div, a {
-                font-family: 'Noto Sans', sans-serif !important;
-            }
-        </style>
-    @elseif($config->font == 'Raleway')
-        <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-        <style>
-            body, h1,h2,h3,h4,h5,h6, p, div, a {
-                font-family: 'Raleway', sans-serif !important;
-            }
-        </style>
-    @elseif($config->font == 'Roboto')
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-        <style>
-            body, h1,h2,h3,h4,h5,h6, p, div, a {
-                font-family: 'Roboto', sans-serif !important;
-            }
-        </style>
+    <!-- Include Fonts Conditionally Based on Language -->
+    @if(app()->getLocale() === 'ar')
+        @switch($config->ar_font)
+            @case('Cairo')
+                <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+                <style>
+                    body, h1, h2, h3, h4, h5, h6, p, div, a {
+                        font-family: 'Cairo', sans-serif !important;
+                    }
+                </style>
+                @break
+            @case('Almarai')
+                <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700&display=swap" rel="stylesheet">
+                <style>
+                    body, h1, h2, h3, h4, h5, h6, p, div, a {
+                        font-family: 'Almarai', sans-serif !important;
+                    }
+                </style>
+                @break
+            @case('Amiri')
+                <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+                <style>
+                    body, h1, h2, h3, h4, h5, h6, p, div, a {
+                        font-family: 'Amiri', serif !important;
+                    }
+                </style>
+                @break
+            @case('Marhey')
+                <link href="https://fonts.googleapis.com/css2?family=Marhey:wght@400;500;700&display=swap" rel="stylesheet">
+                <style>
+                    body, h1, h2, h3, h4, h5, h6, p, div, a {
+                        font-family: 'Marhey', cursive !important;
+                    }
+                </style>
+                @break
+        @endswitch
+    @else
+        @switch($config->font)
+            @case('Oswald')
+                <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+                <style>
+                    body, h1, h2, h3, h4, h5, h6, p, div, a {
+                        font-family: 'Oswald', sans-serif !important;
+                    }
+                </style>
+                @break
+            @case('Noto Sans')
+                <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+                <style>
+                    body, h1, h2, h3, h4, h5, h6, p, div, a {
+                        font-family: 'Noto Sans', sans-serif !important;
+                    }
+                </style>
+                @break
+            @case('Raleway')
+                <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+                <style>
+                    body, h1, h2, h3, h4, h5, h6, p, div, a {
+                        font-family: 'Raleway', sans-serif !important;
+                    }
+                </style>
+                @break
+            @case('Roboto')
+                <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+                <style>
+                    body, h1, h2, h3, h4, h5, h6, p, div, a {
+                        font-family: 'Roboto', sans-serif !important;
+                    }
+                </style>
+                @break
+        @endswitch
     @endif
 
     @if(app()->getLocale() === 'ar')
@@ -205,11 +247,13 @@
             <div class="page-header__sidebar">
                 <div class="page-header__menu-btn"><button class="menu-btn ico_menu is-active"></button></div>
                 <div class="page-header__logo">
-                    <a href="{{route('home')}}">
-                        @if($config->getFirstMediaUrl('logos'))
+                    <a href="{{ route('home') }}">
+                        @if(isset($_COOKIE['darkTheme']) && $_COOKIE['darkTheme']=== 'true' && $config->getFirstMediaUrl('dark_logos'))
+                            <img src="{{ $config->getFirstMediaUrl('dark_logos') }}" alt="dark logo" style="">
+                        @elseif($config->getFirstMediaUrl('logos'))
                             <img src="{{ $config->getFirstMediaUrl('logos') }}" alt="logo" style="">
                         @else
-                            <img src="{{ asset('assets/img/logo.png')}}" alt="logo">
+                            <img src="{{ asset('assets/img/logo.png') }}" alt="default logo">
                         @endif
                     </a>
                 </div>
@@ -290,7 +334,7 @@
                             </form>
                         </li>
                     @elseauth('web')
-                        @if(Auth::user()->hasRole('Admin'))
+                        @if(Auth::user()->hasPermissionTo('admin'))
                             <li id="dashboard"><a href="{{route('dashboard')}}"><i class="fas fa-tachometer-alt"></i><span>@lang('messages.admin_dashboard')</span></a></li>
                         @else
                             <li id="home"><a href="{{route('home')}}"><i class="fas fa-home"></i><span>@lang('messages.home')</span></a></li>
@@ -300,9 +344,9 @@
                             <li id="payment-methods"><a href="{{ route('payments-page') }}"><i class="fas fa-credit-card"></i><span>@lang('messages.payment_methods')</span></a></li>
                             <li id="partners"><a href="{{route('partners')}}"><i class="fas fa-id-badge"></i><span>@lang('messages.partners')</span></a></li>
                             <li id="posts"><a href="{{route('posts')}}"><i class="fas fa-tag"></i><span>@lang('messages.posts')</span></a></li>
-                        @endif
+                            @endif
                         @if(Auth::user()->is_external)
-                            <li id="favourites"><a href="{{route('api')}}"><i class="fas fa-code"></i><span>@lang('messages.api')</span></a></li>
+                            <li id="favourites"><a href="{{route('api')}}"><i class="fas fa-code"></i><span>@lang('messages.api.api')</span></a></li>
                         @endif
                         <li>
                             <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">

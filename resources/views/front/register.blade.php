@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="utf-8">
-    <title> {{ $config->name ?? ""  }} - Register</title>
+    <title>{{ $config->name ?? '' }} - @lang('messages.auth.register')</title>
     <meta name="author" content="Templines">
     <meta name="description" content="TeamHost">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,27 +22,9 @@
             --main-color: {{ $mainColor ?? $config->main_color ?? '#F46119' }};
         }
     </style>
-
-    <style>
-        .js-select{
-            width: 100% !important;
-        }
-        .custom-select-wrapper {
-            position: relative;
-            width: 100%;
-        }
-
-
-
-        .custom-tab li.uk-active a {
-            color: var(--main-color) /* Active tab color */
-        }
-
-        .custom-tab li a:hover {
-            color: var(--main-color); /* Hover effect on inactive tabs */
-        }
-    </style>
-
+    @if(app()->getLocale() === 'ar')
+        <link rel="stylesheet" href="{{ asset('assets/css/main-ar.css') }}">
+    @endif
 </head>
 <body class="page-login">
 <div class="page-wrapper">
@@ -52,9 +34,9 @@
                 @if($config->getFirstMediaUrl('logos'))
                     <img class="animation-navspinv" src="{{ $config->getFirstMediaUrl('logos') }}" alt="logo">
                 @else
-                    <img class="animation-navspinv" src="{{ asset('assets/img/logo.png')}}" alt="logo">
+                    <img class="animation-navspinv" src="{{ asset('assets/img/logo.png') }}" alt="logo">
                 @endif
-                    <h2 class="head-login-desc">{{$config->description ?? ""}}</h2>
+                <h2 class="head-login-desc">{{ $config->description ?? '' }}</h2>
             </div>
             <div>
                 <div class="form-login">
@@ -64,20 +46,16 @@
                         </ul>
                     </div>
                     <div class="form-login__box">
-                        <div class="uk-heading-line uk-text-center"><span>or with Email</span></div>
+                        <div class="uk-heading-line uk-text-center"><span>@lang('messages.auth.or_with_email')</span></div>
                         <form id="registrationForm" action="{{ route('register') }}" method="POST">
                             @csrf
                             <div class="uk-margin">
-                                <input class="uk-input" type="text" name="name" placeholder="Name">
+                                <input class="uk-input" type="text" name="name" placeholder="@lang('messages.auth.name_placeholder')">
                                 <div class="uk-text-danger" id="error-name"></div>
                             </div>
                             <div class="uk-margin">
-                                <input class="uk-input" type="email" name="email" placeholder="Email">
+                                <input class="uk-input" type="email" name="email" placeholder="@lang('messages.auth.email_placeholder')">
                                 <div class="uk-text-danger" id="error-email"></div>
-                            </div>
-                            <div class="uk-margin">
-                                <input class="uk-input" type="text" name="phone" placeholder="Whatsapp Number">
-                                <div class="uk-text-danger" id="error-phone"></div>
                             </div>
                             <div class="uk-margin">
                                 <div class="custom-select-wrapper">
@@ -92,30 +70,32 @@
 
                             <div class="uk-margin">
                                 <div class="custom-select-wrapper">
-                                    <select class="uk-select custom-select country" name="country" id="country"></select>
+                                    <select class="uk-select custom-select" name="country" id="country"></select>
                                 </div>
                                 <div class="uk-text-danger" id="error-country"></div>
                             </div>
-
                             <div class="uk-margin">
-                                <input class="uk-input" type="password" name="password" placeholder="Password">
+                                <input class="uk-input" type="text" name="phone" placeholder="@lang('messages.auth.phone_placeholder')">
+                                <div class="uk-text-danger" id="error-phone"></div>
+                            </div>
+                            <div class="uk-margin">
+                                <input class="uk-input" type="password" name="password" placeholder="@lang('messages.auth.password_placeholder')">
                                 <div class="uk-text-danger" id="error-password"></div>
                             </div>
                             <div class="uk-margin">
-                                <input class="uk-input" type="password" name="password_confirmation" placeholder="Confirm Password">
+                                <input class="uk-input" type="password" name="password_confirmation" placeholder="@lang('messages.auth.confirm_password_placeholder')">
                                 <div class="uk-text-danger" id="error-password_confirmation"></div>
                             </div>
                             <div class="uk-margin">
-                                <button class="uk-button uk-button-danger uk-width-1-1" type="submit">Register</button>
+                                <button class="uk-button uk-button-danger uk-width-1-1" type="submit">@lang('messages.auth.register_button')</button>
                             </div>
                             <div class="uk-text-center">
-                                <span>Already have an account?</span>
-                                <a class="uk-margin-small-left" href="{{ route('sign-in') }}">Log In</a>
+                                <span>@lang('messages.auth.already_have_account')</span>
+                                <a class="uk-margin-small-left" href="{{ route('sign-in') }}">@lang('messages.auth.login_button')</a>
                             </div>
                         </form>
                     </div>
                 </div>
-
             </div>
         </div>
     </main>
@@ -127,7 +107,7 @@
     $(document).ready(function() {
         // Load countries from JSON file
         $.getJSON('{{ asset("assets/countries.json") }}', function(data) {
-            var $countrySelect = $('.country');
+            var $countrySelect = $('#country');
 
             $.each(data, function(key, entry) {
                 $countrySelect.append($('<option></option>').attr('value', entry.name).text(entry.name));
@@ -159,33 +139,10 @@
                 }
             });
         });
-
-        $('#partnerRegistrationForm').submit(function(e) {
-            e.preventDefault();
-            $('div.uk-text-danger').empty(); // Clear previous errors
-
-            $.ajax({
-                url: $(this).attr('action'),
-                type: 'POST',
-                data: $(this).serialize(),
-                success: function(data) {
-                    toastr.success('Registration successful!');
-                    window.location.href = '/'; // Redirect to the home page
-                },
-                error: function(response) {
-                    if (response.status === 422) { // Validation errors
-                        const errors = response.responseJSON.errors;
-                        $.each(errors, function(key, value) {
-                            $('#error-' + key).text(value[0]); // Set error text
-                            toastr.error(value[0]);
-                        });
-                    } else {
-                        toastr.error('An unexpected error occurred. Please try again.');
-                    }
-                }
-            });
-        });
     });
 </script>
 <script src="{{ asset('assets/js/libs.js') }}"></script>
 <script src="{{ asset('assets/js/main.js') }}"></script>
+
+</body>
+</html>

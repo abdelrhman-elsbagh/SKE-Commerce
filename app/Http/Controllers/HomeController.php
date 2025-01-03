@@ -345,12 +345,14 @@ class HomeController extends Controller
 
     public function login_page(Request $request)
     {
+
+        $paymentMethods = PaymentMethod::where('status', 'active')->get();
         $config = Config::with('media')->first();
         /*$user = Auth::user();
         if (!$user) {
             return redirect()->route('login'); // Redirect to login if not authenticated
         }*/
-        return view('front.login', compact('config'));
+        return view('front.login', compact('config', 'paymentMethods'));
     }
 
     public function login(Request $request)
@@ -653,6 +655,9 @@ class HomeController extends Controller
     }
     public function api(Request $request)
     {
+        if(!Auth::user()->is_external) {
+            return redirect()->route('home');
+        }
         $user = Auth::user();
 
         $config = Config::with('media')->first();
@@ -729,8 +734,8 @@ class HomeController extends Controller
                     // Construct the full URL by combining the domain and the API path
                     $url = $subItem->domain . '/api/fetch-sub-item';
 
-                    $external_usr_secret = $subItem->clientStore->secret_key;
-                    $own_usr_secret = User::where('id', $subItem->user_id)->first()->secret_key;
+                    $external_usr_secret = $subItem->clientStore->secret_key ?? null;
+                    $own_usr_secret = User::where('id', $subItem->user_id)->first()->secret_key ?? null;
                     $fe_amount = round($subItem->fee_amount, 2);
 
                     // Prepare the data to match the cURL request format

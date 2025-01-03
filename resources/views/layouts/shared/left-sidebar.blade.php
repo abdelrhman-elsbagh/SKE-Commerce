@@ -462,12 +462,12 @@
                 </a>
             </li>
 
-            <li class="side-nav-item">
-                <a href="{{ route('orders.analytics') }}" class="side-nav-link">
-                    <i class="ri-bar-chart-line"></i>
-                    <span> Order Statistics </span>
-                </a>
-            </li>
+{{--            <li class="side-nav-item">--}}
+{{--                <a href="{{ route('orders.analytics') }}" class="side-nav-link">--}}
+{{--                    <i class="ri-bar-chart-line"></i>--}}
+{{--                    <span> Order Statistics </span>--}}
+{{--                </a>--}}
+{{--            </li>--}}
 
             <li class="side-nav-item">
                 <a href="{{ route('purchase-requests.index') }}" class="side-nav-link">
@@ -603,23 +603,23 @@
                 </div>
             </li>
 
-            <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarAccounts" aria-expanded="false" aria-controls="sidebarAccounts" class="side-nav-link nav-link">
-                    <i class=" ri-calculator-line"></i>
-                    <span> Accounts </span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="sidebarAccounts">
-                    <ul class="side-nav-second-level">
-                        <li>
-                            <a href="{{ route('accounts.index') }}" class="nav-link">All ( Calc ) Accounts</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('accounts.create') }}" class="nav-link">Create Transaction</a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
+{{--            <li class="side-nav-item">--}}
+{{--                <a data-bs-toggle="collapse" href="#sidebarAccounts" aria-expanded="false" aria-controls="sidebarAccounts" class="side-nav-link nav-link">--}}
+{{--                    <i class=" ri-calculator-line"></i>--}}
+{{--                    <span> Accounts </span>--}}
+{{--                    <span class="menu-arrow"></span>--}}
+{{--                </a>--}}
+{{--                <div class="collapse" id="sidebarAccounts">--}}
+{{--                    <ul class="side-nav-second-level">--}}
+{{--                        <li>--}}
+{{--                            <a href="{{ route('accounts.index') }}" class="nav-link">All ( Calc ) Accounts</a>--}}
+{{--                        </li>--}}
+{{--                        <li>--}}
+{{--                            <a href="{{ route('accounts.create') }}" class="nav-link">Create Transaction</a>--}}
+{{--                        </li>--}}
+{{--                    </ul>--}}
+{{--                </div>--}}
+{{--            </li>--}}
 
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarAPIS" aria-expanded="false" aria-controls="sidebarAPIS" class="side-nav-link nav-link">
@@ -724,23 +724,23 @@
                 </div>
             </li>
 
-            <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarInvoices" aria-expanded="false" aria-controls="sidebarInvoices" class="side-nav-link nav-link">
-                    <i class="ri-file-list-line"></i>
-                    <span> Invoices </span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="sidebarInvoices">
-                    <ul class="side-nav-second-level">
-                        <li>
-                            <a href="{{ route('invoices.index') }}" class="nav-link">All Invoices</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('invoices.create') }}" class="nav-link">Create Invoice</a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
+{{--            <li class="side-nav-item">--}}
+{{--                <a data-bs-toggle="collapse" href="#sidebarInvoices" aria-expanded="false" aria-controls="sidebarInvoices" class="side-nav-link nav-link">--}}
+{{--                    <i class="ri-file-list-line"></i>--}}
+{{--                    <span> Invoices </span>--}}
+{{--                    <span class="menu-arrow"></span>--}}
+{{--                </a>--}}
+{{--                <div class="collapse" id="sidebarInvoices">--}}
+{{--                    <ul class="side-nav-second-level">--}}
+{{--                        <li>--}}
+{{--                            <a href="{{ route('invoices.index') }}" class="nav-link">All Invoices</a>--}}
+{{--                        </li>--}}
+{{--                        <li>--}}
+{{--                            <a href="{{ route('invoices.create') }}" class="nav-link">Create Invoice</a>--}}
+{{--                        </li>--}}
+{{--                    </ul>--}}
+{{--                </div>--}}
+{{--            </li>--}}
 
 
             <li class="side-nav-item">

@@ -70,6 +70,25 @@
             </div> <!-- end col -->
         </div> <!-- end row -->
     </div> <!-- container -->
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this client?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('script')
@@ -77,4 +96,56 @@
         'resources/js/pages/demo.datatable-init.js',
         'node_modules/jquery-toast-plugin/dist/jquery.toast.min.js'
     ])
+
+    <script>
+        $(document).ready(function() {
+            let clientIdToDelete = null;
+
+            // Open delete confirmation modal
+            $(document).on('click', '.btn-delete', function() {
+                clientIdToDelete = $(this).data('id');
+                $('#deleteModal').modal('show');
+            });
+
+            // Confirm delete action
+            $('#confirmDelete').on('click', function() {
+                if (!clientIdToDelete) return;
+
+                $.ajax({
+                    url: '{{ route('clients.index') }}/' + clientIdToDelete,
+                    method: 'DELETE',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        $('#deleteModal').modal('hide');
+                        $('#client-' + clientIdToDelete).remove();
+
+                        $.toast({
+                            heading: 'Success',
+                            text: 'Client deleted successfully.',
+                            icon: 'success',
+                            loader: true,
+                            loaderBg: '#f96868',
+                            position: 'top-right',
+                            hideAfter: 3000
+                        });
+                    },
+                    error: function(xhr) {
+                        $('#deleteModal').modal('hide');
+
+                        $.toast({
+                            heading: 'Error',
+                            text: 'Failed to delete the client. Please try again.',
+                            icon: 'error',
+                            loader: true,
+                            loaderBg: '#f96868',
+                            position: 'top-right',
+                            hideAfter: 3000
+                        });
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

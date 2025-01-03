@@ -46,7 +46,9 @@
                             @foreach($users as $user)
                                 <tr id="user-{{ $user->id }}">
                                     <td>{{ $user->id }}</td>
-                                    <td>{{ $user->is_external == 1 ? "API Partner" : "Client" }}</td>
+                                    <td>
+                                        {{ $user->hasPermissionTo('admin') ? 'Staff' : ($user->is_external == 1 ? "API Partner" : "Client") }}
+                                    </td>
                                     <td>{{ $user->name }}</td>
                                     <td>{{ $user->phone ?? "" }}</td>
                                     <td>{{ $user->email }}</td>

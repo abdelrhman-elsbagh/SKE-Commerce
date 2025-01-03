@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
@@ -42,11 +43,9 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'bio' => 'nullable|string',
-            'fee_group_id' => 'required|exists:fee_groups,id',
             'address' => 'nullable|string',
             'date_of_birth' => 'nullable|date',
             'status' => 'nullable|string',
-            'avatar' => 'nullable|image',
             'role' => 'required|exists:roles,id',
         ]);
 
@@ -58,15 +57,13 @@ class UserController extends Controller
             'address' => $request->address,
             'date_of_birth' => $request->date_of_birth,
             'status' => $request->status,
-            'fee_group_id' => $request->fee_group_id,
         ]);
 
-        if ($request->hasFile('avatar')) {
-            $user->addMedia($request->file('avatar'))->toMediaCollection('avatars');
-        }
-
         $role = Role::findById($request->role);
-        $user->syncRoles($role->name);
+        $user->syncRoles([$role->name]);
+
+        Permission::firstOrCreate(['name' => 'admin']);
+        $user->givePermissionTo('admin');
 
         return redirect()->route('users.index')->with('success', 'User created successfully.');
     }

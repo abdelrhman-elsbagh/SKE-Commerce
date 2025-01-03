@@ -20,7 +20,7 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <form id="create-user-form" action="{{ route('users.store') }}" method="POST" enctype="multipart/form-data">
+                        <form id="create-user-form" action="{{ route('users.store') }}" method="POST">
                             @csrf
                             <div class="mb-3">
                                 <label for="name" class="form-label">Name</label>
@@ -43,13 +43,6 @@
                                 <textarea class="form-control" id="bio" name="bio"></textarea>
                             </div>
                             <div class="mb-3">
-                                <label for="address" class="form-label">Country</label>
-                                <select class="form-control" id="address" name="address" required>
-                                    <option value="">Select Country</option>
-                                    <!-- Countries will be loaded here by JavaScript -->
-                                </select>
-                            </div>
-                            <div class="mb-3">
                                 <label for="role_status" class="form-label">Status</label>
                                 <select class="form-control" id="role_status" name="status">
                                     <option value="active">Active</option>
@@ -57,24 +50,10 @@
                                 </select>
                             </div>
                             <div class="mb-3">
-                                <label for="avatar" class="form-label">Avatar</label>
-                                <input type="file" class="form-control" id="avatar" name="avatar" accept="image/*">
-                                <div class="mt-2" id="avatar-preview"></div>
-                            </div>
-                            <div class="mb-3">
                                 <label for="role" class="form-label">Role</label>
                                 <select class="form-control" id="role" name="role" required>
                                     @foreach($roles as $role)
                                         <option value="{{ $role->id }}">{{ $role->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="fee_group" class="form-label">Fee Group</label>
-                                <select class="form-control" id="fee_group" name="fee_group_id">
-                                    <option value="">Select Fee Group</option>
-                                    @foreach($feeGroups as $group)
-                                        <option value="{{ $group->id }}">{{ $group->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -94,22 +73,6 @@
 
     <script>
         $(document).ready(function() {
-            // Load countries from JSON file
-            $.getJSON('{{ asset("assets/countries.json") }}', function(data) {
-                var $countrySelect = $('#address');
-                $.each(data, function(key, entry) {
-                    $countrySelect.append($('<option></option>').attr('value', entry.name).text(entry.name));
-                });
-            });
-
-            $('#avatar').change(function() {
-                let reader = new FileReader();
-                reader.onload = function(e) {
-                    $('#avatar-preview').html('<img src="' + e.target.result + '" alt="Avatar Preview" style="max-width: 200px;">');
-                }
-                reader.readAsDataURL(this.files[0]);
-            });
-
             $('#create-user-form').on('submit', function(e) {
                 e.preventDefault();
 

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="utf-8">
-    <title> {{ $config->name ?? ""  }} - Login</title>
+    <title>{{ $config->name ?? '' }} - @lang('messages.auth.login_title')</title>
     <meta name="author" content="Templines">
     <meta name="description" content="TeamHost">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,11 +20,15 @@
             --main-color: {{ $mainColor ?? $config->main_color ?? '#F46119' }};
         }
     </style>
+
+    @if(app()->getLocale() === 'ar')
+        <link rel="stylesheet" href="{{ asset('assets/css/main-ar.css') }}">
+    @endif
 </head>
 <body class="page-login">
 <div id="page-preloader">
     <div class="preloader-1">
-        <div class="loader-text">Loading</div>
+        <div class="loader-text">@lang('messages.loading')</div>
         <span class="line line-1"></span>
         <span class="line line-2"></span>
         <span class="line line-3"></span>
@@ -46,7 +50,7 @@
                 @else
                     <img class="animation-navspinv" src="{{ asset('assets/img/logo.png')}}" alt="logo">
                 @endif
-                <h2 class="head-login-desc">{{$config->description ?? ""}}</h2>
+                <h2 class="head-login-desc">{{ $config->description ?? '' }}</h2>
             </div>
             <div>
                 <div class="form-login">
@@ -56,28 +60,28 @@
                         </ul>
                     </div>
                     <div class="form-login__box">
-                        <div class="uk-heading-line uk-text-center"><span>or with Email</span></div>
+                        <div class="uk-heading-line uk-text-center"><span>@lang('messages.auth.or_with_email')</span></div>
                         <form action="{{ route('login') }}" method="POST">
                             @csrf
                             <div class="uk-margin">
-                                <input class="uk-input" type="text" name="email" placeholder="Email" value="{{ old('email') }}">
+                                <input class="uk-input" type="text" name="email" placeholder="@lang('messages.auth.email_placeholder')" value="{{ old('email') }}">
                                 @error('email')
                                 <div class="uk-text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="uk-margin">
-                                <input class="uk-input" type="password" name="password" placeholder="Password">
+                                <input class="uk-input" type="password" name="password" placeholder="@lang('messages.auth.password_placeholder')">
                                 @error('password')
                                 <div class="uk-text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="uk-margin">
-                                <button class="uk-button uk-button-danger uk-width-1-1" type="submit">Log In</button>
+                                <button class="uk-button uk-button-danger uk-width-1-1" type="submit">@lang('messages.auth.login_button')</button>
                             </div>
                             <hr>
                             <div class="uk-text-center">
-                                <span>Don’t have an account?</span>
-                                <a class="uk-margin-small-left" href="{{ route('register-page') }}">Register</a>
+                                <span>@lang('messages.auth.dont_have_account')</span>
+                                <a class="uk-margin-small-left" href="{{ route('register-page') }}">@lang('messages.auth.register')</a>
                             </div>
                         </form>
                     </div>

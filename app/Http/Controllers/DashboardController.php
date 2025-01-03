@@ -84,6 +84,15 @@ class DashboardController extends Controller
             ->take(6)
             ->get();
 
+        // Get top selling API sub-items where external_id is not null
+        $topSellingApiSubItems = SubItem::with('item')
+            ->whereNotNull('external_id') // Ensure external_id is not null
+            ->withCount('orderSubItems')
+            ->orderBy('order_sub_items_count', 'desc')
+            ->take(6)
+            ->get();
+
+
         // Get revenue by locations
         $revenueByLocations = User::selectRaw('address, COALESCE(currencies.currency, "USD") as currency, SUM(orders.total) as total_revenue')
             ->join('orders', 'users.id', '=', 'orders.user_id')
@@ -107,6 +116,7 @@ class DashboardController extends Controller
             'currencyData',
             'recentOrders',
             'topSellingSubItems',
+            'topSellingApiSubItems', // New API sub-items
             'revenueByLocations',
             'partnersCount',
             'activePartnersCount',

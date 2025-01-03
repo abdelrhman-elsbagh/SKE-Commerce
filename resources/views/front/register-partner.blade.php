@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="utf-8">
-    <title> {{ $config->name ?? ""  }} - Register</title>
+    <title>{{ $config->name ?? '' }} - @lang('messages.auth.partner_registration')</title>
     <meta name="author" content="Templines">
     <meta name="description" content="TeamHost">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,8 +26,6 @@
             width: 100%;
         }
 
-
-
         .custom-tab li.uk-active a {
             color: var(--main-color); /* Active tab color */
         }
@@ -40,7 +38,9 @@
             --main-color: {{ $mainColor ?? $config->main_color ?? '#F46119' }};
         }
     </style>
-
+    @if(app()->getLocale() === 'ar')
+        <link rel="stylesheet" href="{{ asset('assets/css/main-ar.css') }}">
+    @endif
 </head>
 <body class="page-login">
 <div class="page-wrapper">
@@ -52,7 +52,7 @@
                 @else
                     <img class="animation-navspinv" src="{{ asset('assets/img/logo.png')}}" alt="logo">
                 @endif
-                    <h2 class="head-login-desc">{{$config->description ?? ""}}</h2>
+                <h2 class="head-login-desc">{{ $config->description ?? '' }}</h2>
             </div>
             <div>
                 <div class="form-login">
@@ -62,27 +62,29 @@
                         </ul>
                     </div>
                     <div class="form-login__box">
-                        <div class="uk-heading-line uk-text-center"><span>Partner Registration</span></div>
+                        <div class="uk-heading-line uk-text-center">
+                            <span>@lang('messages.auth.partner_registration')</span>
+                        </div>
                         <form id="partnerRegistrationForm" action="{{ route('partner-register') }}" method="POST">
                             @csrf
                             <div class="uk-margin">
-                                <input class="uk-input" type="text" name="name" placeholder="Name">
+                                <input class="uk-input" type="text" name="name" placeholder="@lang('messages.auth.name_placeholder')">
                                 <div class="uk-text-danger" id="error-name"></div>
                             </div>
                             <div class="uk-margin">
-                                <input class="uk-input" type="email" name="email" placeholder="Email">
+                                <input class="uk-input" type="email" name="email" placeholder="@lang('messages.auth.email_placeholder')">
                                 <div class="uk-text-danger" id="error-email"></div>
                             </div>
                             <div class="uk-margin">
-                                <input class="uk-input" type="text" name="company" placeholder="Company Name">
+                                <input class="uk-input" type="text" name="company" placeholder="@lang('messages.auth.company_placeholder')">
                                 <div class="uk-text-danger" id="error-company"></div>
                             </div>
                             <div class="uk-margin">
-                                <input class="uk-input" type="text" name="domain" placeholder="Your Domain">
-                                <div class="uk-text-danger" id="error-company"></div>
+                                <input class="uk-input" type="text" name="domain" placeholder="@lang('messages.auth.domain_placeholder')">
+                                <div class="uk-text-danger" id="error-domain"></div>
                             </div>
                             <div class="uk-margin">
-                                <input class="uk-input" type="text" name="phone" placeholder="Whatsapp Number">
+                                <input class="uk-input" type="text" name="phone" placeholder="@lang('messages.auth.phone_placeholder')">
                                 <div class="uk-text-danger" id="error-phone"></div>
                             </div>
                             <div class="uk-margin">
@@ -93,24 +95,23 @@
                             </div>
 
                             <div class="uk-margin">
-                                <input class="uk-input" type="password" name="password" placeholder="Password">
+                                <input class="uk-input" type="password" name="password" placeholder="@lang('messages.auth.password_placeholder')">
                                 <div class="uk-text-danger" id="error-password"></div>
                             </div>
                             <div class="uk-margin">
-                                <input class="uk-input" type="password" name="password_confirmation" placeholder="Confirm Password">
+                                <input class="uk-input" type="password" name="password_confirmation" placeholder="@lang('messages.auth.confirm_password_placeholder')">
                                 <div class="uk-text-danger" id="error-password_confirmation"></div>
                             </div>
                             <div class="uk-margin">
-                                <button class="uk-button uk-button-danger uk-width-1-1" type="submit">Register as Partner</button>
+                                <button class="uk-button uk-button-danger uk-width-1-1" type="submit">@lang('messages.auth.register_partner_button')</button>
                             </div>
                             <div class="uk-text-center">
-                                <span>Already have an account?</span>
-                                <a class="uk-margin-small-left" href="{{ route('sign-in') }}">Log In</a>
+                                <span>@lang('messages.auth.already_have_account')</span>
+                                <a class="uk-margin-small-left" href="{{ route('sign-in') }}">@lang('messages.auth.login_button')</a>
                             </div>
                         </form>
                     </div>
                 </div>
-
             </div>
         </div>
     </main>
@@ -184,3 +185,5 @@
 </script>
 <script src="{{ asset('assets/js/libs.js') }}"></script>
 <script src="{{ asset('assets/js/main.js') }}"></script>
+</body>
+</html>

@@ -89,14 +89,22 @@
 
 
                             <div class="mb-3">
-                                <label for="font" class="form-label">Font</label>
+                                <label for="font" class="form-label">English Font</label>
                                 <select class="form-control" id="font" name="font">
-                                    <option value="Nunito" {{ $config->font == 'Nunito' ? 'selected' : '' }}>Nunito ( English )</option>
-                                    <option value="Oswald" {{ $config->font == 'Oswald' ? 'selected' : '' }}>Oswald ( English )</option>
-                                    <option value="Noto Sans" {{ $config->font == 'Noto Sans' ? 'selected' : '' }}>Noto Sans ( English )</option>
-                                    <option value="Raleway" {{ $config->font == 'Raleway' ? 'selected' : '' }}>Raleway ( English )</option>
-                                    <option value="Roboto" {{ $config->font == 'Roboto' ? 'selected' : '' }}>Roboto ( English )</option>
-                                    <option value="Arial" {{ $config->font == 'Arial' ? 'selected' : '' }}>Roboto ( Arabic )</option>
+                                    <option value="Nunito" {{ $config->font == 'Nunito' ? 'selected' : '' }}>Nunito</option>
+                                    <option value="Oswald" {{ $config->font == 'Oswald' ? 'selected' : '' }}>Oswald</option>
+                                    <option value="Noto Sans" {{ $config->font == 'Noto Sans' ? 'selected' : '' }}>Noto Sans</option>
+                                    <option value="Raleway" {{ $config->font == 'Raleway' ? 'selected' : '' }}>Raleway</option>
+                                    <option value="Roboto" {{ $config->font == 'Roboto' ? 'selected' : '' }}>Roboto</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="ar_font" class="form-label">Arabic Font</label>
+                                <select class="form-control" id="ar_font" name="ar_font">
+                                    <option value="Cairo" {{ $config->ar_font == 'Cairo' ? 'selected' : '' }}>Cairo</option>
+                                    <option value="Almarai" {{ $config->ar_font == 'Almarai' ? 'selected' : '' }}>Almarai</option>
+                                    <option value="Amiri" {{ $config->ar_font == 'Amiri' ? 'selected' : '' }}>Amiri</option>
+                                    <option value="Marhey" {{ $config->ar_font == 'Marhey' ? 'selected' : '' }}>Marhey</option>
                                 </select>
                             </div>
                             <div class="mb-3">

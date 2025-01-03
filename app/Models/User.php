@@ -108,8 +108,23 @@ class User extends Authenticatable implements HasMedia
 
     public function hasRole($role)
     {
+        if (is_array($role)) {
+            return $this->roles()->whereIn('name', $role)->exists();
+        }
+
+        if (empty($role) || !is_string($role)) {
+            return false;
+        }
+
         return $this->roles()->where('name', $role)->exists();
     }
+
+//    public function roles(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+//    {
+//        return $this->belongsToMany(Role::class, 'model_has_roles', 'model_id', 'role_id')
+//            ->where('model_type', self::class);
+//    }
+
 
     public function feeGroup()
     {
