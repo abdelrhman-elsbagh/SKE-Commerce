@@ -341,7 +341,7 @@
                             <li id="wallet"><a href="{{route('wallet')}}"><i class="fas fa-wallet"></i><span>@lang('messages.wallet')</span></a></li>
                             <li id="purchase-request"><a href="#modal-purchase-request" data-uk-toggle>
                                     <i class="fas fa-money-bill-wave"></i><span>@lang('messages.purchase_request')</span></a></li>
-                            <li id="payment-methods"><a href="{{ route('payments-page') }}"><i class="fas fa-credit-card"></i><span>@lang('messages.payment_methods')</span></a></li>
+{{--                            <li id="payment-methods"><a href="{{ route('payments-page') }}"><i class="fas fa-credit-card"></i><span>@lang('messages.payment_methods')</span></a></li>--}}
                             <li id="partners"><a href="{{route('partners')}}"><i class="fas fa-id-badge"></i><span>@lang('messages.partners')</span></a></li>
                             <li id="posts"><a href="{{route('posts')}}"><i class="fas fa-tag"></i><span>@lang('messages.posts')</span></a></li>
                             @endif
@@ -420,7 +420,9 @@
                     <div class="uk-form-controls">
                         <select class="uk-select" id="payment_method_id" name="payment_method_id">
                             @foreach($paymentMethods as $paymentMethod)
-                                <option value="{{ $paymentMethod->id }}">
+                                <option value="{{ $paymentMethod->id }}"
+                                        data-image="{{ $paymentMethod->getFirstMediaUrl('payment_method_images') }}"
+                                        data-description="{{ App::getLocale() == 'ar' ? $paymentMethod->ar_description : $paymentMethod->description }}">
                                     @if(App::getLocale() == 'ar')
                                         {{ $paymentMethod->ar_gateway ?? $paymentMethod->gateway }}
                                     @else
@@ -429,6 +431,11 @@
                                 </option>
                             @endforeach
                         </select>
+                        <!-- Area to display selected payment method's media and description -->
+                        <div id="payment_method_details" style="display: none;margin-top: 10px">
+                            <div id="payment_method_image"></div>
+                            <div id="payment_method_description"></div>
+                        </div>
                     </div>
                 </div>
                 <div class="uk-margin">
@@ -554,6 +561,38 @@
             console.log(err.message)
         }
 
+</script>
+
+<script>
+    $(document).ready(function() {
+        // Function to update the payment method details
+        function updatePaymentMethodDetails() {
+            var selectedOption = $('#payment_method_id').find('option:selected');
+            var imageUrl = selectedOption.data('image');
+            var description = selectedOption.data('description');
+
+            // Show the details section
+            $('#payment_method_details').show();
+
+            // Update the image
+            if (imageUrl) {
+                $('#payment_method_image').html('<img src="' + imageUrl + '" alt="Payment Method Image" style="max-width: 200px;">');
+            } else {
+                $('#payment_method_image').html('');
+            }
+
+            // Update the description
+            $('#payment_method_description').html(description ? description : 'No description available');
+        }
+
+        // Trigger on page load to show the details of the initially selected option
+        updatePaymentMethodDetails();
+
+        // Update the details when a different payment method is selected
+        $('#payment_method_id').on('change', function() {
+            updatePaymentMethodDetails();
+        });
+    });
 </script>
 
 @yield('scripts')

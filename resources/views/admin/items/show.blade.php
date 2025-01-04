@@ -48,6 +48,10 @@
                                 @endif
                             </div>
                         </div>
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Rank</label>
+                            <p id="category">{{ $item->order ?? 0 }}</p>
+                        </div>
                         <a href="{{ route('items.index') }}" class="btn btn-secondary">Back</a>
                     </div>
                 </div>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ClientStore;
 use App\Models\DiamondRate;
 use App\Models\Item;
 use App\Models\Category;
@@ -52,7 +53,8 @@ class ItemController extends Controller
     {
         $categories = Category::all();
         $tags = Tag::all();
-        return view('admin.items.create', compact('categories', 'tags'));
+        $itemCount = Item::where('status', 'active')->count();
+        return view('admin.items.create', compact('categories', 'tags', 'itemCount'));
     }
 
     public function store(Request $request)
@@ -114,7 +116,8 @@ class ItemController extends Controller
         $item = Item::with(['subItems', 'subItems.media', 'media'])->findOrFail($id);
         $categories = Category::all();
         $tags = Tag::all();
-        return view('admin.items.edit', compact('item', 'categories', 'tags'));
+        $itemCount = Item::where('status', 'active')->count();
+        return view('admin.items.edit', compact('item', 'categories', 'tags', 'itemCount'));
     }
 
     public function update(Request $request, $id)
@@ -200,7 +203,12 @@ class ItemController extends Controller
         $apiUrl = 'https://api.ekostore.co/client/api/products';
         $apiToken = 'bc249492922515e340088aafc560ff67720ab65ef478ba33';
 
-        $eko_category = Category::firstOrCreate(['name' => 'EkoStore'],
+        $currentOrder = Item::max('order') + 1;
+
+        $eko_domain = ClientStore::updateOrCreate(['domain' => 'https://api.ekostore.co'],
+            ['domain' => 'https://api.ekostore.co', 'status' => 'available', 'name' => 'EkoStore']);
+
+        $eko_category = Category::updateOrCreate(['name' => 'EkoStore'],
             ['description' => 'Imported from EkoStore API', 'status' => 'active', 'name' => 'EkoStore']);
 
         // Fetch data from the API
@@ -214,13 +222,12 @@ class ItemController extends Controller
 
         $products = $response->json();
 
-        foreach ($products as $product) {
+        foreach ($products as $key => $product) {
             // Handle the category (Item in your app)
             $categoryName = $product['category_name'] ?? 'Uncategorized';
             $categoryImage = $product['category_img'];
 
-            // Find or create the category (Item)
-            $item = Item::firstOrCreate(
+            $item = Item::updateOrCreate(
                 ['name' => $categoryName],
                 [
                     'category_id' => $eko_category->id,
@@ -231,6 +238,11 @@ class ItemController extends Controller
                 ]
             );
 
+            if ($item->wasRecentlyCreated && $item->order == 0) {
+                $maxOrder = Item::max('order'); // Get the max existing order value
+                $item->update(['order' => $maxOrder + 1]); // Set the order to max + 1
+            }
+
             // Attach category image if available
             if ($categoryImage && !$item->getFirstMediaUrl('images')) {
                 $item->addMediaFromUrl($categoryImage)->toMediaCollection('images');
@@ -240,6 +252,7 @@ class ItemController extends Controller
                 $item->addMediaFromUrl($categoryImage)->toMediaCollection('front_image');
             }
 
+            $subItemOrder = $key + 1;
             // Handle the sub-item
             SubItem::updateOrCreate(
                 ['external_id' => $product['id']], // Match by external ID
@@ -249,13 +262,16 @@ class ItemController extends Controller
                     'description' => implode(', ', $product['params']),
                     'amount' => $product['qty_values']['min'] ?? 0,
                     'price' => $product['price'],
-                    'original_price' => $product['base_price'],
+                    'original_price' => $product['price'],
                     'status' => $product['available'] ? 'active' : 'inactive',
-                    'is_custom' => $product['product_type'] === 'amount' ? 1 : 0,
+                    'is_custom' => 1,
                     'minimum_amount' => $product['qty_values']['min'] ?? null,
                     'max_amount' => $product['qty_values']['max'] ?? null,
                     'product_type' => $product['product_type']?? null,
                     'domain' => 'https://api.ekostore.co',
+                    'client_store_id' => $eko_domain->id,
+                    'order' => $subItemOrder,
+                    'out_flag' => 1,
                 ]
             );
         }

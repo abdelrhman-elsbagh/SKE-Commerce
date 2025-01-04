@@ -36,6 +36,7 @@
                                 <th>Description</th>
                                 <th>Category</th>
                                 <th>Tags</th>
+                                <th>Rank</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
@@ -56,6 +57,7 @@
                                             <span class="badge bg-primary">{{ $tag->name . ($tag->ar_name ? ' - ' . $tag->ar_name : '') }}</span>
                                         @endforeach
                                     </td>
+                                    <td>{{ $item->order ?? 0 }}</td>
                                     <td>
                                         <a href="{{ route('items.show', $item->id) }}" class="btn btn-info"><i class="ri-eye-line"></i></a>
                                         <a href="{{ route('items.edit', $item->id) }}" class="btn btn-warning"><i class="ri-edit-box-fill"></i></a>

@@ -44,7 +44,11 @@ class HomeController extends Controller
     {
         $sliders = Slider::with('media')->get();
         $config = Config::with('media')->first();
-        $items = Item::with('category', 'media')->get();
+        $items = Item::with('category', 'media')
+            ->orderBy('order')         // Sort by order
+            ->orderBy('updated_at', 'desc') // Sort by updated_at for items with same order
+            ->get();
+//        $items = Item::with('category', 'media')->get();
         $news = News::first();
 
         $user = Auth::guard('web')->user();
@@ -72,11 +76,33 @@ class HomeController extends Controller
         View::share('config', $config);
         View::share('favoritesCount', $favoritesCount);
 
-        $categorizedItems = $items->groupBy(function ($item) {
-            return App::getLocale() === 'ar' && $item->category->ar_name
-                ? $item->category->ar_name // Use Arabic category name if the language is Arabic
-                : $item->category->name;
+
+//        $categorizedItems = $items->groupBy(function ($item) {
+//            return App::getLocale() === 'ar' && $item->category->ar_name
+//                ? $item->category->ar_name // Use Arabic category name if the language is Arabic
+//                : $item->category->name;
+//        });
+
+        $categorizedItems = $items
+            // First, sort the items by order and updated_at
+            ->sortBy(function ($item) {
+                return [$item->order, $item->updated_at];
+            })
+            // Then, group by category name
+            ->groupBy(function ($item) {
+                return App::getLocale() === 'ar' && $item->category->ar_name
+                    ? $item->category->ar_name // Use Arabic category name if the language is Arabic
+                    : $item->category->name;
+            });
+
+        // Now sort the categories by the order and updated_at of the first item in the group
+        $categorizedItems = $categorizedItems->sortBy(function ($items, $categoryName) {
+            // Get the first item in the group to access the category order and updated_at
+            $category = $items->first()->category;
+            return [$category->order, $category->updated_at];  // Sort categories by order and updated_at
         });
+
+
 
         $locale = app()->getLocale(); // Get the current locale
         $footerItems = Footer::with('media')->get()->groupBy(function ($item) use ($locale) {

@@ -62,6 +62,14 @@
                                 </select>
                             </div>
                             <div class="mb-3">
+                                <label for="order" class="form-label">Order</label>
+                                <select class="form-control" id="order" name="order">
+                                    @for ($i = 1; $i <= $categoryCount + 1; $i++)
+                                        <option value="{{ $i }}">{{ $i }}</option>
+                                    @endfor
+                                </select>
+                            </div>
+                            <div class="mb-3">
                                 <label for="status_type" class="form-label">Status</label>
                                 <select class="form-control" id="status_type" name="status">
                                     <option value="active" {{ (isset($item) && $item->status == 'active') ? 'selected' : '' }}>Active</option>

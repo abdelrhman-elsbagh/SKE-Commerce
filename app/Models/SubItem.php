@@ -33,6 +33,8 @@ class SubItem extends Model implements HasMedia
         'client_store_id',
         'status',
         'product_type',
+        'order',
+        'out_flag',
     ];
 
     public function clientStore()

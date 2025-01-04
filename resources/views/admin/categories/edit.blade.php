@@ -32,6 +32,15 @@
                                 <input type="text" class="form-control" id="ar_name" name="ar_name" value="{{ $category->ar_name }}">
                             </div>
 
+                            <div class="mb-3">
+                                <label for="order" class="form-label">Order</label>
+                                <select class="form-control" id="order" name="order">
+                                    @for ($i = 1; $i <= $categoryCount; $i++)
+                                        <option value="{{ $i }}" {{ $category->order == $i ? 'selected' : '' }}>{{ $i }}</option>
+                                    @endfor
+                                </select>
+                            </div>
+
                             <button type="submit" class="btn btn-primary">Update</button>
                         </form>
                     </div>

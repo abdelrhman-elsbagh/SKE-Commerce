@@ -20,7 +20,8 @@ class CategoryController extends Controller
 
     public function create()
     {
-        return view('admin.categories.create');
+        $categoryCount = Category::count(); // Retrieve only the count of categories
+        return view('admin.categories.create', compact('categoryCount'));
     }
 
     public function store(Request $request)
@@ -39,7 +40,9 @@ class CategoryController extends Controller
 
     public function edit($id)
     {
-        return view('admin.categories.edit', ['category' => Category::findOrFail($id)]);
+        $category = Category::findOrFail($id);
+        $categoryCount = Category::count(); // Retrieve the total count of categories
+        return view('admin.categories.edit', compact('category', 'categoryCount'));
     }
 
     public function update(Request $request, $id)

@@ -78,7 +78,7 @@ Route::middleware(['auth', 'role:User', 'SetLocale'])->group(function () {
     Route::get('posts', [HomeController::class, 'posts'])->name('posts');
     Route::get('wallet', [HomeController::class, 'wallet'])->name('wallet');
     Route::get('partners', [HomeController::class, 'partners'])->name('partners');
-    Route::get('payment-methods', [HomeController::class, 'payment_methods'])->name('payments-page');
+//    Route::get('payment-methods', [HomeController::class, 'payment_methods'])->name('payments-page');
     Route::get('/page/{slug}', [HomeController::class, 'showPageBySlug'])->name('page');
     Route::get('terms-conditions', [HomeController::class, 'terms_page'])->name('terms-page');
     Route::get('/item/{id}', [HomeController::class, 'item'])->name('item.show');

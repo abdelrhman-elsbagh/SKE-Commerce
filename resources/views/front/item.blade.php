@@ -85,7 +85,7 @@
                                                     <div class="uk-card-footer" style="text-align: center;border-top: 0;padding: 10px 20px; ">
                                                         <p>
                                                         </p>
-                                                        <span class="uk-text-bold main-color" style=" font-size: 18px;">Custom Amount</span>
+                                                        <span class="uk-text-bold main-color" style=" font-size: 16px;">Custom Amount</span>
                                                         <i class="fas fa-heart fa-1x heart-icon" style="color: {{ $isFavorited ? '#f46119' : '#ccc' }}; position: absolute; top: 10px; left: 10px;"></i>
                                                     </div>
                                                     <div class="selected-icon" style="display: none; position: absolute; top: 10px; right: 10px; color: #f46119;">
@@ -125,6 +125,7 @@
                     </div>
                     <div class="game-profile-card__intro">
                         <span>{{ App::getLocale() == 'ar' && $item->ar_description ? $item->ar_description : $item->name }}</span>
+                        <span id="item_name_service" style="display: none">{{ App::getLocale() == 'ar' ? $item->ar_name : $item->name }}</span>
                     </div>
                     <ul class="game-profile-card__list list-inline">
                         @foreach($item->tags as $tag)
@@ -192,6 +193,7 @@
         document.addEventListener('DOMContentLoaded', function () {
             const customAmountContainer = $('#customAmountContainer');
             const customAmountInput = $('#customAmount');
+            const serviceInput = $('#service_id');
             const priceElement = $('.game-profile-price__value');
             let basePrice = 0; // Initialize the base price
             let unitAmount = 0; // Initialize the base amount unit
@@ -205,9 +207,12 @@
                 const maxAmount = $(this).data('max-amount');
                 basePrice = parseFloat($(this).data('price')); // Get the base price
                 unitAmount = parseFloat($(this).data('amount')); // Get the base unit amount
-
+                let desc_data = $(this).find(".item-detail-desc").html() ?? "";
+                let item_name = $("#item_name_service").html() ?? "";
                 // Set selected sub-item ID
                 $('#selectedSubItemId').val($(this).data('id'));
+
+                serviceInput.attr('placeholder', `Please Enter ${desc_data} For " ${item_name} "`);
 
                 // Show or hide the custom amount input based on is_custom
                 if (isCustom) {

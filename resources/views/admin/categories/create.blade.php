@@ -30,6 +30,15 @@
                                 <label for="ar_name" class="form-label">Arabic Name</label>
                                 <input type="text" class="form-control" id="ar_name" name="ar_name">
                             </div>
+                            <div class="mb-3">
+                                <label for="order" class="form-label">Order</label>
+                                <select class="form-control" id="order" name="order">
+                                    @for ($i = 1; $i <= $itemCount + 1; $i++)
+                                        <option value="{{ $i }}">{{ $i }}</option>
+                                    @endfor
+                                </select>
+                            </div>
+
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </form>
                     </div>
