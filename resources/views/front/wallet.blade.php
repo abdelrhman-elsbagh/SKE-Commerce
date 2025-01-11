@@ -109,6 +109,11 @@
                     <div class="widjet__head" style="margin-top: 20px">
                         <h3 class="uk-text-lead">@lang('messages.recent_orders')</h3>
                     </div>
+                    <div class="d-flex justify-content-around my-3" style="margin-bottom: 10px">
+                        <input type="date" id="start-date" value="{{$startDate}}" class="form-control" placeholder="@lang('messages.wallet_filter.start_date')">
+                        <input type="date" id="end-date" value="{{$endDate}}" class="form-control" placeholder="@lang('messages.wallet_filter.end_date')">
+                        <button class="btn btn-primary" id="filter-date-btn" style="font-size: 12px">@lang('messages.wallet_filter.apply_date_filter')</button>
+                    </div>
                     <input type="text" id="search-orders" class="form-control uk-input" placeholder="@lang('messages.search_orders_placeholder')">
                     <div class="d-flex justify-content-around my-3" style="margin-bottom: 10px">
                         <button class="btn btn-outline-primary filter-btn wallet-filter-all" data-status="all">
@@ -127,81 +132,9 @@
                             <i class="bi bi-x-circle fs-16 icon-search"></i>
                         </button>
                     </div>
-                    <div class="widjet__body">
-                        <ul class="activities-list" id="orders-list" style="max-height: 400px; overflow: scroll;">
-                            @foreach($orders as $order)
-                                @php
-                                    $orderSubItem = $order->subItems->first(); // Assuming there's at least one subItem
-                                    $subItem = $orderSubItem->subItem ?? null;
-                                    $item = $subItem->item ?? null;
-                                @endphp
-                                <li class="activities-item" data-id="{{ $order->id }}" data-name="{{ $item->name ?? 'Unknown Item' }}" data-status="{{ $order->status }}">
-                                    <div class="activities-item__logo">
 
-                                        @if(optional($item)->getFirstMediaUrl('front_image'))
-                                            <a href="{{ route('item.show', ['id' => $item->id]) }}">
-                                                @if($item->getFirstMediaUrl('front_image'))
-                                                    <img src="{{ $item->getFirstMediaUrl('front_image') }}" alt="{{ $order->item_name ?? "" }}" style="height: 100%">
-                                                @endif
-                                            </a>
-                                        @else
-                                            @if($item)
-                                                <a href="{{ route('item.show', ['id' => $item->id]) }}">
-                                                    @if($item->getFirstMediaUrl('images'))
-                                                        <img src="{{ $item->getFirstMediaUrl('images') }}" alt="{{ $order->item_name ?? "" }}" style="height: 100%">
-                                                    @else
-                                                        <img src="{{ asset('assets/img/default-image.jpg') }}" alt="Default Image">
-                                                    @endif
-                                                </a>
-                                            @else
-                                                <img src="{{ asset('assets/img/default-image.jpg') }}" alt="Default Image">
-                                            @endif
-                                        @endif
-
-
-                                    </div>
-                                    <div class="activities-item__info">
-                                        @if($item)
-                                            <a class="activities-item__title" href="{{ route('item.show', ['id' => $item->id]) }}">
-                                                {{ $order->item_name ?? "" }}
-                                            </a>
-                                        @else
-                                            <div class="activities-item__title">{{ $order->item_name ?? "" }}</div>
-                                        @endif
-                                            <div class="activities-item__date">@lang('messages.order_activity.order_id'): #{{ $order->id }}</div>
-                                            <div class="activities-item__date">@lang('messages.order_activity.price'): {{ $order->total ?? "0" }} {{ $user->currency->currency ?? "USD" }}</div>
-                                            <div class="activities-item__date">@lang('messages.order_activity.service_id'): #{{ $order->service_id ?? "" }}</div>
-                                            <div class="activities-item__date">@lang('messages.order_activity.amount'): {{ $order->amount ?? "" }}</div>
-                                            <div class="activities-item__date">{{ $order->created_at->format('d M, Y - H:i') }}</div>
-                                            <div class="activities-item__status">
-                                                @if($order->status == 'canceled' || $order->status == 'refunded')
-                                                    <span class="badge bg-danger-subtle text-danger rounded-pill item__status">
-            @lang('messages.order_activity.status.' . $order->status)
-                                                        @if($order->created_at != $order->updated_at)
-                                                            <span>{{$order->updated_at ?? ""}}</span>
-                                                        @endif
-        </span>
-                                                @elseif($order->status == 'active')
-                                                    <span class="badge bg-success-subtle text-success rounded-pill item__status">
-            @lang('messages.order_activity.status.' . $order->status)
-                                                        @if($order->created_at != $order->updated_at)
-                                                            <span>{{$order->updated_at ?? ""}}</span>
-                                                        @endif
-        </span>
-                                                @else
-                                                    <span class="badge bg-warning-subtle text-secondary rounded-pill item__status">
-            @lang('messages.order_activity.status.' . $order->status)
-                                                        @if($order->created_at != $order->updated_at)
-                                                            <span>{{$order->updated_at ?? ""}}</span>
-                                                        @endif
-        </span>
-                                                @endif
-                                            </div>
-                                    </div>
-                                    <div class="activities-item__price">{{ number_format($order->total ?? 0, 2) }} {{ $user->currency->currency ?? "USD" }}</div>
-                                </li>
-                            @endforeach
-                        </ul>
+                    <div class="widjet__body" id="orders-list-container">
+                        @include('partials.orders_list', ['orders' => $orders])
                     </div>
                 </div>
             </div>
@@ -212,6 +145,30 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
+
+            document.getElementById('filter-date-btn').addEventListener('click', function () {
+                const startDate = document.getElementById('start-date').value;
+                const endDate = document.getElementById('end-date').value;
+
+                if (!startDate || !endDate) {
+                    toastr.error('Please select both start and end dates.');
+                    return;
+                }
+
+                $.ajax({
+                    url: '{{ route("wallet") }}',
+                    method: 'GET',
+                    data: { start_date: startDate, end_date: endDate },
+                    success: function (response) {
+                        $('#orders-list-container').html(response.html);
+                        toastr.success('Filter applied successfully.');
+                    },
+                    error: function () {
+                        toastr.error('An error occurred while applying the filter.');
+                    }
+                });
+            });
+
             // Equal height for cards
             function setEqualHeight() {
                 var maxHeight = 0;

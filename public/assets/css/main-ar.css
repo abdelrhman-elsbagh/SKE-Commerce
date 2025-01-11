@@ -146,3 +146,10 @@ body{
     margin-right: 0;
     margin-left: 20px;
 }
+
+
+#copy_description{
+    top: 0;
+    right: auto;
+    left: 0;
+}

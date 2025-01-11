@@ -8,6 +8,17 @@
  background: var(--main-color)
 }
 
+.whole-item-card{
+    overflow: hidden;
+}
+.item-detail-desc {
+    display: none;
+}
+
+.hidden-overflow {
+    overflow: hidden;
+}
+
 .head-login-desc {
     color: #FFF;
     font-weight: 400;
@@ -27,6 +38,23 @@
 
 .disabled-link {
     cursor: not-allowed;
+}
+
+#copy_payment_icon{
+    color: #079992;
+}
+
+#payment_method_description{
+    height: 100px;
+    overflow: hidden;
+}
+#copy_description{
+    position: absolute;
+    top: 0;
+    right: 5px;
+    background: none;
+    border: none;
+    padding: 0;
 }
 
 [class^="ico_"],
@@ -6054,6 +6082,24 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
     font-size: 14px !important;
 }
 
+.btn-primary {
+    color: #FFF;
+    border-color: var(--main-color);
+    display: inline-block;
+    font-weight: 400;
+    line-height: 1.5;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: middle;
+    cursor: pointer;
+    background-color: var(--main-color);
+    border: 1px solid;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    border-radius: 0.375rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
 .btn-outline-primary {
     color: var(--main-color);
     border-color: var(--main-color);
@@ -6406,4 +6452,5 @@ body.dark-theme .content.custom-page-content *{
         padding-left: 0;
     }
 }
+
 

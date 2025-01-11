@@ -49,6 +49,10 @@
                                 <th>Status</th>
                                 <td>{{ ucfirst($order->status) }}</td>
                             </tr>
+                            <tr>
+                                <th>Reply Msg</th>
+                                <td>{{ ucfirst($order->reply_msg ?? "") }}</td>
+                            </tr>
                         </table>
 
                         <h5>Sub Items</h5>

@@ -28,6 +28,7 @@ return [
     'select_product_first' => 'Please select a product first.',
     'error_processing_request' => 'There was an error processing your request.',
     'loading' => 'Loading',
+    'copy_clipboard' => 'Details copied to clipboard!',
     'auth' => [
         'api' => 'API',
         'login_title' => 'Login',
@@ -97,6 +98,11 @@ return [
         'active' => 'Active',
         'pending' => 'Pending',
         'refunded' => 'Refunded',
+        'start_date' => 'Start Date',
+        'end_date' => 'End Date',
+        'apply_date_filter' => 'Apply Filter',
+        'date_error' => 'Please select both start and end dates.',
+        'error_processing' => 'Error processing the request.',
     ],
     'purchase_request_modal' => [
         'purchase_request' => 'Purchase Request',

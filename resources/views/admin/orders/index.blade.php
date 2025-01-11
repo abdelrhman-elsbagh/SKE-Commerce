@@ -80,6 +80,7 @@
                                 <th>Debit balance</th>
                                 <th>Updated At</th>
                                 <th>Status</th>
+                                <th>Reply Msg</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
@@ -120,7 +121,7 @@
                                     <td>{{ $order->item_price ?? "" }}</td>
                                     <td>
                                         @if($order->user->feeGroup)
-                                            <span class="badge bg-info-subtle text-info rounded-pill">{{ $order->fee_name ?? "" }} , {{ $order->item_fee . "%" ?? ""}}</span>
+                                            <span class="badge bg-info-subtle text-info rounded-pill">{{ $order->fee_name ?? "" }} , {{ $order->user->feeGroup->fee . "%" ?? ""}}</span>
                                         @endif
                                             <span class="badge bg-success-subtle text-success rounded-pill">{{ number_format($feeAmount, 2) }} {{ $order->user->currency->currency ?? "USD" }}</span>
 
@@ -137,7 +138,7 @@
                                     </td>
                                     <td>{{ $order->updated_at->format('Y-m-d H:i:s') }}</td>
                                     <td>
-                                        @if($order->status == 'canceled' || $order->status == 'refunded')
+                                        @if($order->status == 'canceled' || $order->status == 'refunded'|| $order->status == 'reject')
                                             <span class="badge bg-danger-subtle text-danger rounded-pill">
                                                 {{ ucfirst($order->status) }}
                                                 <i class="ri-close-circle-line ms-1 fs-14"></i>
@@ -154,6 +155,7 @@
                                             </span>
                                         @endif
                                     </td>
+                                    <td>{{ $order->reply_msg ?? "" }}</td>
                                     <td>
                                         <a href="{{ route('orders.show', $order->id) }}" class="btn btn-info"><i class=" ri-eye-line"></i></a>
                                         <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-warning"><i class="ri-edit-box-fill"></i></a>

@@ -19,6 +19,7 @@ use App\Models\Partner;
 use App\Models\PaymentMethod;
 use App\Models\Plan;
 use App\Models\Post;
+use App\Models\ResponsesLog;
 use App\Models\Slider;
 use App\Models\SubItem;
 use App\Models\TermsConditions;
@@ -137,7 +138,6 @@ class HomeController extends Controller
             'footerItems' => $footerItems,
         ]);
     }
-
     public function wallet(Request $request)
     {
         $config = Config::with('media')->first();
@@ -152,14 +152,35 @@ class HomeController extends Controller
         View::share('favoritesCount', $favoritesCount);
 
         $wallet = UserWallet::where('user_id', $user->id)->firstOrFail();
-        $orders = $user->orders()->with('subItems.subItem.item.media')->orderBy('created_at', 'DESC')->get();
-        $activeOrders = $user->orders()->with('subItems.subItem.item.media')->where('status', 'active')->get();
+
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
+        $ordersQuery = $user->orders()->with('subItems.subItem.item.media')->orderBy('created_at', 'DESC');
+
+        // If no date range is provided, filter orders for the current month
+        if (!$startDate && !$endDate) {
+            $startDate = now()->today()->toDateString();
+            $endDate = now()->endOfMonth()->toDateString();
+        }
+
+        // Apply the date range filter
+        if ($startDate && $endDate) {
+            $ordersQuery->whereBetween('created_at', [$startDate, $endDate]);
+        }
+
+        $orders = $ordersQuery->get();
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('partials.orders_list', compact('orders', 'user'))->render(),
+            ]);
+        }
+
+        $activeOrders = $orders->where('status', 'active');
         $purchaseRequests = $user->purchaseRequests()->with('paymentMethod')->latest()->take(5)->get();
 
-        // Calculate total money of orders
         $totalOrderMoney = $activeOrders->sum('total');
-
-        // Calculate total amount of purchase requests
         $approvedPurchaseRequests = $user->purchaseRequests()
             ->with('paymentMethod')
             ->where('status', 'approved')
@@ -168,10 +189,7 @@ class HomeController extends Controller
 
         $paymentMethods = PaymentMethod::where('status', 'active')->orderBy('created_at', 'DESC')->get();
 
-        $feeGroup = null;
-        if($user->feeGroup) {
-            $feeGroup = $user->feeGroup;
-        }
+        $feeGroup = $user->feeGroup ?? null;
 
         return view('front.wallet', [
             'wallet' => $wallet,
@@ -182,9 +200,58 @@ class HomeController extends Controller
             'totalPurchaseRequestAmount' => $totalPurchaseRequestAmount,
             'user' => $user,
             'feeGroup' => $feeGroup,
-
+            'endDate' => $endDate,
+            'startDate' => $startDate,
         ]);
     }
+
+//    public function wallet(Request $request)
+//    {
+//        $config = Config::with('media')->first();
+//        View::share('config', $config);
+//
+//        $user = Auth::user();
+//        if (!$user) {
+//            return redirect()->route('login');
+//        }
+//
+//        $favoritesCount = $user->favorites()->count();
+//        View::share('favoritesCount', $favoritesCount);
+//
+//        $wallet = UserWallet::where('user_id', $user->id)->firstOrFail();
+//        $orders = $user->orders()->with('subItems.subItem.item.media')->orderBy('created_at', 'DESC')->get();
+//        $activeOrders = $user->orders()->with('subItems.subItem.item.media')->where('status', 'active')->get();
+//        $purchaseRequests = $user->purchaseRequests()->with('paymentMethod')->latest()->take(5)->get();
+//
+//        // Calculate total money of orders
+//        $totalOrderMoney = $activeOrders->sum('total');
+//
+//        // Calculate total amount of purchase requests
+//        $approvedPurchaseRequests = $user->purchaseRequests()
+//            ->with('paymentMethod')
+//            ->where('status', 'approved')
+//            ->get();
+//        $totalPurchaseRequestAmount = $approvedPurchaseRequests->sum('amount');
+//
+//        $paymentMethods = PaymentMethod::where('status', 'active')->orderBy('created_at', 'DESC')->get();
+//
+//        $feeGroup = null;
+//        if($user->feeGroup) {
+//            $feeGroup = $user->feeGroup;
+//        }
+//
+//        return view('front.wallet', [
+//            'wallet' => $wallet,
+//            'orders' => $orders,
+//            'purchaseRequests' => $purchaseRequests,
+//            'paymentMethods' => $paymentMethods,
+//            'totalOrderMoney' => $totalOrderMoney,
+//            'totalPurchaseRequestAmount' => $totalPurchaseRequestAmount,
+//            'user' => $user,
+//            'feeGroup' => $feeGroup,
+//
+//        ]);
+//    }
     public function posts(Request $request)
     {
         $config = Config::with('media')->first();
@@ -482,6 +549,7 @@ class HomeController extends Controller
 
         // Retrieve the selected sub-item
         $subItem = SubItem::findOrFail($request->sub_item_id);
+        $orderUuid = (string) Str::uuid();
 
         $user = Auth::user();
         if (!$user) {
@@ -503,8 +571,6 @@ class HomeController extends Controller
             $currencyPrice = $user->currency->price;
         }
 
-
-
         // Retrieve the fee percentage from the config
         $config = Config::first();
         $fee_name = "Default";
@@ -514,12 +580,20 @@ class HomeController extends Controller
         }
         $feePercentage = $config->fee;
 
-        $sub_price = $subItem->price * $currencyPrice;
-        $fe_price = round($sub_price * $feePercentage / 100, 2);
+        $sub_price = floatval($subItem->price * $currencyPrice);
+        $fe_price = floatval($sub_price * $feePercentage / 100);
+
+        $totalPrice = $sub_price + $fe_price;
+
+        // Check if the user has enough balance
+        if ($wallet->balance < $totalPrice) {
+            return response()->json(['success' => false, 'message' => 'Insufficient balance in wallet'], 400);
+        }
+
 
         $external_order_id = 0;
         // Check if the sub-item is external
-        if ($subItem->external_id) {
+        if ($subItem->external_id && !$subItem->out_flag) {
             // External item logic
             try {
                 // Call the external API (storeApiOrder)
@@ -536,25 +610,62 @@ class HomeController extends Controller
                 return response()->json(['success' => false, 'message' => 'Error processing external sub-item'], 500);
             }
         }
+
+        if ($subItem->external_id && $subItem->out_flag) {
+            try {
+                // Prepare the external API request data
+                $apiToken = 'bc249492922515e340088aafc560ff67720ab65ef478ba33';
+                $quantity = $request->custom_amount ?? $subItem->amount;
+                $serviceId = $request->service_id;
+
+                $url = "https://api.ekostore.co/client/api/newOrder/{$subItem->external_id}/params";
+                $queryParams = [
+                    'qty' => $quantity,
+                    'playerId' => $serviceId,
+                    'order_uuid' => $orderUuid,
+                ];
+
+                $response = Http::withHeaders([
+                    'api-token' => $apiToken,
+                ])->get($url, $queryParams);
+
+                try {
+                    ResponsesLog::create([
+                        'type' => 'API Response',
+                        'request_data' => json_encode($request->all()),
+                        'response_data' => json_encode($response->json()),
+                        'error_message' => $response->failed() ? 'Failed to process request' : null,
+                    ]);
+                }
+                catch (\Exception $e) {Log::error($e->getMessage());}
+
+                // Check the response
+                if ($response->successful()) {
+                    $responseData = $response->json();
+                    $external_order_id = $responseData['data']['order_id'] ?? null;
+                } else {
+                    return response()->json(['success' => false, 'message' => 'Failed to communicate with external API'], 500);
+                }
+            } catch (\Exception $e) {
+                Log::error('External API error: ' . $e->getMessage());
+                return response()->json(['success' => false, 'message' => 'Error processing external API request'], 500);
+            }
+        }
+
         $order_amount = $subItem->amount;
 
         if ($subItem->is_custom == 1) {
-            $fe_price = round($sub_price * $feePercentage / 100, 2);
+            $fe_price = floatval($sub_price * $feePercentage / 100);
             $order_amount = $request->custom_amount;
             $unitAmount = $subItem->amount; // Each 100 units
             $basePrice = $subItem->price; // Price for each 100 units
 
             // Calculate price based on custom amount
             $sub_price = ($order_amount / $unitAmount) * $basePrice;
-            $fe_price = round($sub_price * $feePercentage / 100, 2);
+            $fe_price = floatval($sub_price * $feePercentage / 100);
         }
 
-        $totalPrice = $sub_price + $fe_price;
 
-        // Check if the user has enough balance
-        if ($wallet->balance < $totalPrice) {
-            return response()->json(['success' => false, 'message' => 'Insufficient balance in wallet 0'], 400);
-        }
 
         // Deduct the amount from the user's wallet
         $before_balance = $wallet->balance;
@@ -588,6 +699,7 @@ class HomeController extends Controller
             'is_external' => $subItem->external_id ? true : false,
             'order_type' => $order_type,
             'external_order_id' => $external_order_id ?? null,
+            'uuid' => $orderUuid,
 
         ];
 
@@ -756,13 +868,15 @@ class HomeController extends Controller
             $currencyPrice = $user->currency->price;
             foreach ($item->subItems as $subItem) {
                 // If the subItem has an external_id, fetch price and amount from external API
-                if ($subItem->external_id) {
+                if ($subItem->external_id && !$subItem->out_flag) {
                     // Construct the full URL by combining the domain and the API path
                     $url = $subItem->domain . '/api/fetch-sub-item';
 
                     $external_usr_secret = $subItem->clientStore->secret_key ?? null;
                     $own_usr_secret = User::where('id', $subItem->user_id)->first()->secret_key ?? null;
-                    $fe_amount = round($subItem->fee_amount, 2);
+//                    $fe_amount = round($subItem->fee_amount, 2);
+                    $fe_amount = floatval($subItem->fee_amount);
+
 
                     // Prepare the data to match the cURL request format
                     $data = [
@@ -789,7 +903,7 @@ class HomeController extends Controller
                     }
                 } else {
                     // Regular price adjustment based on user currency
-                    $subItem->price = $subItem->price * $currencyPrice;
+                    $subItem->price = floatval($subItem->price * $currencyPrice);
                 }
             }
         }

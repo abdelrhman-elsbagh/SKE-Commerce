@@ -18,6 +18,39 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class OrderController extends Controller
 {
+//    public function index(Request $request)
+//    {
+//        $query = Order::with(['user', 'subItems.subItem'])->orderBy('created_at', 'DESC');
+//
+//        if ($request->has('status') && $request->status != '') {
+//            $query->where('status', $request->status);
+//        }
+//
+//        if ($request->has('start_date') && $request->has('end_date')) {
+//            $startDate = $request->start_date;
+//            $endDate = $request->end_date;
+//            $query->whereBetween('created_at', [$startDate, $endDate]);
+//        }
+//
+//        $orders = $query->get();
+//
+//        foreach ($orders as $order) {
+//            if ($order->is_external == 1) {
+//                // Check if the related subItem and clientStore exists, then update the external order
+//                $domain = $order->subItems->first()->subItem->clientStore->domain ?? "";
+//                if ($domain) {
+//                    $response = self::updateOrder($domain, $order->id, $order->external_order_id);
+//                }
+//            }
+//        }
+//
+//        return view('admin.orders.index', compact('orders'))->with([
+//            'statusFilter' => $request->status,
+//            'startDate' => $request->start_date,
+//            'endDate' => $request->end_date
+//        ]);
+//    }
+
     public function index(Request $request)
     {
         $query = Order::with(['user', 'subItems.subItem'])->orderBy('created_at', 'DESC');
@@ -35,11 +68,69 @@ class OrderController extends Controller
         $orders = $query->get();
 
         foreach ($orders as $order) {
-            if ($order->is_external == 1) {
-                // Check if the related subItem and clientStore exists, then update the external order
-                $domain = $order->subItems->first()->subItem->clientStore->domain ?? "";
-                if ($domain) {
-                    $response = self::updateOrder($domain, $order->id, $order->external_order_id);
+            if ($order->is_external == 1 && $order->external_order_id && $order->subItem->out_flag == 1) {
+                // Prepare the API URL and headers
+                $url = "https://api.ekostore.co/client/api/check";
+                $headers = [
+                    'api-token' => 'bc249492922515e340088aafc560ff67720ab65ef478ba33',
+                ];
+
+                $originalStatus = $order->status;
+
+                // API call
+                $response = Http::withHeaders($headers)->get($url, [
+                    'orders' => "[$order->external_order_id]",
+                ]);
+
+                if ($response->ok()) {
+                    $responseData = $response->json();
+
+
+                    // Update the external order status
+                    if (isset($responseData['data'][0]['order_id'])) {
+                        $order->reply_msg = $responseData['data'][0]['replay_api'][0] ?? null;
+                        $status = $responseData['data'][0]['status'] ?? "Error";
+
+                        $order->status = $status === 'wait'
+                            ? 'pending'
+                            : ($status === 'reject'
+                                ? 'refunded'
+                                : ($status === 'accept'
+                                    ? 'active'
+                                    : $status));
+
+                        $order->save();
+                    }
+
+                    if (($originalStatus === 'active' && $order->status === 'refunded') ||
+                        ($originalStatus === 'pending' && $order->status === 'refunded')||
+                        ($originalStatus === 'pending' && $order->status === 'reject')||
+                        ($originalStatus === 'wait' && $order->status === 'reject')||
+                        ($originalStatus === 'active' && $order->status === 'reject')||
+                        ($originalStatus === 'accept' && $order->status === 'reject'))
+                    {
+                        $this->refundOrderAmount($order);
+                    }
+
+                    if( ($originalStatus === 'accept' && $order->status === 'reject')||
+                        ($originalStatus === 'active' && $order->status === 'reject')){
+                        $order->reply_msg = "برجاء مراجعة الطلب شخصيا";
+                        $order->save();
+                    }
+
+                    // Log the response
+                    \App\Models\ResponsesLog::create([
+                        'type' => 'order_update',
+                        'request_data' => ['orders' => $order->external_order_id],
+                        'response_data' => $responseData,
+                    ]);
+                } else {
+                    // Log the error response
+                    \App\Models\ResponsesLog::create([
+                        'type' => 'order_update_error',
+                        'request_data' => ['orders' => $order->external_order_id],
+                        'error_message' => $response->body(),
+                    ]);
                 }
             }
         }
@@ -47,9 +138,10 @@ class OrderController extends Controller
         return view('admin.orders.index', compact('orders'))->with([
             'statusFilter' => $request->status,
             'startDate' => $request->start_date,
-            'endDate' => $request->end_date
+            'endDate' => $request->end_date,
         ]);
     }
+
 
 
 
@@ -85,7 +177,10 @@ class OrderController extends Controller
 
         // Check if status was changed from 'active' to 'refunded'
         if (($originalStatus === 'active' && $order->status === 'refunded') ||
-            ($originalStatus === 'pending' && $order->status === 'refunded')) {
+            ($originalStatus === 'pending' && $order->status === 'refunded')||
+            ($originalStatus === 'pending' && $order->status === 'reject')||
+            ($originalStatus === 'accept' && $order->status === 'reject')||
+            ($originalStatus === 'active' && $order->status === 'reject')) {
             $this->refundOrderAmount($order);
         }
 
@@ -184,7 +279,7 @@ class OrderController extends Controller
             $sub_price = $subItem->price * $currencyPrice;
             $fe_price = 0;
 
-            $fe_price = round($sub_price * $feePercentage / 100, 2);
+            $fe_price = floatval($sub_price * $feePercentage / 100);
             $totalPrice = $sub_price + $fe_price;
             $order_amount = $subItem->amount;
 

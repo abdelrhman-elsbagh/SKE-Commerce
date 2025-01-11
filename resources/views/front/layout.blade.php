@@ -434,7 +434,13 @@
                         <!-- Area to display selected payment method's media and description -->
                         <div id="payment_method_details" style="display: none;margin-top: 10px">
                             <div id="payment_method_image"></div>
-                            <div id="payment_method_description"></div>
+                            <div style="position: relative;">
+                                <textarea id="payment_method_description" readonly class="uk-textarea" style=""></textarea>
+                                <button id="copy_description" type="button" class="uk-button uk-button-default uk-button-small" title="Copy">
+                                    <span uk-icon="copy" id="copy_payment_icon"></span>
+                                </button>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -576,13 +582,14 @@
 
             // Update the image
             if (imageUrl) {
-                $('#payment_method_image').html('<img src="' + imageUrl + '" alt="Payment Method Image" style="max-width: 200px;">');
+                $('#payment_method_image').html('<img src="' + imageUrl + '" alt="Payment Method Image" style="max-width: 70px;border-radius: 50%">');
             } else {
                 $('#payment_method_image').html('');
             }
 
             // Update the description
-            $('#payment_method_description').html(description ? description : 'No description available');
+            $('#payment_method_description').val(description ? description : 'No description available');
+
         }
 
         // Trigger on page load to show the details of the initially selected option
@@ -591,6 +598,16 @@
         // Update the details when a different payment method is selected
         $('#payment_method_id').on('change', function() {
             updatePaymentMethodDetails();
+        });
+
+        $('#copy_description').on('click', function () {
+            const messages = {
+                copy_clipboard: "{{ __('messages.copy_clipboard') }}",
+            };
+            const textArea = document.getElementById('payment_method_description');
+            textArea.select(); // Select the text
+            document.execCommand('copy');
+            toastr.success(messages.copy_clipboard);
         });
     });
 </script>

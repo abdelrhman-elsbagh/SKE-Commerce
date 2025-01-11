@@ -30,8 +30,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="description" class="form-label">Description</label>
-                                <div id="snow-editor" style="height: 300px;"></div>
-                                <input type="hidden" name="description" id="description">
+                                <textarea class="form-control" id="description" name="description" rows="5"></textarea>
                             </div>
 
                             <div class="mb-3">
@@ -40,8 +39,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="ar_description" class="form-label">Arabic Description</label>
-                                <div id="snow-editor2" style="height: 300px;"></div>
-                                <input type="hidden" name="ar_description" id="ar_description">
+                                <textarea class="form-control" id="ar_description" name="ar_description" rows="5"></textarea>
                             </div>
 
                             <div class="mb-3">
@@ -67,53 +65,6 @@
 
     <script>
         $(document).ready(function() {
-            // Initialize Quill editor with a more feature-rich toolbar
-            var quill = new Quill('#snow-editor', {
-                theme: 'snow',
-                modules: {
-                    toolbar: [
-                        [{ 'font': [] }, { 'size': ['small', false, 'large', 'huge'] }],  // custom font and size
-                        ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-                        [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
-                        [{ 'script': 'sub' }, { 'script': 'super' }],     // superscript/subscript
-                        [{ 'header': 1 }, { 'header': 2 }, 'blockquote', 'code-block'],  // headers and block quote
-                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],    // lists
-                        [{ 'indent': '-1' }, { 'indent': '+1' }],         // outdent/indent
-                        [{ 'direction': 'rtl' }],                         // text direction
-                        [{ 'align': [] }],                                // text alignment
-                        ['link', 'image', 'video'],                       // link, image and video
-                        ['clean']                                         // remove formatting button
-                    ]
-                }
-            });
-
-            quill.on('text-change', function() {
-                $('#description').val(quill.root.innerHTML); // Update hidden input with Quill content
-            });
-
-            var quill2 = new Quill('#snow-editor2', {
-                theme: 'snow',
-                modules: {
-                    toolbar: [
-                        [{ 'font': [] }, { 'size': ['small', false, 'large', 'huge'] }],  // custom font and size
-                        ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-                        [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
-                        [{ 'script': 'sub' }, { 'script': 'super' }],     // superscript/subscript
-                        [{ 'header': 1 }, { 'header': 2 }, 'blockquote', 'code-block'],  // headers and block quote
-                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],    // lists
-                        [{ 'indent': '-1' }, { 'indent': '+1' }],         // outdent/indent
-                        [{ 'direction': 'rtl' }],                         // text direction
-                        [{ 'align': [] }],                                // text alignment
-                        ['link', 'image', 'video'],                       // link, image and video
-                        ['clean']                                         // remove formatting button
-                    ]
-                }
-            });
-
-            quill2.on('text-change', function() {
-                $('#ar_description').val(quill2.root.innerHTML); // Update hidden input with Quill content
-            });
-
             $('#image').change(function() {
                 let reader = new FileReader();
                 reader.onload = function(e) {
@@ -124,10 +75,6 @@
 
             $('#create-payment-method-form').on('submit', function(e) {
                 e.preventDefault();
-
-                // Set the description content from the Quill editor to the hidden input field
-                $('#description').val(quill.root.innerHTML);
-
                 var formData = new FormData(this);
 
                 $.ajax({

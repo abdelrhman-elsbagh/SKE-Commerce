@@ -25,12 +25,15 @@
 
                                             $isFavorited = Auth::user()->favorites()->where('sub_item_id', $subItem->id)->exists();
                                             }
-                                            $isInactive = $subItem->status == 'inactive';9
+                                            $isInactive = $subItem->status == 'inactive';
                                         @endphp
-                                        <div>
+                                        <div class="wrapper-item-card {{ $isInactive ? 'hidden-overflow' : '' }}"  style="position: relative; margin-bottom: 10px;">
+                                            @if($isInactive)
+                                                <div class="card-tag card-tag-inactive">Not Available</div>
+                                            @endif
                                             <div class="uk-card uk-card-default uk-card-hover uk-margin selectable-card whole-item-card"
                                                  data-id="{{ $subItem->id }}"
-                                                 data-price="{{ number_format($subItem->price + ($subItem->price * $config->fee / 100), 2) }}"
+                                                 data-price="{{ number_format($subItem->price + ($subItem->price * $config->fee / 100), 4) }}"
                                                  data-is-custom="{{ $subItem->is_custom ? '1' : '0' }}"
                                                  data-min-amount="{{ $subItem->minimum_amount ?? 0 }}"
                                                  data-max-amount="{{ $subItem->max_amount ?? 0 }}"
@@ -48,7 +51,7 @@
                                                                              style="height: 20px; width: 20px; border-radius: 5px">
                                                                     @endif
                                                                 </h3>
-                                                                <p class="uk-card-title uk-margin-remove-bottom item-detail-desc"> {{ $subItem->description ?? ""  }}</p>
+                                                                <p class="uk-card-title uk-margin-remove-bottom item-detail-desc" style="display: none"> {{ $subItem->description ?? ""  }}</p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -56,7 +59,7 @@
                                                         <p>
                                                         </p>
                                                         <span class="uk-text-bold sub-item-price">
-                                                            {{ number_format($subItem->price + ($subItem->price * $config->fee / 100), 2) }} {{ $user->currency->currency ?? "USD" }}
+                                                            {{ number_format($subItem->price + ($subItem->price * $config->fee / 100), 4) }} {{ $user->currency->currency ?? "USD" }}
                                                         </span>
                                                         <i id="addToFavouritesButton" class="fas fa-heart fa-1x heart-icon favourite-item" style="color: {{ $isFavorited ? 'var(--main-color)' : '#ccc' }}; position: absolute; top: 10px; left: 10px;"></i>
                                                     </div>
@@ -78,7 +81,7 @@
                                                                     @endif
                                                                 </h3>
                                                                 <p class="uk-card-title uk-margin-remove-bottom item-detail-desc"
-                                                                   style="">{{ $subItem->description ?? "" }}</p>
+                                                                   style="" disabled="none">{{ $subItem->description ?? "" }}</p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -156,7 +159,11 @@
                         @endif
 
                     </ul>
-                    <span>Your payment security is our top priority. We use advanced encryption to protect your data, ensuring all transactions are processed safely through trusted gateways. Shop confidently with our secure payment system.</span>
+                    @if(App::getLocale() == 'ar')
+                        <span>أمان الدفع الخاص بك هو أولويتنا القصوى. نحن نستخدم تقنيات تشفير متقدمة لحماية بياناتك، مما يضمن معالجة جميع المعاملات بأمان عبر بوابات موثوقة. تسوق بثقة مع نظام الدفع الآمن الخاص بنا.</span>
+                    @else
+                        <span>Your payment security is our top priority. We use advanced encryption to protect your data, ensuring all transactions are processed safely through trusted gateways. Shop confidently with our secure payment system.</span>
+                    @endif
                 </div>
             </div>
         </div>
@@ -171,13 +178,10 @@
             $('.item-crd-detail .uk-card-title').each(function() {
                 // Update maxHeight to the tallest element
                 let currentHeight = $(this).height();
-                console.log("currentHeight => ", currentHeight)
                 if (currentHeight > maxHeight) {
                     maxHeight = currentHeight;
                 }
             });
-
-            console.log("maxHeight => ", maxHeight)
             // Set all elements to the maxHeight
             $('.item-crd-detail').height(maxHeight + 25);
         });
@@ -225,11 +229,11 @@
 
                     // Calculate initial price based on minAmount
                     const initialPrice = (minAmount / unitAmount) * basePrice;
-                    priceElement.text(initialPrice.toFixed(2) + " " + $(priceElement).data('currency'));
+                    priceElement.text(initialPrice.toFixed(4) + " " + $(priceElement).data('currency'));
                 } else {
                     customAmountContainer.hide();
                     customAmountInput.val(''); // Clear the input if hidden
-                    priceElement.text(basePrice.toFixed(2) + " " + $(priceElement).data('currency'));
+                    priceElement.text(basePrice.toFixed(4) + " " + $(priceElement).data('currency'));
                 }
             });
 
@@ -237,8 +241,6 @@
             customAmountInput.on('input', function() {
                 this.value = this.value.replace(/[^0-9]/g, '');
                 const enteredAmount = parseFloat(customAmountInput.val());
-                console.log("customAmountInput", enteredAmount)
-
                 if (enteredAmount >= customAmountInput.attr('min') && enteredAmount <= customAmountInput.attr('max')) {
                     // Calculate the updated price based on the entered custom amount
                     const updatedPrice = (enteredAmount / unitAmount) * basePrice;
@@ -349,4 +351,32 @@
             });
         });
     </script>
+
+    <style>
+
+        .card-tag-inactive {
+            text-align: center;
+            width: 190px;
+            transform: rotate(-45deg);  /* Use 'transform' instead of 'rotate' */
+            position: absolute;
+            top: 27px;
+            left: -36px;
+            padding: 9px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            border-radius: 2px;
+            max-height: 47px;
+            background-color: rgb(255, 0, 0); /* Full opaque red background */
+            z-index: 99;
+            opacity: 1; /* This ensures the child has full opacity */
+            white-space: nowrap;
+        }
+
+        .whole-item-card{
+            position: relative;
+        }
+
+    </style>
+
 @endsection

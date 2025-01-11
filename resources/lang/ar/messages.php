@@ -28,6 +28,7 @@ return [
     'select_product_first' => 'يرجى اختيار منتج أولاً.',
     'error_processing_request' => 'حدث خطأ أثناء معالجة طلبك.',
     'loading' => 'برجاء اللانتظار',
+    'copy_clipboard' => 'تمت نسخ التفاصيل إلى الحافظة!',
     'auth' => [
         'login_title' => 'تسجيل الدخول',
         'or_with_email' => 'أو عبر البريد الإلكتروني',
