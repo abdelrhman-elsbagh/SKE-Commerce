@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\OrdersExport;
+use App\Models\ClientStore;
 use App\Models\Config;
 use App\Models\Order;
 use App\Models\OrderSubItem;
@@ -53,6 +54,8 @@ class OrderController extends Controller
 
     public function index(Request $request)
     {
+        $client = ClientStore::where('domain', 'https://api.ekostore.co')->first();
+
         $query = Order::with(['user', 'subItems.subItem'])->orderBy('created_at', 'DESC');
 
         if ($request->has('status') && $request->status != '') {
@@ -68,11 +71,11 @@ class OrderController extends Controller
         $orders = $query->get();
 
         foreach ($orders as $order) {
-            if ($order->is_external == 1 && $order->external_order_id && $order->subItem->out_flag == 1) {
+            if ($order->is_external == 1 && $order->external_order_id && $order->subItem->out_flag == 1 && $client) {
                 // Prepare the API URL and headers
                 $url = "https://api.ekostore.co/client/api/check";
                 $headers = [
-                    'api-token' => 'bc249492922515e340088aafc560ff67720ab65ef478ba33',
+                    'api-token' => $client->secret_key,
                 ];
 
                 $originalStatus = $order->status;

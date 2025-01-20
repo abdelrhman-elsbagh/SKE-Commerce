@@ -58,6 +58,15 @@
 
         <button id="importItems" class="btn btn-success mt-3">Import Selected</button>
 
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" style="display: none; text-align: center; margin-top: 20px;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p>Please wait, fetching items...</p>
+        </div>
+
+
         <div class="mt-4" id="itemsContainer" style="display:none;">
             <h2>Items to Import</h2>
             <table class="table table-bordered">
@@ -113,13 +122,27 @@
                 });
             }
 
+            const loadingSpinner = document.getElementById('loadingSpinner'); // Add this at the top of the script
+
             fetchItemsBtn.addEventListener('click', function () {
+                // Show the spinner
+                loadingSpinner.style.display = 'block';
+
                 const sourceKey = getSourceKey();
                 const clientId = getClientId();
-                axios.post(domainInput.value + '/api/fetch-items', {
+                const domain = domainInput.value === 'https://api.ekostore.co'
+                    ? 'https://api.ekostore.co'
+                    : domainInput.value;
+
+                // Determine the appropriate endpoint
+                const endpoint = domain === 'https://api.ekostore.co'
+                    ? `${window.location.origin}/api/fetch-items`
+                    : `${domain}/api/fetch-items`;
+
+                axios.post(endpoint, {
                     source_key: sourceKey,
                     client_id: clientId,
-                    domain: window.location.origin ?? ""
+                    domain: domain ?? ""
                 }, {
                     headers: {
                         'Content-Type': 'application/json'
@@ -166,11 +189,12 @@
 
                                             data-sub-is-custom="${sub.is_custom}" data-sub-minimum-amount="${sub.minimum_amount}" data-sub-max-amount="${sub.max_amount}"
 
-                                            data-item-name="${item.name}" data-item-description="${item.description}"
-                                            data-item-ar-name="${item.ar_name}" data-item-ar-description="${item.ar_description}"
-                                            data-sub-user-id="${sub.user_id}" data-sub-item-price="${sub.price}"
+                                            data-item-name="${item.name ?? ''}" data-item-description="${item.description ?? ''}"
+                                            data-category-name="${item.category ?? ''}" data-image="${item.category_img ?? ''}"
+                                            data-item-ar-name="${item.ar_name ?? ''}" data-item-ar-description="${item.ar_description ?? ''}"
+                                            data-sub-user-id="${sub.user_id ?? ''}" data-sub-item-price="${sub.price}"
                                             data-sub-item-amount="${sub.amount}" data-sub-item-name="${sub.name}"
-                                            data-sub-item-description="${sub.description}" class="select-checkbox">
+                                            data-sub-item-description="${sub.description ?? ''}" class="select-checkbox">
                                         </td>
                                     </tr>`;
                                 });
@@ -200,7 +224,13 @@
                     .catch(error => {
                         console.error('Error fetching items:', error);
                         showToast('Failed to fetch items. ' + (error.response ? error.response.data.message : 'Network error'), 'error');
+                    })
+
+                    .finally(() => {
+                        // Hide the spinner
+                        loadingSpinner.style.display = 'none';
                     });
+
             });
 
             importItemsBtn.addEventListener('click', function () {
@@ -211,12 +241,14 @@
                     let item_id = subItem.getAttribute('data-item-id');
                     let user_id = subItem.getAttribute('data-sub-user-id');
                     let external_id = subItem.getAttribute('data-sub-item-id').trim();
+                    let category = subItem.getAttribute('data-category-name').trim();
+                    let image = subItem.getAttribute('data-image').trim();
 
                     let is_custom = subItem.getAttribute('data-sub-is-custom').trim();
                     let minimum_amount = parseInt(subItem.getAttribute('data-sub-minimum-amount').trim()) ?? 0;
                     let max_amount = parseInt(subItem.getAttribute('data-sub-max-amount').trim()) ?? 0;
 
-                    let price = parseFloat(subItem.getAttribute('data-sub-item-price') || 0).toFixed(2);
+                    let price = parseFloat(subItem.getAttribute('data-sub-item-price') || 0);
                     let name = subItem.getAttribute('data-sub-item-name') ?? "";
                     let item_name = subItem.getAttribute('data-item-name') ?? "";
 
@@ -234,6 +266,8 @@
                         item_id: item_id,
                         user_id: user_id,
                         item_name: item_name,
+                        category: category,
+                        image: image,
 
                         is_custom: is_custom,
                         minimum_amount: minimum_amount,

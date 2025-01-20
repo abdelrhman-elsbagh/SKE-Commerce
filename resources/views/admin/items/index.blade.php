@@ -23,6 +23,8 @@
                 <div class="card">
                     <div class="card-body  res-table-card">
                         <a href="{{ route('items.create') }}" class="btn btn-primary mb-3">Create Item</a>
+                        <button class="btn btn-secondary mb-3" data-bs-toggle="modal" data-bs-target="#moveItemModal">Move Item</button>
+
                         <table id="basic-datatable" class="table table-striped table-bordered dt-responsive nowrap">
                             <thead>
                             <tr>
@@ -70,6 +72,44 @@
                     </div> <!-- end card-body -->
                 </div> <!-- end card -->
             </div> <!-- end col -->
+
+            <div class="modal fade" id="moveItemModal" tabindex="-1" aria-labelledby="moveItemModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="moveItemModalLabel">Move SubItem</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="moveItemForm">
+                                @csrf
+                                <div class="mb-3">
+                                    <label for="subitem-select" class="form-label">Select SubItem</label>
+                                    <select id="subitem-select" class="form-control">
+                                        <option value="">Select a SubItem</option>
+                                        @foreach ($subitems as $subitem)
+                                            <option value="{{ $subitem->id }}">
+                                                {{ $subitem->name }} (Item: {{ $subitem->item->name ?? 'Unassigned' }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="item-select" class="form-label">Select Target Item</label>
+                                    <select id="item-select" class="form-control">
+                                        <option value="">Select an Item</option>
+                                        @foreach ($items as $item)
+                                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Move</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div> <!-- end row -->
     </div> <!-- container -->
 
@@ -153,4 +193,81 @@
             });
         });
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const moveItemForm = document.getElementById('moveItemForm');
+
+            // Handle Move Item Form Submission
+            moveItemForm.addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                const subitemId = document.getElementById('subitem-select').value;
+                const targetItemId = document.getElementById('item-select').value;
+
+                if (!subitemId || !targetItemId) {
+                    $.toast({
+                        heading: 'Error',
+                        text: 'Please select both a subitem and a target item.',
+                        icon: 'error',
+                        loader: true,
+                        loaderBg: '#f96868',
+                        position: 'top-right',
+                        hideAfter: 3000,
+                    });
+                    return;
+                }
+
+                fetch('{{ route('subitems.move') }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        subitem_id: subitemId,
+                        target_item_id: targetItemId,
+                    }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            $.toast({
+                                heading: 'Success',
+                                text: 'SubItem moved successfully!',
+                                icon: 'success',
+                                loader: true,
+                                loaderBg: '#5ba035',
+                                position: 'top-right',
+                                hideAfter: 3000,
+                            });
+                            $('#moveItemModal').modal('hide');
+                            location.reload();
+                        } else {
+                            $.toast({
+                                heading: 'Error',
+                                text: 'Failed to move SubItem: ' + data.message,
+                                icon: 'error',
+                                loader: true,
+                                loaderBg: '#f96868',
+                                position: 'top-right',
+                                hideAfter: 3000,
+                            });
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Error moving subitem:', err);
+                        $.toast({
+                            heading: 'Error',
+                            text: 'An unexpected error occurred while moving the subitem.',
+                            icon: 'error',
+                            loader: true,
+                            loaderBg: '#f96868',
+                            position: 'top-right',
+                            hideAfter: 3000,
+                        });
+                    });
+            });
+        });
+    </script>
+
 @endsection

@@ -10,6 +10,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class ApiItemsController extends Controller
 {
@@ -62,8 +64,24 @@ class ApiItemsController extends Controller
             'item_id' => 'required|integer',
         ]);
 
+        $domain = $validated['domain'];
+        // Check if the source key matches a ClientStore's secret_key
+        if ($domain === 'https://api.ekostore.co') {
+            // Use ClientStore for EkoStore domain
+            $clientStore = ClientStore::where([
+                'secret_key' => $validated['source_key'],
+                'status' => 'active',
+            ])->first();
+        } else {
+            // Use User for other domains
+            $clientStore = User::where([
+                'secret_key' => $validated['source_key'],
+                'status' => 'active',
+            ])->first();
+        }
+
         // Check if the source key matches a User's secret_key (ClientStore)
-        $clientStore = User::where('secret_key', $validated['source_key'])->first();
+//        $clientStore = User::where('secret_key', $validated['source_key'])->first();
 
         if (!$clientStore) {
             return response()->json(['message' => 'Invalid source key.'], 401);
@@ -97,17 +115,34 @@ class ApiItemsController extends Controller
             'client_id' => 'required|integer',
         ]);
 
+
         $client_id = $validated['client_id'];
+        $domain = $validated['domain'];
         // Check if the source key matches a ClientStore's secret_key
-        $clientStore = User::where([
-            'secret_key' => $validated['source_key'],
-            'status' => 'active',
-//            'id' => $client_id,
-        ])->first();
+        if ($domain === 'https://api.ekostore.co') {
+            // Use ClientStore for EkoStore domain
+            $clientStore = ClientStore::where([
+                'secret_key' => $validated['source_key'],
+                'status' => 'active',
+            ])->first();
+        } else {
+            // Use User for other domains
+            $clientStore = User::where([
+                'secret_key' => $validated['source_key'],
+                'status' => 'active',
+            ])->first();
+        }
+
 
 
         if (!$clientStore) {
             return response()->json(['message' => 'Invalid source key.'], 401);
+        }
+
+
+        // If domain is EkoStore, fetch directly from its API
+        if ($domain === 'https://api.ekostore.co') {
+            return $this->fetchEkoStoreItems($validated['client_id']);
         }
 
         // Check if the domain matches a User's domain
@@ -116,8 +151,6 @@ class ApiItemsController extends Controller
         if (!$user) {
             return response()->json(['message' => 'Invalid info.'], 401);
         }
-
-//        $user = $clientStore;
 
         $items = Item::where('status', 'active')->with(['subItems', 'category'])->get();
 
@@ -141,6 +174,57 @@ class ApiItemsController extends Controller
         return response()->json(['items' => $items]);
     }
 
+    public function fetchEkoStoreItems($client_id)
+    {
+        $client = ClientStore::where('domain', 'https://api.ekostore.co')->first();
+        try {
+            if($client) {
+                $apiUrl = 'https://api.ekostore.co/client/api/products';
+                $apiToken = $client->secret_key; // Replace with your actual API token
+
+                // Fetch data from the EkoStore API
+                $response = Http::withHeaders(['api-token' => $apiToken])->get($apiUrl);
+
+                if ($response->failed()) {
+                    return response()->json(['success' => false, 'message' => 'Failed to fetch data from the EkoStore API'], 500);
+                }
+
+                $products = $response->json();
+
+                $items = [];
+                foreach ($products as $product) {
+                    $items[] = [
+                        'id' => $product['id'],
+                        'name' => $product['name'],
+                        'category' => $product['category_name'] ?? 'Out Source',
+                        'category_img' => $product['category_img'] ?? null,
+                        'description' => implode(', ', $product['params']),
+                        'price' => $product['price'],
+                        'amount' => $product['qty_values']['min'] ?? 0,
+                        'sub_items' => [
+                            [
+                                'id' => $product['id'],
+                                'name' => $product['name'],
+                                'description' => implode(', ', $product['params']),
+                                'price' => $product['price'],
+                                'amount' => $product['qty_values']['min'] ?? 0,
+                                'is_custom' => $product['product_type'] == 'amount' ? 1 : 0,
+                                'minimum_amount' => $product['qty_values']['min'] ?? null,
+                                'max_amount' => $product['qty_values']['max'] ?? null,
+                            ],
+                        ],
+                    ];
+                }
+
+                return response()->json(['items' => $items]);
+            }
+        }
+        catch (\Exception $e) {
+            Log::error($e->getMessage());
+        }
+        return response()->json(['items' => []]);
+    }
+
 
     /**
      * Import selected items into the database under the authenticated user's account.
@@ -160,7 +244,7 @@ class ApiItemsController extends Controller
             'sub_items.*.minimum_amount' => 'nullable|integer',
             'sub_items.*.max_amount' => 'nullable|integer',
 
-            'sub_items.*.user_id' => 'required|integer',
+//            'sub_items.*.user_id' => 'nullable|integer',
             'sub_items.*.item_id' => 'required|string',
             'sub_items.*.item_name' => 'required|string',
 
@@ -171,6 +255,8 @@ class ApiItemsController extends Controller
             'sub_items.*.item_title' => 'nullable|string',
             'domain' => 'nullable|string',
             'client_id' => 'nullable|integer',
+            'sub_items.*.category' => 'nullable|string',
+            'sub_items.*.image' => 'nullable|string',
         ]);
 
         // Ensure the user is authenticated
@@ -179,15 +265,19 @@ class ApiItemsController extends Controller
             return response()->json(['message' => 'User must be authenticated to import items.'], 401);
         }
 
+
         $importedItems = [];
         $client_id = $validated['client_id'];
 
-        // Get or create the OUT-SOURCE category for the user
-        $category = Category::firstOrCreate(
-            ['name' => 'OUT-SOURCE', 'user_id' => $user->id]
-        );
 
         foreach ($validated['sub_items'] as $subItemData) {
+
+            $category_name = $subItemData['category'] ?? 'OUT-SOURCE';
+            // Get or create the OUT-SOURCE category for the user
+            $category = Category::firstOrCreate(
+                ['name' => $category_name, 'user_id' => $user->id]
+            );
+
             $itemExternalId = $subItemData['external_id'];
             $itemName = $subItemData['item_name'];
             $itemDesc = $subItemData['description'] ?? "";
@@ -235,11 +325,22 @@ class ApiItemsController extends Controller
                     'max_amount' => $subItemData['max_amount'],
                     'price' => $subItemData['price'],
                     'external_id' => $subItemData['external_id'],
-                    'external_user_id' => $subItemData['user_id'],
+                    'external_user_id' => $subItemData['user_id'] ?? Auth::user()->id,
                     'external_item_id' => $subItemData['item_id'],
                     'domain' => $request->input('domain'),
                     'client_store_id' => $client_id,
+                    'out_flag' => $request->input('domain') == 'https://api.ekostore.co' ? 1 : 0,
                 ]);
+            }
+
+            $categoryImage = $subItemData['image'] ?? null;
+            // Attach category image if available
+            if ($categoryImage && !$parentItem->getFirstMediaUrl('images')) {
+                $parentItem->addMediaFromUrl($categoryImage)->toMediaCollection('images');
+            }
+
+            if ($categoryImage && !$parentItem->getFirstMediaUrl('front_image')) {
+                $parentItem->addMediaFromUrl($categoryImage)->toMediaCollection('front_image');
             }
         }
 

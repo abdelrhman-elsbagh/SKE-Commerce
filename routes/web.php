@@ -118,6 +118,11 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'permission:admin']]
 
     Route::get('/api-items/edit', [ApiItemsController::class, 'edit'])->name('api-items.edit');
     Route::post('/items/import', [ApiItemsController::class, 'importItems'])->name('items.import');
+    Route::get('/fetch-eko-store-items', [ApiItemsController::class, 'fetchEkoStoreItems'])->name('fetch.eko.store.items');
+    Route::post('/client-stores/integrate', [ClientStoreController::class, 'integrate'])->name('clientStores.integrate');
+    Route::get('/modules-integration', [ClientStoreController::class, 'ekoIntegrate'])->name('stores.integrates');
+
+
 
     Route::get('permissions', [PermissionController::class, 'index'])->name('permissions.index');
     Route::get('permissions/create', [PermissionController::class, 'create'])->name('permissions.create');
@@ -160,6 +165,9 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'permission:admin']]
     Route::resource('invoices', InvoiceController::class);
     Route::resource('diamond-rates', DiamondRatesController::class)->names('diamond_rates');
     Route::resource('items', ItemController::class);
+    Route::get('subitems/search', [ItemController::class, 'search'])->name('subitems.search');
+    Route::post('subitems/move', [ItemController::class, 'move'])->name('subitems.move');
+
     Route::resource('plans', PlanController::class);
     Route::resource('payment-methods', PaymentMethodController::class);
     Route::resource('subscriptions', SubscriptionController::class);

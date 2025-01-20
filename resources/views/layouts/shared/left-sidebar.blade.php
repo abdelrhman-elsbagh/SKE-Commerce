@@ -635,6 +635,9 @@
                         <li>
                             <a href="{{ route('clientStores.index') }}" class="nav-link">Business Clients</a>
                         </li>
+                        <li>
+                            <a href="{{ route('stores.integrates') }}" class="nav-link">Stores Modules</a>
+                        </li>
                     </ul>
                 </div>
             </li>

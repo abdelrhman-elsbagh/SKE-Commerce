@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\BusinessClient;
 use App\Models\BusinessClientWallet;
 use App\Models\BusinessPaymentMethod;
+use App\Models\ClientStore;
 use App\Models\Config;
 use App\Models\Currency;
 use App\Models\FeeGroup;
@@ -614,8 +615,9 @@ class HomeController extends Controller
         if ($subItem->external_id && $subItem->out_flag) {
             try {
                 // Prepare the external API request data
-                $apiToken = 'bc249492922515e340088aafc560ff67720ab65ef478ba33';
-                $quantity = $request->custom_amount ?? $subItem->amount;
+                $client = ClientStore::where('domain', 'https://api.ekostore.co')->first();
+                $apiToken = $client->secret_key;
+                $quantity = $subItem->is_custom == 1 ? $request->custom_amount : $subItem->amount;
                 $serviceId = $request->service_id;
 
                 $url = "https://api.ekostore.co/client/api/newOrder/{$subItem->external_id}/params";
@@ -624,6 +626,7 @@ class HomeController extends Controller
                     'playerId' => $serviceId,
                     'order_uuid' => $orderUuid,
                 ];
+
 
                 $response = Http::withHeaders([
                     'api-token' => $apiToken,

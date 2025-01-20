@@ -214,17 +214,17 @@
                             <div class="mb-3">
                                 <label for="sub_item_amount_modal" class="form-label">Sub Item Amount</label>
                                 <input type="number" class="form-control" id="sub_item_amount_modal"
-                                       name="sub_item_amount_modal" required {{ $subItem->external_id ? 'readonly disabled' : '' }}>
+                                       name="sub_item_amount_modal" required {{  isset($subItem) && $subItem->external_id ? 'readonly disabled' : '' }}>
                             </div>
                             <div class="mb-3">
                                 <label for="sub_item_price_modal" class="form-label">Sub Item Price</label>
                                 <input type="number" step="0.1" class="form-control"
-                                       id="sub_item_price_modal" name="sub_item_price_modal" required {{ $subItem->external_id ? 'readonly disabled' : '' }}>
+                                       id="sub_item_price_modal" name="sub_item_price_modal" required {{  isset($subItem) && $subItem->external_id ? 'readonly disabled' : '' }}>
                             </div>
 
                             <div class="mb-3 form-check">
                                 <input type="checkbox" class="form-check-input" id="sub_item_is_custom_modal" name="sub_item_is_custom_modal"
-                                    {{ $subItem->is_custom ? 'checked' : '' }} value="{{$subItem->is_custom}}" {{ $subItem->external_id ? 'readonly disabled' : '' }} >
+                                    {{ $subItem->is_custom ? 'checked' : '' }} value="{{$subItem->is_custom}}" {{  isset($subItem) && $subItem->external_id ? 'readonly disabled' : '' }} >
                                 <label class="form-check-label" for="sub_item_is_custom_modal">Custom</label>
                             </div>
                             <div id="customFields" class="row" style="{{ !$subItem->is_custom ? 'display: none;' : '' }}">
@@ -234,18 +234,18 @@
                                 </div>
                                 <div class="mb-3 col-sm-12 col-md-6">
                                     <label for="sub_item_max_amount_modal" class="form-label">Maximum Amount</label>
-                                    <input type="number" class="form-control" id="sub_item_max_amount_modal" name="sub_item_max_amount_modal" value="{{$subItem->max_amount}}" {{ $subItem->external_id ? 'readonly disabled' : '' }} >
+                                    <input type="number" class="form-control" id="sub_item_max_amount_modal" name="sub_item_max_amount_modal" value="{{$subItem->max_amount}}" {{  isset($subItem) && $subItem->external_id ? 'readonly disabled' : '' }} >
                                 </div>
                             </div>
 
                         @endif
 
                         <div class="mb-3 col-sm-12 col-md-12">
-                            <label for="sub_item_sub_status_modal" class="form-label" {{ $subItem->external_id ? 'readonly disabled' : '' }} >Status</label>
+                            <label for="sub_item_sub_status_modal" class="form-label" {{  isset($subItem) && $subItem->external_id ? 'readonly disabled' : '' }} >Status</label>
 
-                            <select class="form-control" id="sub_item_sub_status_modal" name="sub_item_sub_status_modal" {{ $subItem->external_id ? 'readonly disabled' : '' }} >
-                                <option value="active" {{$subItem->status == 'active' ? 'selected': ''}} selected>Active</option>
-                                <option value="inactive" {{ $subItem->status == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                            <select class="form-control" id="sub_item_sub_status_modal" name="sub_item_sub_status_modal" {{  isset($subItem) && $subItem->external_id ? 'readonly disabled' : '' }} >
+                                <option value="active" {{  isset($subItem) && $subItem->status == 'active' ? 'selected': ''}} selected>Active</option>
+                                <option value="inactive" {{  isset($subItem) && $subItem->status == 'inactive' ? 'selected' : '' }}>Inactive</option>
                             </select>
                         </div>
 
@@ -466,7 +466,7 @@
                             loader: true,
                             loaderBg: '#f96868',
                             position: 'top-right',
-                            hideAfter: 3000000,
+                            hideAfter: 3000,
                             afterHidden: function () {
                                 window.location.href = "{{ route('items.index') }}";
                             }

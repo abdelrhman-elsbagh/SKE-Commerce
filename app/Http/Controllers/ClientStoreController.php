@@ -136,4 +136,43 @@ class ClientStoreController extends Controller
         $clientStore->delete();
         return redirect()->route('clientStores.index')->with('success', 'Client store deleted successfully.');
     }
+
+    public function integrate(Request $request)
+    {
+        $request->validate([
+            'api_key' => 'required|string',
+            'email' => 'required|email',
+        ]);
+
+        $clientStore = null;
+
+        if ($request->has('client_id') && $request->client_id) {
+            $clientStore = ClientStore::find($request->client_id);
+        }
+
+        if (!$clientStore) {
+            // Create a new client store if it doesn't exist
+            $clientStore = ClientStore::create([
+                'name' => 'EkoStore', // Replace with a default name or from the request if provided
+                'email' => $request->email,
+                'domain' => 'https://api.ekostore.co', // Replace with a default domain or from the request
+                'secret_key' => $request->api_key,
+            ]);
+        } else {
+            // Update the existing client store
+            $clientStore->update([
+                'email' => $request->email,
+                'secret_key' => $request->api_key,
+            ]);
+        }
+
+        return response()->json(['message' => 'Integration successful', 'client_store' => $clientStore]);
+    }
+
+    public function ekoIntegrate()
+    {
+        $clientStores = ClientStore::all(); // Fetch all client stores
+        $ekoStore = ClientStore::where('domain', 'https://api.ekostore.co')->first(); // Check if Eko Store exists
+        return view('admin.clientStores.eko_integrate', compact('clientStores', 'ekoStore'));
+    }
 }

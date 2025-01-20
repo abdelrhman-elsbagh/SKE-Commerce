@@ -13,12 +13,14 @@ use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class ItemController extends Controller
 {
     public function index()
     {
         $items = Item::with(['category', 'tags', 'subItems'])->get();
+        $subitems = SubItem::with('item')->get();
 
         foreach ($items as $item) {
             // Get all sub-item IDs for the current item
@@ -39,7 +41,7 @@ class ItemController extends Controller
                 ->count();
         }
 
-        return view('admin.items.index', compact('items'));
+        return view('admin.items.index', compact('items', 'subitems'));
     }
 
     public function show($id)
@@ -200,82 +202,118 @@ class ItemController extends Controller
     ###############################
     public function fetchAndImportEkoStoreProducts()
     {
-        $apiUrl = 'https://api.ekostore.co/client/api/products';
-        $apiToken = 'bc249492922515e340088aafc560ff67720ab65ef478ba33';
+        $eko_domain = ClientStore::where('domain', 'https://api.ekostore.co')->first();
 
-        $currentOrder = Item::max('order') + 1;
+        try {
+            if ($eko_domain) {
+                $apiUrl = 'https://api.ekostore.co/client/api/products';
+                $apiToken = $eko_domain->secret_key;
 
-        $eko_domain = ClientStore::updateOrCreate(['domain' => 'https://api.ekostore.co'],
-            ['domain' => 'https://api.ekostore.co', 'status' => 'available', 'name' => 'EkoStore']);
+//                $eko_category = Category::updateOrCreate(['name' => 'EkoStore'],
+//                    ['description' => 'Imported from EkoStore API', 'status' => 'active', 'name' => 'EkoStore']);
 
-        $eko_category = Category::updateOrCreate(['name' => 'EkoStore'],
-            ['description' => 'Imported from EkoStore API', 'status' => 'active', 'name' => 'EkoStore']);
+                // Fetch data from the API
+                $response = Http::withHeaders([
+                    'api-token' => $apiToken,
+                ])->get($apiUrl);
 
-        // Fetch data from the API
-        $response = Http::withHeaders([
-            'api-token' => $apiToken,
-        ])->get($apiUrl);
+                if ($response->failed()) {
+                    return response()->json(['success' => false, 'message' => 'Failed to fetch data from the EkoStore API'], 500);
+                }
 
-        if ($response->failed()) {
-            return response()->json(['success' => false, 'message' => 'Failed to fetch data from the EkoStore API'], 500);
+                $products = $response->json();
+
+                foreach ($products as $key => $product) {
+                    // Handle the category (Item in your app)
+                    $categoryName = $product['category_name'] ?? 'Uncategorized';
+//                    $categoryImage = $product['category_img'];
+
+//                    $item = Item::updateOrCreate(
+                    $item = Item::where('name', $categoryName)->first();
+
+                    if($item){
+                        $item->update([
+                            'description' => 'Imported from EkoStore API',
+                            'status' => 'active',
+                            'is_outsourced' => true,
+                            'source_domain' => 'https://api.ekostore.co',
+                        ]);
+
+                        $subItem = SubItem::where('external_id', $product['id'])->first();
+
+                        $subItemOrder = $key + 1;
+
+                        if ($subItem) {
+                            // Handle the sub-item
+                            $subItem->update(
+                                [
+                                    'item_id' => $item->id,
+                                    'name' => $product['name'],
+                                    'description' => implode(', ', $product['params']),
+                                    'amount' => $product['qty_values']['min'] ?? 0,
+                                    'price' => $product['price'],
+                                    'original_price' => $product['price'],
+                                    'status' => $product['available'] ? 'active' : 'inactive',
+                                    'is_custom' => $product['product_type'] == "amount" ? 1 : 0,
+                                    'minimum_amount' => $product['qty_values']['min'] ?? null,
+                                    'max_amount' => $product['qty_values']['max'] ?? null,
+                                    'product_type' => $product['product_type']?? null,
+                                    'domain' => 'https://api.ekostore.co',
+                                    'client_store_id' => $eko_domain->id,
+//                                    'order' => $subItemOrder,
+                                    'out_flag' => 1,
+                                ]
+                            );
+                        }
+
+                    }
+
+//                    if ($item->wasRecentlyCreated && $item->order == 0) {
+//                        $item->update(['category_id' => $eko_category->id]);
+//                        $maxOrder = Item::max('order'); // Get the max existing order value
+//                        $item->update(['order' => $maxOrder + 1]); // Set the order to max + 1
+//                    }
+
+//                    if ($categoryImage && !$item->getFirstMediaUrl('images')) {
+//                        $item->addMediaFromUrl($categoryImage)->toMediaCollection('images');
+//                    }
+
+//                    if ($categoryImage && !$item->getFirstMediaUrl('front_image')) {
+//                        $item->addMediaFromUrl($categoryImage)->toMediaCollection('front_image');
+//                    }
+                }
+
+                return response()->json(['success' => true, 'message' => 'EkoStore products imported successfully']);
+            }
+        }
+        catch (\Exception $e) {
+            Log::error($e->getMessage());
         }
 
-        $products = $response->json();
+        return response()->json(['success' => false, 'message' => 'Error while Import Eko-Store products']);
 
-        foreach ($products as $key => $product) {
-            // Handle the category (Item in your app)
-            $categoryName = $product['category_name'] ?? 'Uncategorized';
-            $categoryImage = $product['category_img'];
-
-            $item = Item::updateOrCreate(
-                ['name' => $categoryName],
-                [
-                    'category_id' => $eko_category->id,
-                    'description' => 'Imported from EkoStore API',
-                    'status' => 'active',
-                    'is_outsourced' => true,
-                    'source_domain' => 'https://api.ekostore.co',
-                ]
-            );
-
-            if ($item->wasRecentlyCreated && $item->order == 0) {
-                $maxOrder = Item::max('order'); // Get the max existing order value
-                $item->update(['order' => $maxOrder + 1]); // Set the order to max + 1
-            }
-
-            // Attach category image if available
-            if ($categoryImage && !$item->getFirstMediaUrl('images')) {
-                $item->addMediaFromUrl($categoryImage)->toMediaCollection('images');
-            }
-
-            if ($categoryImage && !$item->getFirstMediaUrl('front_image')) {
-                $item->addMediaFromUrl($categoryImage)->toMediaCollection('front_image');
-            }
-
-            $subItemOrder = $key + 1;
-            // Handle the sub-item
-            SubItem::updateOrCreate(
-                ['external_id' => $product['id']], // Match by external ID
-                [
-                    'item_id' => $item->id,
-                    'name' => $product['name'],
-                    'description' => implode(', ', $product['params']),
-                    'amount' => $product['qty_values']['min'] ?? 0,
-                    'price' => $product['price'],
-                    'original_price' => $product['price'],
-                    'status' => $product['available'] ? 'active' : 'inactive',
-                    'is_custom' => 1,
-                    'minimum_amount' => $product['qty_values']['min'] ?? null,
-                    'max_amount' => $product['qty_values']['max'] ?? null,
-                    'product_type' => $product['product_type']?? null,
-                    'domain' => 'https://api.ekostore.co',
-                    'client_store_id' => $eko_domain->id,
-                    'order' => $subItemOrder,
-                    'out_flag' => 1,
-                ]
-            );
-        }
-
-        return response()->json(['success' => true, 'message' => 'EkoStore products imported successfully']);
     }
+
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+        $subitems = SubItem::where('name', 'LIKE', "%{$query}%")->get(['id', 'name']);
+
+        return response()->json(['subitems' => $subitems]);
+    }
+
+    public function move(Request $request)
+    {
+        $request->validate([
+            'subitem_id' => 'required|exists:sub_items,id',
+            'target_item_id' => 'required|exists:items,id',
+        ]);
+
+        $subItem = SubItem::find($request->subitem_id);
+        $subItem->item_id = $request->target_item_id;
+        $subItem->save();
+
+        return response()->json(['success' => true, 'message' => 'SubItem moved successfully']);
+    }
+
 }
