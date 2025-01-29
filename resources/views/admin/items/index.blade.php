@@ -24,11 +24,13 @@
                     <div class="card-body  res-table-card">
                         <a href="{{ route('items.create') }}" class="btn btn-primary mb-3">Create Item</a>
                         <button class="btn btn-secondary mb-3" data-bs-toggle="modal" data-bs-target="#moveItemModal">Move Item</button>
+                        <button class="btn btn-danger delete-selected mb-3" disabled>Delete Selected</button>
 
                         <table id="basic-datatable" class="table table-striped table-bordered dt-responsive nowrap">
                             <thead>
                             <tr>
-                                <th>Apps ID</th>
+                                <th>Select</th>
+                                <th>ID</th>
                                 <th>Name</th>
                                 <th>Ar Name</th>
                                 <th>Type</th>
@@ -45,6 +47,9 @@
                             <tbody>
                             @foreach($items as $item)
                                 <tr id="item-{{ $item->id }}">
+                                    <td>
+                                        <input type="checkbox" class="item-select" value="{{ $item->id }}">
+                                    </td>
                                     <td>{{ $item->id }}</td>
                                     <td>{{ $item->name }}</td>
                                     <td>{{ $item->ar_name ?? "" }}</td>
@@ -77,16 +82,15 @@
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="moveItemModalLabel">Move SubItem</h5>
+                            <h5 class="modal-title" id="moveItemModalLabel">Move SubItems</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <form id="moveItemForm">
                                 @csrf
                                 <div class="mb-3">
-                                    <label for="subitem-select" class="form-label">Select SubItem</label>
-                                    <select id="subitem-select" class="form-control">
-                                        <option value="">Select a SubItem</option>
+                                    <label for="subitem-select" class="form-label">Select SubItems</label>
+                                    <select id="subitem-select" class="form-control" multiple>
                                         @foreach ($subitems as $subitem)
                                             <option value="{{ $subitem->id }}">
                                                 {{ $subitem->name }} (Item: {{ $subitem->item->name ?? 'Unassigned' }})
@@ -194,20 +198,33 @@
         });
     </script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const moveItemForm = document.getElementById('moveItemForm');
+        $(document).ready(function () {
+            // Initialize Select2 for subitem and item selects with explicit reset
+            $('#subitem-select').val(null).trigger('change'); // Reset pre-selected values
+            $('#subitem-select').select2({
+                theme: 'default',
+                placeholder: 'Select SubItems',
+                allowClear: true
+            });
+
+            $('#item-select').val(null).trigger('change'); // Reset pre-selected values
+            $('#item-select').select2({
+                theme: 'default',
+                placeholder: 'Select Target Item',
+                allowClear: true
+            });
 
             // Handle Move Item Form Submission
-            moveItemForm.addEventListener('submit', function (event) {
+            $('#moveItemForm').on('submit', function (event) {
                 event.preventDefault();
 
-                const subitemId = document.getElementById('subitem-select').value;
-                const targetItemId = document.getElementById('item-select').value;
+                const subitemIds = $('#subitem-select').val(); // Get selected sub-items
+                const targetItemId = $('#item-select').val();  // Get target item
 
-                if (!subitemId || !targetItemId) {
+                if (!subitemIds || !targetItemId) {
                     $.toast({
                         heading: 'Error',
-                        text: 'Please select both a subitem and a target item.',
+                        text: 'Please select at least one subitem and a target item.',
                         icon: 'error',
                         loader: true,
                         loaderBg: '#f96868',
@@ -224,7 +241,7 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        subitem_id: subitemId,
+                        subitem_ids: subitemIds, // Send as an array
                         target_item_id: targetItemId,
                     }),
                 })
@@ -233,7 +250,7 @@
                         if (data.success) {
                             $.toast({
                                 heading: 'Success',
-                                text: 'SubItem moved successfully!',
+                                text: 'SubItems moved successfully!',
                                 icon: 'success',
                                 loader: true,
                                 loaderBg: '#5ba035',
@@ -245,7 +262,7 @@
                         } else {
                             $.toast({
                                 heading: 'Error',
-                                text: 'Failed to move SubItem: ' + data.message,
+                                text: 'Failed to move SubItems: ' + data.message,
                                 icon: 'error',
                                 loader: true,
                                 loaderBg: '#f96868',
@@ -255,10 +272,10 @@
                         }
                     })
                     .catch(err => {
-                        console.error('Error moving subitem:', err);
+                        console.error('Error moving subitems:', err);
                         $.toast({
                             heading: 'Error',
-                            text: 'An unexpected error occurred while moving the subitem.',
+                            text: 'An unexpected error occurred while moving the subitems.',
                             icon: 'error',
                             loader: true,
                             loaderBg: '#f96868',
@@ -270,4 +287,103 @@
         });
     </script>
 
+    <script>
+        $(document).ready(function () {
+            const deleteSelectedButton = $('.delete-selected');
+
+            // Manage row selection and action disabling
+            $(document).on('change', '.item-select', function () {
+                const selectedItems = $('.item-select:checked').map(function () {
+                    return $(this).val();
+                }).get();
+
+                // Disable actions for selected rows
+                $('.item-select').each(function () {
+                    const itemId = $(this).val();
+                    const actions = $(`.item-action[data-id="${itemId}"]`);
+                    if ($(this).is(':checked')) {
+                        actions.prop('disabled', true);
+                    } else {
+                        actions.prop('disabled', false);
+                    }
+                });
+
+                // Enable or disable the delete button
+                deleteSelectedButton.prop('disabled', selectedItems.length === 0);
+            });
+
+            // Handle delete action for selected rows
+            deleteSelectedButton.on('click', function () {
+                const selectedItems = $('.item-select:checked').map(function () {
+                    return $(this).val();
+                }).get();
+
+                if (selectedItems.length === 0) {
+                    $.toast({
+                        heading: 'Error',
+                        text: 'No items selected.',
+                        icon: 'error',
+                        loader: true,
+                        loaderBg: '#f96868',
+                        position: 'top-right',
+                        hideAfter: 3000,
+                    });
+                    return;
+                }
+
+                if (!confirm('Are you sure you want to delete the selected items?')) {
+                    return;
+                }
+
+                $.ajax({
+                    url: '{{ route("items.deleteSelected") }}',
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    },
+                    data: { item_ids: selectedItems },
+                    success: function (response) {
+                        if (response.success) {
+                            selectedItems.forEach(id => {
+                                $(`#item-${id}`).remove(); // Remove rows from the table
+                            });
+
+                            $.toast({
+                                heading: 'Success',
+                                text: 'Selected items deleted successfully.',
+                                icon: 'success',
+                                loader: true,
+                                loaderBg: '#5ba035',
+                                position: 'top-right',
+                                hideAfter: 3000,
+                            });
+
+                            deleteSelectedButton.prop('disabled', true); // Disable button after action
+                        } else {
+                            $.toast({
+                                heading: 'Error',
+                                text: response.message || 'Failed to delete selected items.',
+                                icon: 'error',
+                                loader: true,
+                                loaderBg: '#f96868',
+                                position: 'top-right',
+                                hideAfter: 3000,
+                            });
+                        }
+                    },
+                    error: function () {
+                        $.toast({
+                            heading: 'Error',
+                            text: 'An unexpected error occurred while deleting the items.',
+                            icon: 'error',
+                            loader: true,
+                            loaderBg: '#f96868',
+                            position: 'top-right',
+                            hideAfter: 3000,
+                        });
+                    },
+                });
+            });
+        });
+    </script>
 @endsection

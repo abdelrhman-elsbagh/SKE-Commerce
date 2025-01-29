@@ -118,8 +118,10 @@ class ClientStoreController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'domain' => 'required|url|unique:client_stores,domain,' . $clientStore->id,
-            'secret_key' => 'required|string|max:255'
+            'secret_key' => 'required|string|max:255',
+            'status' => 'required|string'
         ]);
+
 
         // Update the client store
         $clientStore->update($validatedData);
@@ -142,12 +144,13 @@ class ClientStoreController extends Controller
         $request->validate([
             'api_key' => 'required|string',
             'email' => 'required|email',
+            'domain' => 'required',
         ]);
 
         $clientStore = null;
-
+        $domain = rtrim($request->domain, '/');
         if ($request->has('client_id') && $request->client_id) {
-            $clientStore = ClientStore::find($request->client_id);
+            $clientStore = ClientStore::where('domain', $domain)->where('status', 'active')->first();
         }
 
         if (!$clientStore) {
@@ -155,7 +158,7 @@ class ClientStoreController extends Controller
             $clientStore = ClientStore::create([
                 'name' => 'EkoStore', // Replace with a default name or from the request if provided
                 'email' => $request->email,
-                'domain' => 'https://api.ekostore.co', // Replace with a default domain or from the request
+                'domain' => $domain,
                 'secret_key' => $request->api_key,
             ]);
         } else {
@@ -163,6 +166,7 @@ class ClientStoreController extends Controller
             $clientStore->update([
                 'email' => $request->email,
                 'secret_key' => $request->api_key,
+                'domain' => $domain,
             ]);
         }
 
@@ -171,8 +175,7 @@ class ClientStoreController extends Controller
 
     public function ekoIntegrate()
     {
-        $clientStores = ClientStore::all(); // Fetch all client stores
-        $ekoStore = ClientStore::where('domain', 'https://api.ekostore.co')->first(); // Check if Eko Store exists
-        return view('admin.clientStores.eko_integrate', compact('clientStores', 'ekoStore'));
+        $clientStores = ClientStore::where('name', 'EkoStore')->where('status', 'active')->get(); // Fetch all client stores
+        return view('admin.clientStores.eko_integrate', compact('clientStores'));
     }
 }

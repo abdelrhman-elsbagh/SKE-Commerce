@@ -49,7 +49,7 @@
             <label for="domain">Domain:</label>
             <select class="form-control" id="domain" required>
                 @foreach($users as $user)
-                    <option value="{{ $user->domain }}" data-source-key="{{ $user->secret_key }}" data-client-id="{{ $user->id }}">{{ $user->name }} ({{ $user->domain }})</option>
+                    <option value="{{ $user->domain }}" data-client-name="{{ $user->name }}" data-source-key="{{ $user->secret_key }}" data-client-id="{{ $user->id }}">{{ $user->name }} ({{ $user->domain }})</option>
                 @endforeach
             </select>
         </div>
@@ -130,12 +130,14 @@
 
                 const sourceKey = getSourceKey();
                 const clientId = getClientId();
-                const domain = domainInput.value === 'https://api.ekostore.co'
-                    ? 'https://api.ekostore.co'
-                    : domainInput.value;
+
+                const selectedOption = document.querySelector('option:checked');
+                const clientName = selectedOption?.getAttribute('data-client-name');
+
+                const domain = domainInput.value;
 
                 // Determine the appropriate endpoint
-                const endpoint = domain === 'https://api.ekostore.co'
+                const endpoint = clientName === 'EkoStore'
                     ? `${window.location.origin}/api/fetch-items`
                     : `${domain}/api/fetch-items`;
 

@@ -167,6 +167,8 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'permission:admin']]
     Route::resource('items', ItemController::class);
     Route::get('subitems/search', [ItemController::class, 'search'])->name('subitems.search');
     Route::post('subitems/move', [ItemController::class, 'move'])->name('subitems.move');
+    Route::post('/items/delete-selected', [ItemController::class, 'deleteSelected'])->name('items.deleteSelected');
+
 
     Route::resource('plans', PlanController::class);
     Route::resource('payment-methods', PaymentMethodController::class);

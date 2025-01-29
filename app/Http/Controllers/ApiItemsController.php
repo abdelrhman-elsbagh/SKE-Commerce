@@ -17,7 +17,7 @@ class ApiItemsController extends Controller
 {
     public function edit()
     {
-        $users = ClientStore::all();
+        $users = ClientStore::where('status', 'active')->get();
         return view('admin.api-items.edit', compact('users'));
     }
 
@@ -65,24 +65,20 @@ class ApiItemsController extends Controller
         ]);
 
         $domain = $validated['domain'];
+        $clientStore = ClientStore::where([
+            'secret_key' => $validated['source_key'],
+            'domain' => $domain,
+            'status' => 'active',
+            'name' => 'EkoStore',
+        ])->first();
         // Check if the source key matches a ClientStore's secret_key
-        if ($domain === 'https://api.ekostore.co') {
-            // Use ClientStore for EkoStore domain
-            $clientStore = ClientStore::where([
-                'secret_key' => $validated['source_key'],
-                'status' => 'active',
-            ])->first();
-        } else {
+        if ($clientStore == null) {
             // Use User for other domains
             $clientStore = User::where([
                 'secret_key' => $validated['source_key'],
                 'status' => 'active',
             ])->first();
         }
-
-        // Check if the source key matches a User's secret_key (ClientStore)
-//        $clientStore = User::where('secret_key', $validated['source_key'])->first();
-
         if (!$clientStore) {
             return response()->json(['message' => 'Invalid source key.'], 401);
         }
@@ -118,14 +114,18 @@ class ApiItemsController extends Controller
 
         $client_id = $validated['client_id'];
         $domain = $validated['domain'];
-        // Check if the source key matches a ClientStore's secret_key
-        if ($domain === 'https://api.ekostore.co') {
-            // Use ClientStore for EkoStore domain
-            $clientStore = ClientStore::where([
-                'secret_key' => $validated['source_key'],
-                'status' => 'active',
-            ])->first();
-        } else {
+
+        $clientStore = ClientStore::where([
+            'secret_key' => $validated['source_key'],
+            'domain' => $domain,
+            'status' => 'active',
+            'name' => 'EkoStore',
+        ])->first();
+
+        if ($clientStore) {
+            return $this->fetchEkoStoreItems($clientStore->id);
+        }
+        else {
             // Use User for other domains
             $clientStore = User::where([
                 'secret_key' => $validated['source_key'],
@@ -133,16 +133,8 @@ class ApiItemsController extends Controller
             ])->first();
         }
 
-
-
         if (!$clientStore) {
             return response()->json(['message' => 'Invalid source key.'], 401);
-        }
-
-
-        // If domain is EkoStore, fetch directly from its API
-        if ($domain === 'https://api.ekostore.co') {
-            return $this->fetchEkoStoreItems($validated['client_id']);
         }
 
         // Check if the domain matches a User's domain
@@ -176,48 +168,76 @@ class ApiItemsController extends Controller
 
     public function fetchEkoStoreItems($client_id)
     {
-        $client = ClientStore::where('domain', 'https://api.ekostore.co')->first();
+        $client = ClientStore::find($client_id);
         try {
-            if($client) {
-                $apiUrl = 'https://api.ekostore.co/client/api/products';
-                $apiToken = $client->secret_key; // Replace with your actual API token
+                if($client) {
+                    $apiUrl = "{$client->domain}/client/api/products";
+                    $apiToken = $client->secret_key; // Replace with your actual API token
 
-                // Fetch data from the EkoStore API
-                $response = Http::withHeaders(['api-token' => $apiToken])->get($apiUrl);
+//                    dd($apiUrl);
 
-                if ($response->failed()) {
-                    return response()->json(['success' => false, 'message' => 'Failed to fetch data from the EkoStore API'], 500);
+                    // Fetch data from the EkoStore API
+                    $response = Http::withHeaders(['api-token' => $apiToken])->get($apiUrl);
+
+                    if ($response->failed()) {
+                        return response()->json(['success' => false, 'message' => 'Failed to fetch data from the EkoStore API'], 500);
+                    }
+
+                    $products = $response->json();
+
+                    $groupedProducts = collect($products)->groupBy('category_name');
+
+                    $items = [];
+                    foreach ($groupedProducts as $categoryName => $productsInCategory) {
+                        $items[] = [
+                        'id' => $productsInCategory->first()['id'],
+                            'name' => $categoryName ?? 'Out Source',
+                            'description' => $productsInCategory->first()['description'] ?? null,
+                            'category' => $categoryName ?? 'Out Source',
+                            'category_img' => $productsInCategory->first()['category_img'] ?? null,
+                            'sub_items' => $productsInCategory->map(function ($product) {
+                                return [
+                                    'id' => $product['id'],
+                                    'name' => $product['name'],
+                                    'description' => implode(', ', $product['params']),
+                                    'price' => $product['price'],
+                                    'amount' => $product['qty_values']['min'] ?? 1,
+                                    'product_type' => $product['product_type'] ?? "package",
+                                    'is_custom' => $product['product_type'] == 'amount' ? 1 : 0,
+                                    'minimum_amount' => $product['qty_values']['min'] ?? 1,
+                                    'max_amount' => $product['qty_values']['max'] ?? 1,
+                                ];
+                            })->toArray(),
+                        ];
+                    }
+//                    foreach ($products as $product) {
+//
+//                        $items[] = [
+//                            'id' => $product['id'],
+//                            'name' => $product['name'],
+//                            'category' => $product['category_name'] ?? 'Out Source',
+//                            'category_img' => $product['category_img'] ?? null,
+//                            'description' => implode(', ', $product['params']),
+//                            'price' => $product['price'],
+//                            'amount' => $product['qty_values']['min'] ?? 0,
+//                            'sub_items' => [
+//                                [
+//                                    'id' => $product['id'],
+//                                    'name' => $product['name'],
+//                                    'description' => implode(', ', $product['params']),
+//                                    'price' => $product['price'],
+//                                    'amount' => $product['qty_values']['min'] ?? 0,
+//                                    'is_custom' => $product['product_type'] == 'amount' ? 1 : 0,
+//                                    'minimum_amount' => $product['qty_values']['min'] ?? null,
+//                                    'max_amount' => $product['qty_values']['max'] ?? null,
+//                                ],
+//                            ],
+//                        ];
+//                    }
+
+                    return response()->json(['items' => $items]);
                 }
 
-                $products = $response->json();
-
-                $items = [];
-                foreach ($products as $product) {
-                    $items[] = [
-                        'id' => $product['id'],
-                        'name' => $product['name'],
-                        'category' => $product['category_name'] ?? 'Out Source',
-                        'category_img' => $product['category_img'] ?? null,
-                        'description' => implode(', ', $product['params']),
-                        'price' => $product['price'],
-                        'amount' => $product['qty_values']['min'] ?? 0,
-                        'sub_items' => [
-                            [
-                                'id' => $product['id'],
-                                'name' => $product['name'],
-                                'description' => implode(', ', $product['params']),
-                                'price' => $product['price'],
-                                'amount' => $product['qty_values']['min'] ?? 0,
-                                'is_custom' => $product['product_type'] == 'amount' ? 1 : 0,
-                                'minimum_amount' => $product['qty_values']['min'] ?? null,
-                                'max_amount' => $product['qty_values']['max'] ?? null,
-                            ],
-                        ],
-                    ];
-                }
-
-                return response()->json(['items' => $items]);
-            }
         }
         catch (\Exception $e) {
             Log::error($e->getMessage());
@@ -278,6 +298,9 @@ class ApiItemsController extends Controller
                 ['name' => $category_name, 'user_id' => $user->id]
             );
 
+            $domain = $validated['domain'] ?? '';
+            $clientStore = ClientStore::where('domain', $domain)->where('status', 'active')->first();
+
             $itemExternalId = $subItemData['external_id'];
             $itemName = $subItemData['item_name'];
             $itemDesc = $subItemData['description'] ?? "";
@@ -316,7 +339,7 @@ class ApiItemsController extends Controller
             if (!$subItem) {
                 SubItem::create([
                     'item_id' => $parentItem->id,
-                    'user_id' => $user->id,
+                    'user_id' => Auth::user()->id,
                     'name' => $subItemData['name'],
                     'description' => $subItemData['description'],
                     'amount' => $subItemData['amount'],
@@ -327,9 +350,10 @@ class ApiItemsController extends Controller
                     'external_id' => $subItemData['external_id'],
                     'external_user_id' => $subItemData['user_id'] ?? Auth::user()->id,
                     'external_item_id' => $subItemData['item_id'],
-                    'domain' => $request->input('domain'),
+                    'product_type' => $subItemData['is_custom'] ? "amount" : "package",
+                    'domain' => $domain,
                     'client_store_id' => $client_id,
-                    'out_flag' => $request->input('domain') == 'https://api.ekostore.co' ? 1 : 0,
+                    'out_flag' => $clientStore != null ? 1 : 0,
                 ]);
             }
 

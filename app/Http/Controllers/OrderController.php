@@ -54,7 +54,7 @@ class OrderController extends Controller
 
     public function index(Request $request)
     {
-        $client = ClientStore::where('domain', 'https://api.ekostore.co')->first();
+        $clients = ClientStore::where('name', 'EkoStore')->where('status', 'active')->get();
 
         $query = Order::with(['user', 'subItems.subItem'])->orderBy('created_at', 'DESC');
 
@@ -71,69 +71,71 @@ class OrderController extends Controller
         $orders = $query->get();
 
         foreach ($orders as $order) {
-            if ($order->is_external == 1 && $order->external_order_id && $order->subItem->out_flag == 1 && $client) {
-                // Prepare the API URL and headers
-                $url = "https://api.ekostore.co/client/api/check";
-                $headers = [
-                    'api-token' => $client->secret_key,
-                ];
+            if ($order->is_external == 1 && $order->external_order_id && $order->subItem->out_flag == 1 && !$clients->isEmpty()) {
+                foreach ($clients as $client) {
+                    // Prepare the API URL and headers
+                    $url = "{$client->domain}/client/api/check";
+                    $headers = [
+                        'api-token' => $client->secret_key,
+                    ];
 
-                $originalStatus = $order->status;
+                    $originalStatus = $order->status;
 
-                // API call
-                $response = Http::withHeaders($headers)->get($url, [
-                    'orders' => "[$order->external_order_id]",
-                ]);
-
-                if ($response->ok()) {
-                    $responseData = $response->json();
-
-
-                    // Update the external order status
-                    if (isset($responseData['data'][0]['order_id'])) {
-                        $order->reply_msg = $responseData['data'][0]['replay_api'][0] ?? null;
-                        $status = $responseData['data'][0]['status'] ?? "Error";
-
-                        $order->status = $status === 'wait'
-                            ? 'pending'
-                            : ($status === 'reject'
-                                ? 'refunded'
-                                : ($status === 'accept'
-                                    ? 'active'
-                                    : $status));
-
-                        $order->save();
-                    }
-
-                    if (($originalStatus === 'active' && $order->status === 'refunded') ||
-                        ($originalStatus === 'pending' && $order->status === 'refunded')||
-                        ($originalStatus === 'pending' && $order->status === 'reject')||
-                        ($originalStatus === 'wait' && $order->status === 'reject')||
-                        ($originalStatus === 'active' && $order->status === 'reject')||
-                        ($originalStatus === 'accept' && $order->status === 'reject'))
-                    {
-                        $this->refundOrderAmount($order);
-                    }
-
-                    if( ($originalStatus === 'accept' && $order->status === 'reject')||
-                        ($originalStatus === 'active' && $order->status === 'reject')){
-                        $order->reply_msg = "برجاء مراجعة الطلب شخصيا";
-                        $order->save();
-                    }
-
-                    // Log the response
-                    \App\Models\ResponsesLog::create([
-                        'type' => 'order_update',
-                        'request_data' => ['orders' => $order->external_order_id],
-                        'response_data' => $responseData,
+                    // API call
+                    $response = Http::withHeaders($headers)->get($url, [
+                        'orders' => "[$order->external_order_id]",
                     ]);
-                } else {
-                    // Log the error response
-                    \App\Models\ResponsesLog::create([
-                        'type' => 'order_update_error',
-                        'request_data' => ['orders' => $order->external_order_id],
-                        'error_message' => $response->body(),
-                    ]);
+
+                    if ($response->ok()) {
+                        $responseData = $response->json();
+
+
+                        // Update the external order status
+                        if (isset($responseData['data'][0]['order_id'])) {
+                            $order->reply_msg = $responseData['data'][0]['replay_api'][0] ?? null;
+                            $status = $responseData['data'][0]['status'] ?? "Error";
+
+                            $order->status = $status === 'wait'
+                                ? 'pending'
+                                : ($status === 'reject'
+                                    ? 'refunded'
+                                    : ($status === 'accept'
+                                        ? 'active'
+                                        : $status));
+
+                            $order->save();
+                        }
+
+                        if (($originalStatus === 'active' && $order->status === 'refunded') ||
+                            ($originalStatus === 'pending' && $order->status === 'refunded')||
+                            ($originalStatus === 'pending' && $order->status === 'reject')||
+                            ($originalStatus === 'wait' && $order->status === 'reject')||
+                            ($originalStatus === 'active' && $order->status === 'reject')||
+                            ($originalStatus === 'accept' && $order->status === 'reject'))
+                        {
+                            $this->refundOrderAmount($order);
+                        }
+
+                        if( ($originalStatus === 'accept' && $order->status === 'reject')||
+                            ($originalStatus === 'active' && $order->status === 'reject')){
+                            $order->reply_msg = "برجاء مراجعة الطلب شخصيا";
+                            $order->save();
+                        }
+
+                        // Log the response
+                        \App\Models\ResponsesLog::create([
+                            'type' => 'order_update',
+                            'request_data' => ['orders' => $order->external_order_id],
+                            'response_data' => $responseData,
+                        ]);
+                    } else {
+                        // Log the error response
+                        \App\Models\ResponsesLog::create([
+                            'type' => 'order_update_error',
+                            'request_data' => ['orders' => $order->external_order_id],
+                            'error_message' => $response->body(),
+                        ]);
+                    }
                 }
             }
         }

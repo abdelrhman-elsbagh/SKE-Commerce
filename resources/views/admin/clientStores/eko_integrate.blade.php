@@ -20,15 +20,9 @@
                             <strong>Domain:</strong> https://api.ekostore.co<br>
                             <strong>Email:</strong> your-email@email.com
                         </p>
-                        @if($ekoStore && $ekoStore->secret_key)
-                            <!-- Button for already integrated store -->
-                            <button class="btn btn-success" disabled>Integrated Successfully</button>
-                        @else
-                            <!-- Button for integration -->
-                            <button class="btn btn-primary btn-integrate">
-                                Integrate
-                            </button>
-                        @endif
+                        <button class="btn btn-primary btn-integrate">
+                            Integrate
+                        </button>
                     </div>
                 </div>
             </div>
@@ -45,6 +39,10 @@
                 </div>
                 <div class="modal-body">
                     <form id="integrateForm">
+                        <div class="mb-3">
+                            <label for="storeDomain" class="form-label">Store Domain</label>
+                            <input type="text" class="form-control" id="storeDomain" required>
+                        </div>
                         <div class="mb-3">
                             <label for="apiInput" class="form-label">API Key</label>
                             <input type="text" class="form-control" id="apiInput" required>
@@ -78,6 +76,7 @@
 
                 // Handle the form submission
                 $('#submitIntegration').on('click', function () {
+                    const domain = $('#storeDomain').val();
                     const apiKey = $('#apiInput').val();
                     const email = $('#emailInput').val();
 
@@ -98,6 +97,7 @@
                         url: '{{ route("clientStores.integrate") }}',
                         type: 'POST',
                         data: {
+                            domain: domain,
                             api_key: apiKey,
                             email: email,
                             _token: '{{ csrf_token() }}'

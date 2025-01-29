@@ -202,96 +202,60 @@ class ItemController extends Controller
     ###############################
     public function fetchAndImportEkoStoreProducts()
     {
-        $eko_domain = ClientStore::where('domain', 'https://api.ekostore.co')->first();
+        $eko_domains = ClientStore::where('name', 'EkoStore')->where('status', 'active')->get();
+
+        if ($eko_domains->isEmpty()) {
+            return response()->json(['success' => false, 'message' => 'No active EkoStore domains found']);
+        }
 
         try {
-            if ($eko_domain) {
-                $apiUrl = 'https://api.ekostore.co/client/api/products';
-                $apiToken = $eko_domain->secret_key;
+            foreach ($eko_domains as $eko_domain) {
 
-//                $eko_category = Category::updateOrCreate(['name' => 'EkoStore'],
-//                    ['description' => 'Imported from EkoStore API', 'status' => 'active', 'name' => 'EkoStore']);
+                if ($eko_domain) {
+                    $apiUrl = "{$eko_domain->domain}/client/api/products";
+                    $apiToken = $eko_domain->secret_key;
+                    // Fetch data from the API
+                    $response = Http::withHeaders([
+                        'api-token' => $apiToken,
+                    ])->get($apiUrl);
 
-                // Fetch data from the API
-                $response = Http::withHeaders([
-                    'api-token' => $apiToken,
-                ])->get($apiUrl);
-
-                if ($response->failed()) {
-                    return response()->json(['success' => false, 'message' => 'Failed to fetch data from the EkoStore API'], 500);
-                }
-
-                $products = $response->json();
-
-                foreach ($products as $key => $product) {
-                    // Handle the category (Item in your app)
-                    $categoryName = $product['category_name'] ?? 'Uncategorized';
-//                    $categoryImage = $product['category_img'];
-
-//                    $item = Item::updateOrCreate(
-                    $item = Item::where('name', $categoryName)->first();
-
-                    if($item){
-                        $item->update([
-                            'description' => 'Imported from EkoStore API',
-                            'status' => 'active',
-                            'is_outsourced' => true,
-                            'source_domain' => 'https://api.ekostore.co',
-                        ]);
-
-                        $subItem = SubItem::where('external_id', $product['id'])->first();
-
-                        $subItemOrder = $key + 1;
-
-                        if ($subItem) {
-                            // Handle the sub-item
-                            $subItem->update(
-                                [
-                                    'item_id' => $item->id,
-                                    'name' => $product['name'],
-                                    'description' => implode(', ', $product['params']),
-                                    'amount' => $product['qty_values']['min'] ?? 0,
-                                    'price' => $product['price'],
-                                    'original_price' => $product['price'],
-                                    'status' => $product['available'] ? 'active' : 'inactive',
-                                    'is_custom' => $product['product_type'] == "amount" ? 1 : 0,
-                                    'minimum_amount' => $product['qty_values']['min'] ?? null,
-                                    'max_amount' => $product['qty_values']['max'] ?? null,
-                                    'product_type' => $product['product_type']?? null,
-                                    'domain' => 'https://api.ekostore.co',
-                                    'client_store_id' => $eko_domain->id,
-//                                    'order' => $subItemOrder,
-                                    'out_flag' => 1,
-                                ]
-                            );
-                        }
-
+                    if ($response->failed()) {
+                        return response()->json(['success' => false, 'message' => 'Failed to fetch data from the EkoStore API'], 500);
                     }
 
-//                    if ($item->wasRecentlyCreated && $item->order == 0) {
-//                        $item->update(['category_id' => $eko_category->id]);
-//                        $maxOrder = Item::max('order'); // Get the max existing order value
-//                        $item->update(['order' => $maxOrder + 1]); // Set the order to max + 1
-//                    }
+                    $products = $response->json();
 
-//                    if ($categoryImage && !$item->getFirstMediaUrl('images')) {
-//                        $item->addMediaFromUrl($categoryImage)->toMediaCollection('images');
-//                    }
+                    foreach ($products as $key => $product) {
+                            $subItem = SubItem::where('external_id', $product['id'])->first();
+                            if ($subItem) {
+                                $subItem->update(
+                                    [
+                                        'amount' => $product['qty_values']['min'] ?? 1,
+                                        'price' => $product['price'],
+                                        'original_price' => $product['price'],
+                                        'status' => $product['available'] ? 'active' : 'inactive',
+                                        'is_custom' => $product['product_type'] == "amount" ? 1 : 0,
+                                        'minimum_amount' => $product['qty_values']['min'] ?? 1,
+                                        'max_amount' => $product['qty_values']['max'] ?? 1,
+                                        'product_type' => $product['product_type']?? "package",
+                                        'domain' => $eko_domain->domain,
+                                        'client_store_id' => $eko_domain->id,
+                                        'out_flag' => 1,
+                                    ]
+                                );
+                                $subItem->save();
+                            }
+                    }
 
-//                    if ($categoryImage && !$item->getFirstMediaUrl('front_image')) {
-//                        $item->addMediaFromUrl($categoryImage)->toMediaCollection('front_image');
-//                    }
                 }
-
-                return response()->json(['success' => true, 'message' => 'EkoStore products imported successfully']);
             }
         }
         catch (\Exception $e) {
             Log::error($e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Error while Import Eko-Store products' . $e->getMessage()]);
         }
 
-        return response()->json(['success' => false, 'message' => 'Error while Import Eko-Store products']);
-
+        return response()->json(['success' => true, 'message' => 'EkoStore products imported successfully']);
     }
 
     public function search(Request $request)
@@ -305,15 +269,27 @@ class ItemController extends Controller
     public function move(Request $request)
     {
         $request->validate([
-            'subitem_id' => 'required|exists:sub_items,id',
+            'subitem_ids' => 'required|array',
+            'subitem_ids.*' => 'exists:sub_items,id',
             'target_item_id' => 'required|exists:items,id',
         ]);
 
-        $subItem = SubItem::find($request->subitem_id);
-        $subItem->item_id = $request->target_item_id;
-        $subItem->save();
+        SubItem::whereIn('id', $request->subitem_ids)->update(['item_id' => $request->target_item_id]);
 
-        return response()->json(['success' => true, 'message' => 'SubItem moved successfully']);
+        return response()->json(['success' => true, 'message' => 'SubItems moved successfully']);
     }
+
+    public function deleteSelected(Request $request)
+    {
+        $request->validate([
+            'item_ids' => 'required|array',
+            'item_ids.*' => 'exists:items,id',
+        ]);
+
+        Item::whereIn('id', $request->item_ids)->delete();
+
+        return response()->json(['success' => true, 'message' => 'Selected items deleted successfully.']);
+    }
+
 
 }

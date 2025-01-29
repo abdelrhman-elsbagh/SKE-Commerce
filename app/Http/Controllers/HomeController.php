@@ -615,12 +615,12 @@ class HomeController extends Controller
         if ($subItem->external_id && $subItem->out_flag) {
             try {
                 // Prepare the external API request data
-                $client = ClientStore::where('domain', 'https://api.ekostore.co')->first();
+                $client = ClientStore::where('domain', $subItem->domain)->where('status', 'active')->first();
                 $apiToken = $client->secret_key;
                 $quantity = $subItem->is_custom == 1 ? $request->custom_amount : $subItem->amount;
                 $serviceId = $request->service_id;
 
-                $url = "https://api.ekostore.co/client/api/newOrder/{$subItem->external_id}/params";
+                $url = "{$subItem->domain}/client/api/newOrder/{$subItem->external_id}/params";
                 $queryParams = [
                     'qty' => $quantity,
                     'playerId' => $serviceId,
