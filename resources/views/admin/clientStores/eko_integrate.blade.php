@@ -15,9 +15,9 @@
             <div class="col-md-4">
                 <div class="card mb-4 shadow-sm">
                     <div class="card-body">
-                        <h5 class="card-title">Eko Store</h5>
+                        <h5 class="card-title">ZDDK API Client</h5>
                         <p class="card-text">
-                            <strong>Domain:</strong> https://api.ekostore.co<br>
+                            <strong>Domain:</strong> https://api.store.com<br>
                             <strong>Email:</strong> your-email@email.com
                         </p>
                         <button class="btn btn-primary btn-integrate">

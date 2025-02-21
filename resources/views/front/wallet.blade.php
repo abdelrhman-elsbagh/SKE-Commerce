@@ -140,6 +140,29 @@
             </div>
         </div>
     </main>
+
+    <!-- UIkit Modal Structure -->
+    <div id="modal-order-details" class="uk-flex-top" uk-modal>
+        <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+            <button class="uk-modal-close-default" type="button" uk-close></button>
+            <h2 class="uk-modal-title">Order Details</h2>
+            <ul class="uk-list uk-list-divider">
+                <li><strong>Order ID:</strong> <span id="modal-order-id"></span></li>
+                <li><strong>Service ID:</strong> <span id="modal-service-id"></span></li>
+                <li><strong>Item Name:</strong> <span id="modal-item-name"></span></li>
+                <li><strong>Amount:</strong> <span id="modal-amount"></span></li>
+                <li><strong>Status:</strong> <span id="modal-status"></span></li>
+                <li><strong>Created At:</strong> <span id="modal-created-at"></span></li>
+                <li><strong>Updated At:</strong> <span id="modal-updated-at"></span></li>
+                <li><strong>Total Price:</strong> <span id="modal-total"></span></li>
+                <li><strong>Reply Message:</strong> <span id="reply_msg"></span></li>
+            </ul>
+            <div class="uk-margin">
+                <button class="uk-button uk-button-secondary uk-modal-close">Close</button>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @section('scripts')
@@ -230,6 +253,60 @@
                     });
                 }
             });
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            console.log("Document is ready");
+
+            function bindOrderDetailsClick() {
+                $(document).off('click', '.order-details-btn').on('click', '.order-details-btn', function() {
+                    console.log("order-details-btn clicked");
+
+                    let orderItem = $(this).closest('.activities-item');
+
+                    // Extract order details
+                    let orderId = orderItem.data('id');
+                    let serviceId = orderItem.find('.activities-item__date:nth-child(3)').text().replace(/[^0-9]/g, '');
+                    let itemName = orderItem.data('name') || 'Unknown Item';
+                    let amount = orderItem.find('.activities-item__date:nth-child(4)').text().trim();
+                    let status = orderItem.find('.item__status').text().trim();
+                    let reply_msg = orderItem.find('.reply_msg').text().trim();
+                    let createdAt = orderItem.find('.activities-item__date:nth-child(5)').text().trim();
+                    let updatedAt = orderItem.find('.activities-item__status span').text().trim();
+                    let total = orderItem.find('.activities-item__price').text().trim();
+
+                    // Populate modal fields
+                    $('#modal-order-id').text(orderId);
+                    $('#modal-service-id').text(serviceId || 'N/A');
+                    $('#modal-item-name').text(itemName);
+                    $('#modal-amount').text(amount);
+                    $('#modal-status').text(status);
+                    $('#reply_msg').text(reply_msg);
+                    $('#modal-created-at').text(createdAt);
+                    $('#modal-updated-at').text(updatedAt || 'Not Updated');
+                    $('#modal-total').text(total);
+
+                    // Open UIkit Modal
+                    UIkit.modal('#modal-order-details').show();
+                });
+
+                console.log("Event binding complete");
+            }
+
+            // Bind events initially
+            bindOrderDetailsClick();
+
+            // Monitor for dynamic changes in the orders list container
+            const targetNode = document.getElementById('orders-list-container');
+            if (targetNode) {
+                const observer = new MutationObserver(function(mutationsList, observer) {
+                    console.log("Orders list updated - Rebinding events");
+                    bindOrderDetailsClick(); // Rebind click event when new content is loaded
+                });
+
+                observer.observe(targetNode, { childList: true, subtree: true });
+            }
         });
     </script>
 @endsection

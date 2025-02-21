@@ -108,9 +108,13 @@
                                     <thead>
                                     <tr>
                                         <th>Name</th>
+                                        <th>Status</th>
                                         <th>Description</th>
                                         <th>Amount</th>
                                         <th>Price</th>
+                                        <th>Max Amount</th>
+                                        <th>Min Amount</th>
+                                        <th>Country</th>
                                         <th>Image</th>
                                         <th>Actions</th>
                                     </tr>
@@ -135,6 +139,10 @@
                                                 <td>
                                                     <input type="hidden" name="sub_items[{{ $loop->index }}][price]" value="{{ $subItem->price }}">
                                                     {{ $subItem->price }}
+                                                </td>
+                                                <td>
+                                                    <input type="text" name="sub_items[{{ $loop->index }}][country]" value="{{ $subItem->country ?? 'Global' }}">
+                                                    <span class="sub-item-country-display">{{ $subItem->country ?? 'Global' }}</span> <!-- ✅ Show country -->
                                                 </td>
                                                 <td>
                                                     @if($subItem->getFirstMediaUrl('images'))
@@ -208,6 +216,18 @@
                             </select>
                         </div>
                         <div class="mb-3">
+                            <label for="sub_item_country_modal" class="form-label">Country</label>
+                            <select class="form-control" id="sub_item_country_modal" name="sub_item_country_modal">
+                                <option value="Global">Global</option>
+                                @php
+                                        $countries = json_decode(file_get_contents(public_path('assets/countries.json')), true);
+                                @endphp
+                            @foreach($countries as $country)
+                                    <option value="{{ $country['name'] }}">{{ $country['name'] }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-3">
                             <label for="sub_item_image_modal" class="form-label">Sub Item Image</label>
                             <input type="file" class="form-control" id="sub_item_image_modal" name="sub_item_image_modal" accept="image/*">
                             <div class="mt-2" id="sub-item-image-preview-modal"></div>
@@ -272,6 +292,7 @@
                 let is_custom = $('#is_custom').is(':checked') ? 1 : 0;
                 let subItemPrice = $('#sub_item_price_modal').val();
                 let subItemImage = $('#sub_item_image_modal')[0].files[0];
+                let subItemCountry = $('#sub_item_country_modal').val();
 
                 let subItemCount = $('#sub-items-table-body tr').length;
 
@@ -305,6 +326,10 @@
                             <input type="hidden" name="sub_items[${subItemCount}][max_amount]" value="${max_amount}">
                             <input type="hidden" name="sub_items[${subItemCount}][is_custom]" value="${is_custom}">
                             ${max_amount}
+                        </td>
+                         <td>
+                            <input type="hidden" name="sub_items[${subItemCount}][country]" value="${subItemCountry}">
+                            ${subItemCountry}
                         </td>
                         <td>
                             <input type="file" name="sub_items[${subItemCount}][image]" class="sub-item-image-file" data-index="${subItemCount}" style="display: none;">

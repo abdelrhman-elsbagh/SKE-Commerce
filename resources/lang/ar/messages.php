@@ -24,6 +24,7 @@ return [
     'recent_orders' => ' أحدث الطلبات',
     'search_orders_placeholder' => 'ابحث عن الطلبات بواسطة المعرف أو الاسم...',
     'enter_user_id_in_application' => 'قم بإدخال معرف المستخدم في التطبيق',
+    'sub_item_country_filter' => 'البلد :',
     'enter_user_id' => 'يرجى إدخال معرف المستخدم في التطبيق.',
     'select_product_first' => 'يرجى اختيار منتج أولاً.',
     'error_processing_request' => 'حدث خطأ أثناء معالجة طلبك.',

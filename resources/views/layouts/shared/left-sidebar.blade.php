@@ -603,6 +603,24 @@
                 </div>
             </li>
 
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarTickets" aria-expanded="false" aria-controls="sidebarTickets" class="side-nav-link nav-link">
+                    <i class="ri-customer-service-2-line"></i>
+                    <span> Tickets </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarTickets">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('tickets.index') }}" class="nav-link">Tickets</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('ticket_categories.index') }}" class="nav-link">Tickets Categories</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
 {{--            <li class="side-nav-item">--}}
 {{--                <a data-bs-toggle="collapse" href="#sidebarAccounts" aria-expanded="false" aria-controls="sidebarAccounts" class="side-nav-link nav-link">--}}
 {{--                    <i class=" ri-calculator-line"></i>--}}
@@ -763,6 +781,14 @@
                     </ul>
                 </div>
             </li>
+
+            <li class="side-nav-item">
+                <a href="{{ route('item_styles.edit') }}" class="side-nav-link">
+                    <i class="ri-palette-line"></i>
+                    <span> Item Styles </span>
+                </a>
+            </li>
+
 
             <li class="side-nav-item">
                 <a href="{{ route('configs.edit') }}" class="side-nav-link">

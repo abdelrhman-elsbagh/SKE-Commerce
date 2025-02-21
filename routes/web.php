@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\ItemStyleController;
+use App\Http\Controllers\TicketCategoryController;
+use App\Http\Controllers\TicketController;
+use Illuminate\Http\Request;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ApiItemsController;
 use App\Http\Controllers\ClientController;
@@ -36,10 +40,13 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\TermsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserWalletController;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoutingController;
+use Laravel\Socialite\Facades\Socialite;
 
 
 require __DIR__ . '/auth.php';
@@ -47,6 +54,56 @@ require __DIR__ . '/auth.php';
 
 //Route::get('/abdel', [PermissionController::class, 'syncAdminGroupPermissions']);
 
+/*
+Route::get('auth/google', function (Request $request) {
+    // Validate input parameters first
+    $currency = $request->query('currency');
+    $country = $request->query('country');
+    $phone = $request->query('phone');
+
+    // Check if all fields are present
+    if (!$currency || !$country || !$phone) {
+        return redirect()->back()->withErrors(['message' => 'All fields are required.']);
+    }
+
+    // Store data in session
+    session([
+        'google_currency' => $currency,
+        'google_country' => $country,
+        'google_phone' => $phone,
+    ]);
+
+    return Socialite::driver('google')->redirect();
+})->name('google.login');
+
+*/
+
+// ✅ Google Register - Requires Currency, Country, Phone
+Route::get('auth/google/register', function (Request $request) {
+    if (!$request->has(['currency', 'country', 'phone'])) {
+        return redirect()->back()->withErrors(['message' => 'Currency, country, and phone are required for registration.']);
+    }
+
+    session([
+        'google_currency' => $request->query('currency'),
+        'google_country' => $request->query('country'),
+        'google_phone' => $request->query('phone'),
+    ]);
+
+    return Socialite::driver('google')->redirect();
+})->name('google.register');
+
+// ✅ Google Login - Does NOT Require Currency, Country, Phone
+Route::get('auth/google/login', function () {
+    return Socialite::driver('google')->redirect();
+})->name('google.login');
+
+// ✅ Google Callback - Handles Both Register & Login
+Route::get('auth/google/callback', [HomeController::class, 'googleAuth'])->name('google.callback');
+
+
+
+//Route::get('auth/google/callback', [HomeController::class, 'googleRegister'])->name('google.callback');
 
 
 
@@ -58,6 +115,8 @@ Route::get('/change-language/{lang}', [LanguageController::class, 'changeLanguag
 
 
 Route::get('registration', [HomeController::class, 'register_page'])->name('register-page');
+Route::post('user-create-ticket', [HomeController::class, 'create_ticket'])->name('user-create-ticket');
+Route::get('user-tickets', [HomeController::class, 'tickets'])->name('user-tickets');
 Route::get('partner-registration', [HomeController::class, 'register_partner_page'])->name('register-partner');
 Route::get('register-business', [HomeController::class, 'register_business_page'])->name('register-business');
 Route::get('sign-in', [HomeController::class, 'login_page'])->name('sign-in');
@@ -70,6 +129,8 @@ Route::get('api', [HomeController::class, 'api'])->name('api');
 
 Route::post('login', [HomeController::class, 'login']);
 Route::post('register', [HomeController::class, 'register'])->name('register');
+Route::post('google-register', [HomeController::class, 'googleRegister']);
+
 Route::post('partner-register', [HomeController::class, 'registerPartner'])->name('partner-register');
 Route::post('register_business', [HomeController::class, 'register_business'])->name('register_business');
 
@@ -158,6 +219,10 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'permission:admin']]
 
     Route::get('configs/edit', [ConfigController::class, 'edit'])->name('configs.edit');
     Route::put('configs/{id}', [ConfigController::class, 'update'])->name('configs.update');
+
+    Route::get('item_styles/edit', [ItemStyleController::class, 'edit'])->name('item_styles.edit');
+    Route::put('item_styles/{id}', [ItemStyleController::class, 'update'])->name('item_styles.update');
+
     Route::get('terms/edit', [TermsController::class, 'edit'])->name('terms.edit');
     Route::put('terms/{id}', [TermsController::class, 'update'])->name('terms.update');
     Route::resource('business-client-wallets', BusinessClientWalletController::class)->names('business-client-wallets');
@@ -177,6 +242,8 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'permission:admin']]
     Route::resource('footer', FooterController::class);
     Route::resource('fee-groups', FeeGroupController::class)->names('fee_groups');
     Route::resource('posts', PostController::class);
+    Route::resource('tickets', TicketController::class);
+    Route::resource('ticket_categories', TicketCategoryController::class);
     Route::resource('partners', PartnerController::class);
     Route::resource('notifications', NotificationController::class);
     Route::resource('currencies', CurrencyController::class);

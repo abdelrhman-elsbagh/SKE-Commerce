@@ -5,6 +5,18 @@
 
 @section('content')
     <main class="page-main">
+        <div class="uk-margin uk-width-2-3@l subitem-country-container">
+            <label for="countryFilter" class="uk-form-label">{{ __('messages.sub_item_country_filter') }}</label>
+            <select id="countryFilter" class="uk-select subitem-country">
+                @foreach($item->subItems->pluck('country')->unique()->sort() as $country)
+                    @if(!empty($country))
+                        <option value="{{ $country }}" {{ $country == 'Global' ? 'selected' : '' }}>
+                            {{ $country }}
+                        </option>
+                    @endif
+                @endforeach
+            </select>
+        </div>
         <div class="uk-grid" data-uk-grid>
             @if(isset($item))
                 <div class="uk-width-2-3@l">
@@ -17,6 +29,7 @@
                                 @csrf
                                 <input class="uk-input light-border" id="service_id" name="service_id" type="text"
                                        placeholder="{{ __('messages.enter_user_id_in_application') }}" style="position: absolute;bottom: -80px;left: 0;background: #FFF;">
+
                                 <div class="uk-grid uk-grid-small uk-child-width-1-5@xl uk-child-width-1-4@m uk-child-width-1-3" data-uk-grid>
                                     @foreach($item->subItems as $subItem)
                                         @php
@@ -27,24 +40,28 @@
                                             }
                                             $isInactive = $subItem->status == 'inactive';
                                         @endphp
-                                        <div class="wrapper-item-card {{ $isInactive ? 'hidden-overflow' : '' }}"  style="position: relative; margin-bottom: 10px;">
+                                        <div class="wrapper-item-card {{ $isInactive ? 'hidden-overflow' : '' }}"  style="position: relative; margin-bottom: 10px;"
+                                             data-country="{{ $subItem->country ?? 'Global' }}">
                                             @if($isInactive)
                                                 <div class="card-tag card-tag-inactive">Not Available</div>
                                             @endif
                                             <div class="uk-card uk-card-default uk-card-hover uk-margin selectable-card whole-item-card"
                                                  data-id="{{ $subItem->id }}"
-                                                 data-price="{{ number_format($subItem->price + ($subItem->price * $config->fee / 100), 4) }}"
+                                                 data-price="{{ substr((string)($subItem->price + ($subItem->price * $config->fee / 100)), 0, 9) }}"
+                                                 data-product-type="{{ $subItem->product_type }}"
+                                                 data-qty-list="{{ $subItem->qty_list ? $subItem->qty_list : '[]' }}"
                                                  data-is-custom="{{ $subItem->is_custom ? '1' : '0' }}"
-                                                 data-min-amount="{{ $subItem->minimum_amount ?? 0 }}"
-                                                 data-max-amount="{{ $subItem->max_amount ?? 0 }}"
-                                                 data-amount="{{ $subItem->amount ?? 0 }}"
+                                                 data-min-amount="{{ $subItem->minimum_amount ?? 1 }}"
+                                                 data-max-amount="{{ $subItem->max_amount ?? 1 }}"
+                                                 data-amount="{{ $subItem->amount ?? 1 }}"
                                                  @if($isInactive) style="pointer-events: none; opacity: 0.5;" @endif>
-                                                @if($subItem->is_custom == 0)
+
+                                            @if($subItem->is_custom == 0)
                                                     <div class="uk-card-header item-crd" style="padding: 10px !important;">
                                                         <div class="uk-grid-small uk-flex-middle" data-uk-grid>
                                                             <div class="uk-width-expand item-info item-crd-detail">
                                                                 <h3 class="uk-card-title uk-margin-remove-bottom item-detail-title" style="">
-                                                                    {{ $subItem->amount }} {{ $subItem->name }}
+                                                                    {{ $subItem->name }}
                                                                     @if(optional($subItem)->getFirstMediaUrl('images'))
 
                                                                         <img src="{{ $subItem->getFirstMediaUrl('images') }}" alt="{{ $subItem->name }}" class="uk-width-1-1"
@@ -107,6 +124,14 @@
                                            border: 1px solid #F46119; max-width: 400px;;font-weight: 600;">
                                 </div>
 
+                                <!-- Hidden Select Dropdown for qty_list (Initially Hidden) -->
+                                <div id="qtyListContainer" class="d-flex align-items-center justify-content-center" style="display: none; margin-top: 20px;">
+                                    <label for="qtyListSelect" class="me-2" style="flex: 0 0 auto; white-space: nowrap; margin-right: 20px;font-weight: 600;">Select Quantity:</label>
+                                    <select id="qtyListSelect" class="uk-select" name="qty_list"
+                                            style="flex: 1; background: #FFF; border: 1px solid #F46119; max-width: 400px; font-weight: 600;">
+                                    </select>
+                                </div>
+
                                 <input type="hidden" name="sub_item_id" id="selectedSubItemId">
                             </form>
                         </div>
@@ -127,7 +152,7 @@
                         @endif
                     </div>
                     <div class="game-profile-card__intro">
-                        <span>{{ App::getLocale() == 'ar' && $item->ar_description ? $item->ar_description : $item->name }}</span>
+                        <span>{{ App::getLocale() == 'ar' ? $item->ar_description : $item->description ?? "" }}</span>
                         <span id="item_name_service" style="display: none">{{ App::getLocale() == 'ar' ? $item->ar_name : $item->name }}</span>
                     </div>
                     <ul class="game-profile-card__list list-inline">
@@ -201,6 +226,9 @@
             const priceElement = $('.game-profile-price__value');
             let basePrice = 0; // Initialize the base price
             let unitAmount = 0; // Initialize the base amount unit
+            const qtyListContainer = $('#qtyListContainer');
+            const qtyListSelect = $('#qtyListSelect');
+            const selectedSubItemIdInput = $('#selectedSubItemId');
 
             $('.selectable-card').on('click', function() {
                 if ($(this).css('pointer-events') === 'none') {
@@ -218,6 +246,61 @@
 
                 serviceInput.attr('placeholder', `Please Enter ${desc_data} For " ${item_name} "`);
 
+                /*#############################################################################*/
+                const productType = $(this).data('product-type');
+                let qtyList = $(this).attr('data-qty-list');
+
+
+
+                try {
+                    qtyList = JSON.parse(qtyList); // Convert JSON string to array
+                } catch (e) {
+                    qtyList = []; // Default to empty array if parsing fails
+                }
+
+                let selectedAmount = qtyList.length > 0 ? parseFloat(qtyList[0].replace(/[^0-9.]/g, '')) || 1 : 1;
+                selectedSubItemIdInput.val($(this).data('id'));
+                console.log("selectedAmount", selectedAmount)
+                console.log("Parsed qty_list:", qtyList);
+
+                if (productType === "specificPackage" && Array.isArray(qtyList) && qtyList.length > 0) {
+                    qtyListContainer.show();
+                    customAmountContainer.hide();
+                    qtyListSelect.empty();
+
+                    qtyList.forEach(value => {
+                        let cleanedValue = value.replace(/[^0-9.]/g, ''); // Ensure it's a clean number
+                        qtyListSelect.append(new Option(cleanedValue, cleanedValue));
+                    });
+
+                    // **Set default selection before triggering the price update**
+                    qtyListSelect.val(selectedAmount);
+
+                    // ✅ **Move the price update AFTER setting the default selection**
+                    setTimeout(() => {
+                        updatePrice(selectedAmount, basePrice);
+                    }, 50);
+
+                    qtyListSelect.off('change').on('change', function () {
+                        updatePrice(this.value, basePrice);
+                    });
+
+                } else {
+                    qtyListContainer.hide();
+                    qtyListSelect.empty();
+                    customAmountContainer.show();
+                    updatePrice(selectedAmount, basePrice); // Ensure correct price is used
+                }
+
+                // Function to update price
+                function updatePrice(amount, basePrice) {
+                    if (!amount) return;
+                    const selectedQty = parseFloat(amount);
+                    const updatedPrice = basePrice * selectedQty;
+                    priceElement.text(updatedPrice.toFixed(4) + " " + priceElement.data('currency'));
+                }
+                /*#############################################################################*/
+
                 // Show or hide the custom amount input based on is_custom
                 if (isCustom) {
                     console.log("it's custom")
@@ -228,25 +311,62 @@
                     customAmountInput.val(minAmount); // Set initial amount to minAmount
 
                     // Calculate initial price based on minAmount
+                    console.log("minAmount", minAmount)
+                    console.log("unitAmount", unitAmount)
                     const initialPrice = (minAmount / unitAmount) * basePrice;
-                    priceElement.text(initialPrice.toFixed(4) + " " + $(priceElement).data('currency'));
+                    priceElement.text(initialPrice.toString().substring(0, 6) + " " + $(priceElement).data('currency'));
                 } else {
                     customAmountContainer.hide();
                     customAmountInput.val(''); // Clear the input if hidden
-                    priceElement.text(basePrice.toFixed(4) + " " + $(priceElement).data('currency'));
+                    priceElement.text(basePrice.toString().substring(0, 6) + " " + $(priceElement).data('currency'));
+
                 }
             });
 
+            // // Update price dynamically when custom amount changes
+            // customAmountInput.on('input', function() {
+            //     this.value = this.value.replace(/[^0-9]/g, '');
+            //     const enteredAmount = parseFloat(customAmountInput.val());
+            //     if (enteredAmount >= customAmountInput.attr('min') && enteredAmount <= customAmountInput.attr('max')) {
+            //         // Calculate the updated price based on the entered custom amount
+            //         const updatedPrice = (enteredAmount / unitAmount) * basePrice;
+            //         priceElement.text(updatedPrice.toString().substring(0, 6) + " " + $(priceElement).data('currency'));
+            //     }
+            // });
+
             // Update price dynamically when custom amount changes
             customAmountInput.on('input', function() {
-                this.value = this.value.replace(/[^0-9]/g, '');
-                const enteredAmount = parseFloat(customAmountInput.val());
-                if (enteredAmount >= customAmountInput.attr('min') && enteredAmount <= customAmountInput.attr('max')) {
-                    // Calculate the updated price based on the entered custom amount
-                    const updatedPrice = (enteredAmount / unitAmount) * basePrice;
-                    priceElement.text(updatedPrice.toFixed(2) + " " + $(priceElement).data('currency'));
+                this.value = this.value.replace(/[^0-9]/g, ''); // Allow only numbers
+
+                const enteredAmount = parseFloat(this.value);
+                const min = parseFloat(customAmountInput.attr('min'));
+                const max = parseFloat(customAmountInput.attr('max'));
+
+                if (!isNaN(enteredAmount)) {
+                    // Only enforce max value while typing
+                    if (enteredAmount > max) {
+                        this.value = max;
+                    }
+
+                    // ✅ Calculate the updated price dynamically
+                    if (enteredAmount >= min) {
+                        const updatedPrice = (enteredAmount / unitAmount) * basePrice;
+                        priceElement.text(updatedPrice.toString().substring(0, 6) + " " + $(priceElement).data('currency'));
+                    }
                 }
             });
+
+// ✅ Ensure the minimum value is applied only when leaving the input field
+            customAmountInput.on('blur', function() {
+                const enteredAmount = parseFloat(this.value);
+                const min = parseFloat(customAmountInput.attr('min'));
+
+                if (!isNaN(enteredAmount) && enteredAmount < min) {
+                    this.value = min; // Enforce min only after input completion
+                }
+            });
+
+
 
             const cards = document.querySelectorAll('.selectable-card');
             let currency = $(priceElement).data('currency')
@@ -283,11 +403,24 @@
                 const buyNowButton = this;
                 buyNowButton.disabled = true; // Disable the button
 
+                // ✅ Get the selected product type
+                const selectedCard = document.querySelector(`.selectable-card[data-id="${selectedSubItemId}"]`);
+                const productType = selectedCard?.getAttribute('data-product-type') || '';
+
+                let customAmount = null;
+
+                if (productType === "specificPackage") {
+                    customAmount = document.getElementById('qtyListSelect')?.value || null;
+                } else {
+                    customAmount = AmountInput?.value ?? null;
+                }
+
+                console.log("customAmount", customAmount)
 
                 const formData = new FormData();
                 formData.append('sub_item_id', selectedSubItemId);
                 formData.append('service_id', serviceIdInput.value);
-                formData.append('custom_amount', AmountInput?.value >> null);
+                formData.append('custom_amount', customAmount);
                 formData.append('_token', document.querySelector('input[name="_token"]').value);
 
                 fetch('{{ route('purchase_order') }}', {
@@ -348,6 +481,41 @@
                         console.error('Error:', error);
                         toastr.error('There was an error processing your request.');
                     });
+            });
+
+            const countryFilter = document.getElementById('countryFilter');
+            const subItems = document.querySelectorAll('.wrapper-item-card');
+
+            let initialCountry = countryFilter.options.length > 0 ? countryFilter.options[0].value : "Global";
+
+            // Ensure "Global" is selected if present
+            if ([...countryFilter.options].some(option => option.value === "Global")) {
+                initialCountry = "Global";
+            }
+
+            // Set initial dropdown selection
+            countryFilter.value = initialCountry;
+
+            // Function to filter sub-items based on the selected country
+            function filterSubItems(selectedCountry) {
+                subItems.forEach(subItem => {
+                    const subItemCountry = subItem.getAttribute('data-country') || 'Global';
+                    console.log("subItemCountry", subItemCountry)
+
+                    if (subItemCountry === selectedCountry) {
+                        subItem.style.display = 'block'; // Show only items of the selected country
+                    } else {
+                        subItem.style.display = 'none'; // Hide others
+                    }
+                });
+            }
+
+            // ✅ Initially show only "Global" sub-items
+            filterSubItems(initialCountry);
+
+            // ✅ Listen for country filter change
+            countryFilter.addEventListener('change', function () {
+                filterSubItems(this.value);
             });
         });
     </script>

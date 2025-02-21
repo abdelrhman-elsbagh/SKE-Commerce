@@ -20,7 +20,7 @@ body{
 }
 .sidebar.is-show + .page-main
 {
-    right: 250px;
+    /*right: 250px;*/
     left: auto;
 }
 
@@ -84,6 +84,10 @@ body{
     margin-right: 0;
 }
 
+.subitem-country-container {
+    padding-right: 0;
+    padding-left: 15px;
+}
 
 .news-bar {
     position: relative;

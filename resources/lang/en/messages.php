@@ -24,6 +24,7 @@ return [
     'recent_orders' => 'Recent Orders',
     'search_orders_placeholder' => 'Search orders by ID or name...',
     'enter_user_id_in_application' => 'Enter User ID In Application',
+    'sub_item_country_filter' => 'Country :',
     'enter_user_id' => 'Please enter User ID In Application.',
     'select_product_first' => 'Please select a product first.',
     'error_processing_request' => 'There was an error processing your request.',

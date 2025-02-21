@@ -34,7 +34,6 @@
                     <div class="activities-item__title">{{ $order->item_name ?? '' }}</div>
                 @endif
                 <div class="activities-item__date">@lang('messages.order_activity.order_id'): #{{ $order->id }}</div>
-                <div class="activities-item__date">@lang('messages.order_activity.price'): {{ $order->total ?? '0' }} {{ $user->currency->currency ?? 'USD' }}</div>
                 <div class="activities-item__date">@lang('messages.order_activity.service_id'): #{{ $order->service_id ?? '' }}</div>
                 <div class="activities-item__date">@lang('messages.order_activity.amount'): {{ $order->amount ?? '' }}</div>
                 <div class="activities-item__date">{{ $order->created_at->format('d M, Y - H:i') }}</div>
@@ -61,9 +60,11 @@
                             @endif
                         </span>
                     @endif
+                        <button class="order-details-btn btn btn-primary" style="font-size: 10px;font-weight: 800;">Details</button>
                 </div>
+                <p class="reply_msg" style="display: none">{{$order?->reply_msg ?? ""}}</p>
             </div>
-            <div class="activities-item__price">{{ number_format($order->total ?? 0, 2) }} {{ $user->currency->currency ?? 'USD' }}</div>
+            <div class="activities-item__price">{{ substr($order->total ?? 0, 0, 6) }} {{ $user->currency->currency ?? 'USD' }}</div>
         </li>
     @endforeach
 </ul>

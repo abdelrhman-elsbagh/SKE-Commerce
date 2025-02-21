@@ -56,7 +56,11 @@
                 <div class="form-login">
                     <div class="form-login__social">
                         <ul class="social">
-                            <li><a href="http://www.google.com"><img src="{{ asset('assets/img/google.svg') }}" alt="google"></a></li>
+                            <li>
+                                <a id="google-login" href="{{ route('google.login') }}">
+                                    <img src="{{ asset('assets/img/google.svg') }}" alt="Login with Google">
+                                </a>
+                            </li>
                         </ul>
                     </div>
                     <div class="form-login__box">

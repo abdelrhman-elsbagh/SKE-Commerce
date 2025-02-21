@@ -19,7 +19,7 @@ class ImportEkoProducts extends Command
      *
      * @var string
      */
-    protected $description = 'Fetch and import products from EkoStore API';
+    protected $description = 'Fetch and import products from ZDDK API';
 
     /**
      * Execute the console command.
@@ -28,11 +28,11 @@ class ImportEkoProducts extends Command
      */
     public function handle()
     {
-        \Log::info('ImportEkoProducts Command Started');
+        \Log::info('ImportEkoProducts Command Started 2');
         $controller = new ItemController();
         $controller->fetchAndImportEkoStoreProducts();
-        $this->info('EkoStore products imported successfully.');
-        \Log::info('ImportEkoProducts Command Finished');
+        $this->info('ZDDK products imported successfully.');
+        \Log::info('ImportEkoProducts Command Finished 2');
         return Command::SUCCESS;
     }
 }

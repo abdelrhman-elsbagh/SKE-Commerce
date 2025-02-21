@@ -12,7 +12,7 @@ class Config extends Model implements HasMedia
     use HasFactory, InteractsWithMedia;
 
     protected $fillable = ['name', 'description', 'whatsapp', 'telegram', 'facebook', 'fee', 'discount',
-        'currency', 'font','ar_font', 'main_color'];
+        'currency', 'font','ar_font', 'main_color', 'seo_description'];
 
     public function registerMediaCollections(): void
     {

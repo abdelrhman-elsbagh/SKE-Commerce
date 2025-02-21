@@ -36,6 +36,7 @@ class User extends Authenticatable implements HasMedia
         'secret_key',
         'is_external',
         'domain',
+        'google_id',
     ];
 
     /**

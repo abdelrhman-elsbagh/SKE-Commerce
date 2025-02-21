@@ -54,6 +54,10 @@
                                 <textarea class="form-control" id="description" name="description">{{ $config->description }}</textarea>
                             </div>
                             <div class="mb-3">
+                                <label for="seo_description" class="form-label">SEO Description</label>
+                                <textarea class="form-control" id="seo_description" name="seo_description">{{ $config->seo_description }}</textarea>
+                            </div>
+                            <div class="mb-3">
                                 <label for="whatsapp" class="form-label">WhatsApp</label>
                                 <textarea class="form-control" id="whatsapp" name="whatsapp">{{ $config->whatsapp }}</textarea>
                             </div>
@@ -106,6 +110,15 @@
                                     <option value="Amiri" {{ $config->ar_font == 'Amiri' ? 'selected' : '' }}>Amiri</option>
                                     <option value="Marhey" {{ $config->ar_font == 'Marhey' ? 'selected' : '' }}>Marhey</option>
                                 </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="fav_icon" class="form-label">Fav Icon</label>
+                                <input type="file" class="form-control" id="fav_icon" name="fav_icon" accept="image/*">
+                                <div class="mt-2" id="logo-preview">
+                                    @if($config->getFirstMediaUrl('fav_icon'))
+                                        <img src="{{ $config->getFirstMediaUrl('fav_icon') }}" alt="{{ $config->name }}" style="max-width: 200px;">
+                                    @endif
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label for="logo" class="form-label">Logo</label>

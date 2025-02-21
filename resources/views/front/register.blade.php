@@ -27,6 +27,38 @@
     @endif
 </head>
 <body class="page-login">
+<!-- Modal -->
+<div id="googleModal" class="uk-modal" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body">
+        <h2 class="uk-modal-title">Enter Your Details</h2>
+        <form id="googleRegisterForm">
+            <div class="uk-margin">
+                <label for="modal_currency">Currency</label>
+                <select class="uk-select" id="modal_currency" name="currency">
+                    @foreach($currencies as $currency)
+                        <option value="{{ $currency->id }}">{{ $currency->currency }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="uk-margin">
+                <label for="modal_country">Country</label>
+                <select class="uk-select" id="modal_country"></select>
+            </div>
+
+            <div class="uk-margin">
+                <label for="modal_whatsapp">WhatsApp Number</label>
+                <input type="text" class="uk-input" id="modal_whatsapp" name="whatsapp" placeholder="Enter your WhatsApp number">
+            </div>
+
+            <div class="uk-margin uk-text-right">
+                <button type="button" class="uk-button uk-button-default uk-modal-close">Cancel</button>
+                <button type="button" class="uk-button uk-button-primary" id="confirmGoogleLogin">Confirm</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <div class="page-wrapper">
     <main class="page-first-screen">
         <div class="uk-grid uk-grid-small uk-child-width-1-2@s uk-flex-middle uk-width-1-1" data-uk-grid>
@@ -42,7 +74,7 @@
                 <div class="form-login">
                     <div class="form-login__social">
                         <ul class="social">
-                            <li><a href="http://www.google.com"><img src="{{ asset('assets/img/google.svg') }}" alt="google"></a></li>
+                            <li><a id="google-register" href="{{ route('google.login') }}"><img src="{{ asset('assets/img/google.svg') }}" alt="google"></a></li>
                         </ul>
                     </div>
                     <div class="form-login__box">
@@ -112,6 +144,57 @@
             $.each(data, function(key, entry) {
                 $countrySelect.append($('<option></option>').attr('value', entry.name).text(entry.name));
             });
+
+            var $countryModSelect = $('#modal_country');
+            $.each(data, function(key, entry) {
+                $countryModSelect.append($('<option></option>').attr('value', entry.name).text(entry.name));
+            });
+        });
+
+        // Show modal on Google Register click
+        $('#google-register').click(function(event) {
+            event.preventDefault(); // Prevent immediate redirect
+            UIkit.modal('#googleModal').show();
+        });
+
+        /*
+        // Handle confirm button inside modal
+        $('#confirmGoogleLogin').click(function() {
+            let currency = $('#modal_currency').val();
+            let country = $('#modal_country').val();
+            let phone = $('#modal_whatsapp').val();
+
+            console.log("phone", phone)
+            console.log("currency", currency)
+            console.log("country", country)
+
+            if (!currency || !country || !phone) {
+                toastr.error("Please fill in all fields before continuing.");
+                return;
+            }
+
+            // Redirect to Google login with query parameters
+            let googleUrl = "{{ route('google.login') }}" +
+                `?currency=${encodeURIComponent(currency)}&country=${encodeURIComponent(country)}&phone=${encodeURIComponent(phone)}`;
+
+            window.location.href = googleUrl;
+        });*/
+
+        $('#confirmGoogleLogin').click(function() {
+            let currency = $('#modal_currency').val();
+            let country = $('#modal_country').val();
+            let phone = $('#modal_whatsapp').val();
+
+            if (!currency || !country || !phone) {
+                toastr.error("Please fill in all fields before continuing.");
+                return;
+            }
+
+            // Redirect to Google login with query parameters for registration
+            let googleRegisterUrl = "{{ route('google.register') }}" +
+                `?currency=${encodeURIComponent(currency)}&country=${encodeURIComponent(country)}&phone=${encodeURIComponent(phone)}`;
+
+            window.location.href = googleRegisterUrl;
         });
 
         $('#registrationForm').submit(function(e) {

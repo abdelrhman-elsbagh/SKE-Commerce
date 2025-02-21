@@ -90,11 +90,12 @@ class ItemController extends Controller
                 // Create the sub-item
                 $subItem = new SubItem([
                     'name' => $subItemData['name'],
+                    'country' => $subItemData['country'] ?? "Global",
                     'description' => $subItemData['description'],
-                    'amount' => $subItemData['amount'],
+                    'amount' => $subItemData['amount'] ?? 1,
                     'price' => $subItemData['price'],
-                    'max_amount' => $subItemData['max_amount'] ?? null,
-                    'minimum_amount' => $subItemData['minimum_amount'] ?? null,
+                    'max_amount' => $subItemData['max_amount'] ?? 1,
+                    'minimum_amount' => $subItemData['minimum_amount'] ?? 1,
                     'is_custom' => $subItemData['is_custom'] ?? 0,
                     'status' => $subItemData['sub_status'] ?? 'active',
                 ]);
@@ -162,12 +163,13 @@ class ItemController extends Controller
                         unset($subItemData['sub_status']);
                     }
 
+
                     $subItem->update($subItemData);
 
                     // Only override amount and price if external_id is null
                     if ($subItem->external_id) {
-                        $subItem->amount = $origin_price;
-                        $subItem->price = $origin_amount;
+                        $subItem->amount = $origin_amount;
+                        $subItem->price = $origin_price;
                         $subItem->save();
                     }
 
@@ -202,10 +204,10 @@ class ItemController extends Controller
     ###############################
     public function fetchAndImportEkoStoreProducts()
     {
-        $eko_domains = ClientStore::where('name', 'EkoStore')->where('status', 'active')->get();
+        $eko_domains = ClientStore::where('key_name', 'ZDDK')->where('status', 'active')->get();
 
         if ($eko_domains->isEmpty()) {
-            return response()->json(['success' => false, 'message' => 'No active EkoStore domains found']);
+            return response()->json(['success' => false, 'message' => 'No active ZDDK domains found']);
         }
 
         try {
@@ -220,27 +222,28 @@ class ItemController extends Controller
                     ])->get($apiUrl);
 
                     if ($response->failed()) {
-                        return response()->json(['success' => false, 'message' => 'Failed to fetch data from the EkoStore API'], 500);
+                        Log::error("Failed to fetch data from ZDDK API: {$apiUrl}");
+                        continue; // Skip this domain and move to the next one
                     }
 
                     $products = $response->json();
 
                     foreach ($products as $key => $product) {
-                            $subItem = SubItem::where('external_id', $product['id'])->first();
+                            $subItem = SubItem::where('external_id', $product['id'])->where('domain', $eko_domain->domain)->first();
                             if ($subItem) {
                                 $subItem->update(
                                     [
-                                        'amount' => $product['qty_values']['min'] ?? 1,
+                                        'amount' => 1,
                                         'price' => $product['price'],
                                         'original_price' => $product['price'],
                                         'status' => $product['available'] ? 'active' : 'inactive',
                                         'is_custom' => $product['product_type'] == "amount" ? 1 : 0,
                                         'minimum_amount' => $product['qty_values']['min'] ?? 1,
                                         'max_amount' => $product['qty_values']['max'] ?? 1,
-                                        'product_type' => $product['product_type']?? "package",
-                                        'domain' => $eko_domain->domain,
-                                        'client_store_id' => $eko_domain->id,
+                                        'product_type' => $product['product_type'] ?? "package",
                                         'out_flag' => 1,
+                                        'qty_list' => (!isset($product['qty_values']['max']) && !isset($product['qty_values']['min'])) ? json_encode($product['qty_values']) : null,
+
                                     ]
                                 );
                                 $subItem->save();
@@ -255,7 +258,7 @@ class ItemController extends Controller
             return response()->json(['success' => false, 'message' => 'Error while Import Eko-Store products' . $e->getMessage()]);
         }
 
-        return response()->json(['success' => true, 'message' => 'EkoStore products imported successfully']);
+        return response()->json(['success' => true, 'message' => 'ZDDK products imported successfully']);
     }
 
     public function search(Request $request)

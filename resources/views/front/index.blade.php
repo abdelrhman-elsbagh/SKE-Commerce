@@ -3,7 +3,7 @@
 @section('title', ($config->name ?? "") . "- Home")
 
 @section('content')
-    <main class="page-main">
+    <main class="page-main" style="width: 100%">
         <div class="uk-width-4-5@l uk-width-3-3@m uk-width-3-3@s uk-margin-auto">
             {{-- <h3 class="uk-text-lead">Recommended & Featured</h3> --}}
             <div class="js-recommend">
@@ -50,13 +50,39 @@
         </div>
 
         <div class="uk-grid uk-child-width-1-6@xl uk-child-width-1-5@m uk-child-width-1-3 uk-grid-small" data-uk-grid id="items-container">
+            @php
+                function getWidthClass($xl, $lg, $md, $sm, $xs) {
+                    return [
+                        "uk-width-1-{$xl}@xl",
+                        "uk-width-1-{$lg}@lg",
+                        "uk-width-1-{$md}@m",
+                        "uk-width-1-{$sm}@s",
+                        "uk-width-1-{$sm}@xs"
+                    ];
+                }
+
+                // Get width classes from stored values
+                [$xlWidth, $lgWidth, $mWidth, $sWidth, $xsWidth] = getWidthClass(
+                    $itemStyle->xl ?? 4,
+                    $itemStyle->lg ?? 4,
+                    $itemStyle->md ?? 3,
+                    $itemStyle->sm ?? 2,
+                    $itemStyle->xs ?? 1
+                );
+            @endphp
+
             @foreach ($categorizedItems as $categoryName => $items)
+               <p> salma {{$itemStyle->sm}} , </p>
                 <div class="uk-width-1-1">
                     <h3 class="category-title">{{ $categoryName }}</h3>
-                    <div class="uk-grid uk-child-width-1-6@xl uk-child-width-1-5@m uk-child-width-1-3 uk-grid-small">
+                    <div class="uk-grid uk-child-width-1-6@xl uk-child-width-1-5@m uk-child-width-1-3 uk-grid-small ">
                         @foreach ($items as $item)
-                            <div class="uk-width-1-6@xl uk-width-1-5@m uk-width-1-3 item-card" data-name="{{ strtolower($item->name) }}" style="margin-top: 15px;">
-                                <div class="game-card" style="overflow: hidden">
+                            <div class=" item-card item-card col-sm-{{ $itemStyle->sm ?? 1 }} item-card col-xs-{{ $itemStyle->sm ?? 1 }} col-md-{{ $itemStyle->md ?? 1 }} col-lg-{{ $itemStyle->lg ?? 1 }} col-xl-{{ $itemStyle->xl ?? 1 }}"
+
+                                 data-name="{{ strtolower($item->name) }}"
+                                 style="margin-top: 15px;">
+
+                            <div class="game-card" style="overflow: hidden">
                                     <div class="game-card__box game-card {{ $item->status == 'inactive' ? 'inactive' : '' }}">
                                         <div class="game-card__media">
                                             <a href="{{ $item->status == 'active' ? route('item.show', ['id' => $item->id]) : '#' }}" class="{{ $item->status == 'inactive' ? 'disabled-link' : '' }}">

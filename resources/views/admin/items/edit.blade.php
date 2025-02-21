@@ -168,11 +168,16 @@
                                                     <input type="hidden" name="sub_items[{{ $loop->index }}][status]" value="{{ $subItem->status }}">
                                                     <span>{{ $subItem->status }}</span>
                                                 </td>
+                                                <td>
+                                                    <input type="hidden" name="sub_items[{{ $loop->index }}][country]" value="{{ $subItem->country }}">
+                                                    <span>{{ $subItem->country }}</span>
+                                                </td>
                                                 <td style="text-align: center">
                                                     <input type="file" name="sub_items[{{ $loop->index }}][image]" class="sub-item-image-file" data-index="{{ $loop->index }}" style="display: none;">
                                                     <img src="{{ $subItem->getFirstMediaUrl('images') ?? '' }}" alt="Sub Item Image" class="sub-item-image-preview" style="max-width: 100px;border-radius: 10px;">
                                                 </td>
                                                 <td>
+                                                    <input type="hidden" name="sub_items[{{ $loop->index }}][external_id]" value="{{ $subItem->external_id }}">
                                                     <button type="button" class="btn btn-danger remove-sub-item" data-id="{{ $subItem->id }}">Remove</button>
                                                     <button type="button" class="btn btn-primary edit-sub-item" data-id="{{ $subItem->id }}">Edit</button>
                                                 </td>
@@ -196,7 +201,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="subItemModalLabel">Add Sub Item</h5>
+                    <h5 class="modal-title" id="subItemModalLabel">Add / Edit Sub Item</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -214,36 +219,48 @@
                             <div class="mb-3">
                                 <label for="sub_item_amount_modal" class="form-label">Sub Item Amount</label>
                                 <input type="number" class="form-control" id="sub_item_amount_modal"
-                                       name="sub_item_amount_modal" required {{  isset($subItem) && $subItem->external_id ? 'readonly disabled' : '' }}>
+                                       name="sub_item_amount_modal" required >
                             </div>
                             <div class="mb-3">
                                 <label for="sub_item_price_modal" class="form-label">Sub Item Price</label>
                                 <input type="number" step="0.1" class="form-control"
-                                       id="sub_item_price_modal" name="sub_item_price_modal" required {{  isset($subItem) && $subItem->external_id ? 'readonly disabled' : '' }}>
+                                       id="sub_item_price_modal" name="sub_item_price_modal" required >
                             </div>
 
                             <div class="mb-3 form-check">
                                 <input type="checkbox" class="form-check-input" id="sub_item_is_custom_modal" name="sub_item_is_custom_modal"
-                                    {{ $subItem->is_custom ? 'checked' : '' }} value="{{$subItem->is_custom}}" {{  isset($subItem) && $subItem->external_id ? 'readonly disabled' : '' }} >
+                                    {{ $subItem->is_custom ? 'checked' : '' }} value="{{$subItem->is_custom}}" >
                                 <label class="form-check-label" for="sub_item_is_custom_modal">Custom</label>
                             </div>
                             <div id="customFields" class="row" style="{{ !$subItem->is_custom ? 'display: none;' : '' }}">
                                 <div class="mb-3 col-sm-12 col-md-6">
                                     <label for="sub_item_minimum_amount_modal" class="form-label">Minimum Amount</label>
-                                    <input type="number" class="form-control" id="sub_item_minimum_amount_modal" name="sub_item_minimum_amount_modal" value="{{$subItem->minimum_amount}}" {{ $subItem->external_id ? 'readonly disabled' : '' }} >
+                                    <input type="number" class="form-control" id="sub_item_minimum_amount_modal" name="sub_item_minimum_amount_modal" value="{{$subItem->minimum_amount}}" >
                                 </div>
                                 <div class="mb-3 col-sm-12 col-md-6">
                                     <label for="sub_item_max_amount_modal" class="form-label">Maximum Amount</label>
-                                    <input type="number" class="form-control" id="sub_item_max_amount_modal" name="sub_item_max_amount_modal" value="{{$subItem->max_amount}}" {{  isset($subItem) && $subItem->external_id ? 'readonly disabled' : '' }} >
+                                    <input type="number" class="form-control" id="sub_item_max_amount_modal" name="sub_item_max_amount_modal" value="{{$subItem->max_amount}}" >
                                 </div>
                             </div>
 
                         @endif
 
                         <div class="mb-3 col-sm-12 col-md-12">
-                            <label for="sub_item_sub_status_modal" class="form-label" {{  isset($subItem) && $subItem->external_id ? 'readonly disabled' : '' }} >Status</label>
+                            <label for="sub_item_country_modal" class="form-label">Country</label>
+                            <select class="form-control" id="sub_item_country_modal" name="sub_item_country_modal">
+                                @php
+                                    $countries = json_decode(file_get_contents(public_path('assets/countries.json')), true);
+                                @endphp
+                                @foreach($countries as $country)
+                                    <option value="{{ $country['name'] }}">{{ $country['name'] }}</option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                            <select class="form-control" id="sub_item_sub_status_modal" name="sub_item_sub_status_modal" {{  isset($subItem) && $subItem->external_id ? 'readonly disabled' : '' }} >
+                        <div class="mb-3 col-sm-12 col-md-12">
+                            <label for="sub_item_sub_status_modal" class="form-label" >Status</label>
+
+                            <select class="form-control" id="sub_item_sub_status_modal" name="sub_item_sub_status_modal" >
                                 <option value="active" {{  isset($subItem) && $subItem->status == 'active' ? 'selected': ''}} selected>Active</option>
                                 <option value="inactive" {{  isset($subItem) && $subItem->status == 'inactive' ? 'selected' : '' }}>Inactive</option>
                             </select>
@@ -323,6 +340,7 @@
                 let subItemMaxAmount = $('#sub_item_max_amount_modal').val();
                 let subItemSubStatus = $('#sub_item_sub_status_modal').val();
                 let subItemSubIsCustom = $('#sub_item_is_custom_modal').is(':checked') ? 1 : 0;
+                let subItemCountry = $('#sub_item_country_modal').val();
 
                 console.log("subItemSubIsCustom", subItemSubIsCustom)
 
@@ -345,6 +363,8 @@
                         subItemRow.find('input[name^="sub_items"][name$="[max_amount]"]').val(subItemMaxAmount);
                         subItemRow.find('input[name^="sub_items"][name$="[status]"]').val(subItemSubStatus);
                         subItemRow.find('input[name^="sub_items"][name$="[is_custom]"]').val(subItemSubIsCustom);
+                        subItemRow.find('input[name^="sub_items"][name$="[country]"]').val(subItemCountry);
+
 
                         subItemRow.find('input[name^="sub_items"][name$="[image_url]"]').val(imageSrc);
                         subItemRow.find('span').eq(0).text(subItemName);
@@ -502,7 +522,59 @@
                     value: subItemId
                 }).appendTo('#create-edit-item-form');
             });
+            $(document).on('click', '.edit-sub-item', function() {
+                let subItemRow = $(this).closest('tr'); // Get the clicked row
+                let subItemIndex = subItemRow.data('id'); // Get the sub-item ID
 
+                let subItemName = subItemRow.find('input[name^="sub_items"][name$="[name]"]').val();
+                let subItemDescription = subItemRow.find('input[name^="sub_items"][name$="[description]"]').val();
+                let subItemAmount = subItemRow.find('input[name^="sub_items"][name$="[amount]"]').val();
+                let subItemPrice = subItemRow.find('input[name^="sub_items"][name$="[price]"]').val();
+                let subItemMaxAmount = subItemRow.find('input[name^="sub_items"][name$="[max_amount]"]').val();
+                let subItemMinAmount = subItemRow.find('input[name^="sub_items"][name$="[minimum_amount]"]').val();
+                let subItemStatus = subItemRow.find('input[name^="sub_items"][name$="[status]"]').val();
+                let subItemIsCustom = subItemRow.find('input[name^="sub_items"][name$="[is_custom]"]').val();
+                let subItemCountry = subItemRow.find('input[name^="sub_items"][name$="[country]"]').val();
+                let subItemExternalId = subItemRow.find('input[name^="sub_items"][name$="[external_id]"]').val();
+
+                let isExternal = subItemExternalId !== undefined && subItemExternalId.trim() !== "";
+
+                $('#sub_item_amount_modal').prop('readonly', isExternal).prop('disabled', isExternal);
+
+                console.log("subItemExternalId", subItemExternalId);
+                console.log("isExternal", isExternal);
+
+                $('#sub_item_price_modal').prop('readonly', isExternal).prop('disabled', isExternal);
+                $('#sub_item_is_custom_modal').prop('disabled', isExternal);
+                $('#sub_item_minimum_amount_modal').prop('readonly', isExternal).prop('disabled', isExternal);
+                $('#sub_item_max_amount_modal').prop('readonly', isExternal).prop('disabled', isExternal);
+                $('#sub_item_sub_status_modal').prop('disabled', isExternal);
+
+                // ✅ Populate the modal with the sub-item data
+                $('#sub_item_index_modal').val(subItemIndex);
+                $('#sub_item_name_modal').val(subItemName);
+                $('#sub_item_description_modal').val(subItemDescription);
+                $('#sub_item_amount_modal').val(subItemAmount);
+                $('#sub_item_price_modal').val(subItemPrice);
+                $('#sub_item_minimum_amount_modal').val(subItemMinAmount);
+                $('#sub_item_max_amount_modal').val(subItemMaxAmount);
+                $('#sub_item_sub_status_modal').val(subItemStatus);
+                $('#sub_item_is_custom_modal').prop('checked', subItemIsCustom == 1);
+                $('#sub_item_country_modal').val(subItemCountry); // ✅ Set country dropdown dynamically
+
+                // ✅ Handle image preview
+                let subItemImageSrc = subItemRow.find('.sub-item-image-preview').attr('src');
+                if (subItemImageSrc) {
+                    $('#sub-item-image-preview-modal').html('<img src="' + subItemImageSrc + '" alt="Sub Item Image Preview" style="max-width: 200px;">');
+                } else {
+                    $('#sub-item-image-preview-modal').html('');
+                }
+
+                // ✅ Open the modal
+                $('#subItemModal').modal('show');
+            });
+
+            /*
             $(document).on('click', '.edit-sub-item', function() {
                 let subItemRow = $(this).closest('tr');
                 let subItemIndex = subItemRow.data('id');
@@ -559,6 +631,7 @@
 
                 $('#subItemModal').modal('show');
             });
+            */
 
             $('#subItemModal').on('hidden.bs.modal', function () {
                 $('#create-sub-item-form')[0].reset();  // Reset form fields when the modal is closed

@@ -10,6 +10,7 @@ use App\Models\Currency;
 use App\Models\FeeGroup;
 use App\Models\Footer;
 use App\Models\Item;
+use App\Models\ItemStyle;
 use App\Models\News;
 use App\Models\Notification;
 use App\Models\Order;
@@ -24,6 +25,8 @@ use App\Models\ResponsesLog;
 use App\Models\Slider;
 use App\Models\SubItem;
 use App\Models\TermsConditions;
+use App\Models\Ticket;
+use App\Models\TicketCategory;
 use App\Models\User;
 use App\Models\UserWallet;
 use App\Providers\RouteServiceProvider;
@@ -37,7 +40,9 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use Laravel\Socialite\Facades\Socialite;
 
 
 class HomeController extends Controller
@@ -77,6 +82,9 @@ class HomeController extends Controller
 
         View::share('config', $config);
         View::share('favoritesCount', $favoritesCount);
+
+        $categories = TicketCategory::all();
+        View::share('categories', $categories);
 
 
 //        $categorizedItems = $items->groupBy(function ($item) {
@@ -127,6 +135,8 @@ class HomeController extends Controller
             }
         }
 
+        $categories = TicketCategory::all();
+        $itemStyle = ItemStyle::first();
 
         return view('front.index', [
             'categorizedItems' => $categorizedItems,
@@ -137,12 +147,51 @@ class HomeController extends Controller
             'news' => $news,
             'latestUnreadNotification' => $latestUnreadNotification,
             'footerItems' => $footerItems,
+            'categories' => $categories,
+            'itemStyle' => $itemStyle,
         ]);
     }
+
+    public function create_ticket(Request $request)
+    {
+        // Validate the request
+        $request->validate([
+            'ticket_category_id' => 'required|exists:ticket_categories,id',
+            'message' => 'required|string',
+            'user_id' => 'required',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+        ]);
+
+        // Create the new ticket
+        $ticket = Ticket::create($request->all());
+
+        // Handle the image media if provided
+        if ($request->hasFile('image')) {
+            $ticket->addMedia($request->file('image'))->toMediaCollection('images');
+        }
+
+        return response()->json(['success' => true, 'message' => 'Ticket created successfully.'], 200);
+    }
+
+    public function tickets()
+    {
+        // Fetch all tickets for the authenticated user, ordered by the latest first
+        $tickets = Ticket::where('user_id', Auth::id())
+            ->latest() // Order by the latest ticket first
+            ->with('category') // Eager load the 'category' relationship
+            ->get();
+
+        // Return the tickets along with the category name
+        return response()->json($tickets, 200);
+    }
+
     public function wallet(Request $request)
     {
         $config = Config::with('media')->first();
         View::share('config', $config);
+
+        $categories = TicketCategory::all();
+        View::share('categories', $categories);
 
         $user = Auth::user();
         if (!$user) {
@@ -258,6 +307,9 @@ class HomeController extends Controller
         $config = Config::with('media')->first();
         View::share('config', $config);
 
+        $categories = TicketCategory::all();
+        View::share('categories', $categories);
+
         $user = Auth::user();
         if (!$user) {
             return redirect()->route('login');
@@ -308,6 +360,9 @@ class HomeController extends Controller
         $config = Config::with('media')->first();
         View::share('config', $config);
 
+        $categories = TicketCategory::all();
+        View::share('categories', $categories);
+
         $businessClient = Auth::guard('business_client')->user();
         if (!$businessClient) {
             return redirect()->route('business-sign-in');
@@ -348,15 +403,141 @@ class HomeController extends Controller
         return view('front.register-partner', compact('config', 'currencies'));
     }
 
+//    public function googleRegister(Request $request)
+//    {
+//        $googleUser = Socialite::driver('google')->stateless()->user();
+//
+//        // Retrieve session data
+//        $currency = session('google_currency');
+//        $country = session('google_country');
+//        $phone = session('google_phone');
+//
+//        // Check if session data exists
+//        if (!$currency || !$country || !$phone) {
+//            return response()->json(['error' => 'Missing required fields'], 400);
+//        }
+//
+//        // Load valid country names from JSON
+//        $countriesJson = file_get_contents(public_path('assets/countries.json'));
+//        $countriesArray = json_decode($countriesJson, true);
+//        $validCountries = collect($countriesArray)->pluck('name')->toArray();
+//
+//        $validator = Validator::make([
+//            'email' => $googleUser->getEmail(),
+//            'currency_id' => $currency,
+//            'country' => $country,
+//            'phone' => $phone,
+//        ], [
+//            'email' => 'required|string|email|max:255|unique:users',
+//            'currency_id' => 'required',
+//            'country' => ['required', 'string', Rule::in($validCountries)],
+//            'phone' => 'required|numeric',
+//        ]);
+//
+//        if ($validator->fails()) {
+//            throw new ValidationException($validator);
+//        }
+//
+//        $fee = FeeGroup::where('name', 'Default')->firstOrFail();
+//
+//        $user = User::updateOrCreate(
+//            ['email' => $googleUser->getEmail()],
+//            [
+//                'name' => $googleUser->getName() ?? 'Google User',
+//                'phone' => $phone,
+//                'currency_id' => $currency,
+//                'fee_group_id' => $fee->id,
+//                'address' => $country,
+//                'status' => 'active',
+//                'password' => Hash::make(Str::random(16)),
+//            ]
+//        );
+//
+//        $user->assignRole('User');
+//        Auth::login($user);
+//
+//        UserWallet::firstOrCreate(['user_id' => $user->id], ['balance' => 0]);
+//        return redirect()->route('home');
+////        return response()->json(['message' => 'User registered successfully via Google']);
+//    }
+
+
+    public function googleAuth(Request $request)
+    {
+        try {
+            $googleUser = Socialite::driver('google')->stateless()->user();
+
+            // 🔹 Check if the user already exists in DB
+            $user = User::where('email', $googleUser->getEmail())->first();
+
+            if ($user) {
+                // 🔹 If user exists, log them in and fetch their profile data
+                Auth::login($user, true);
+                return redirect()->route('home')->with('success', 'Logged in successfully via Google.');
+            }
+
+            // 🔹 If user does NOT exist, ensure required session data exists
+            $currency = session('google_currency');
+            $country = session('google_country');
+            $phone = session('google_phone');
+
+            if (!$currency || !$country || !$phone) {
+                return redirect()->route('register-page')->withErrors(['message' => 'Registration failed: missing required fields.']);
+            }
+
+            // 🔹 Validate country using JSON
+            $validCountries = [];
+            if ($country) {
+                $countriesJson = file_get_contents(public_path('assets/countries.json'));
+                $countriesArray = json_decode($countriesJson, true);
+                $validCountries = collect($countriesArray)->pluck('name')->toArray();
+
+                if (!in_array($country, $validCountries)) {
+                    $country = null; // Reset invalid country to null
+                }
+            }
+
+            // 🔹 Register new user
+            $user = User::create([
+                'name' => $googleUser->getName() ?? 'Google User',
+                'email' => $googleUser->getEmail(),
+                'phone' => $phone,
+                'currency_id' => $currency,
+                'address' => $country,
+                'fee_group_id' => FeeGroup::where('name', 'Default')->first()->id ?? null,
+                'status' => 'active',
+                'password' => Hash::make(Str::random(16)), // Generate random password
+            ]);
+
+            // 🔹 Assign role & wallet
+            $user->assignRole('User');
+            UserWallet::firstOrCreate(['user_id' => $user->id], ['balance' => 0]);
+
+            // 🔹 Log the new user in
+            Auth::login($user, true);
+
+            return redirect()->route('home')->with('success', 'User registered successfully via Google.');
+
+        } catch (\Exception $e) {
+            return redirect()->route('login')->withErrors(['message' => 'Google authentication failed.']);
+        }
+    }
+
+
     public function register(Request $request)
     {
+        // Load valid country names from the JSON file
+        $countriesJson = file_get_contents(public_path('assets/countries.json'));
+        $countriesArray = json_decode($countriesJson, true);
+        $validCountries = collect($countriesArray)->pluck('name')->toArray();
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'phone' => 'required|numeric',
-            'country' => 'required|string',
             'currency_id' => 'required',
             'password' => 'required|string|min:8|confirmed',
+            'country' => ['required', 'string', Rule::in($validCountries)],
         ]);
 
         if ($validator->fails()) {
@@ -468,6 +649,7 @@ class HomeController extends Controller
         ])->withInput($request->only('email'));
     }
 
+
     public function purchase(Request $request)
     {
         $request->validate([
@@ -493,6 +675,9 @@ class HomeController extends Controller
 
         View::share('config', $config);
 
+        $categories = TicketCategory::all();
+        View::share('categories', $categories);
+
         $orders = $user->orders()->with('subItems.subItem.media')->get();
         $purchaseRequests = $user->purchaseRequests()->with('media')->get();
 
@@ -509,6 +694,9 @@ class HomeController extends Controller
     {
         $config = Config::with('media')->first();
         View::share('config', $config);
+
+        $categories = TicketCategory::all();
+        View::share('categories', $categories);
 
         $businessClient = Auth::guard('business_client')->user();
         if (!$businessClient) {
@@ -536,6 +724,10 @@ class HomeController extends Controller
         $config = Config::with('media')->first();
         $userFavorites = Auth::user()->favorites()->with(['item', 'subItem.item', 'item.media', 'subItem.media'])->get();
         View::share('config', $config);
+
+        $categories = TicketCategory::all();
+        View::share('categories', $categories);
+
         $paymentMethods = PaymentMethod::where('status', 'active')->get();
         return view('front.favourites', compact('userFavorites', 'paymentMethods', 'user'));
     }
@@ -581,10 +773,10 @@ class HomeController extends Controller
         }
         $feePercentage = $config->fee;
 
-        $sub_price = floatval($subItem->price * $currencyPrice);
+        $order_amount = $request->custom_amount ?? 1;
+        $sub_price = floatval($subItem->price * $currencyPrice * $order_amount);
         $fe_price = floatval($sub_price * $feePercentage / 100);
-
-        $totalPrice = $sub_price + $fe_price;
+        $totalPrice = floatval($sub_price + $fe_price);
 
         // Check if the user has enough balance
         if ($wallet->balance < $totalPrice) {
@@ -657,7 +849,7 @@ class HomeController extends Controller
 
         $order_amount = $subItem->amount;
 
-        if ($subItem->is_custom == 1) {
+        if ($subItem->is_custom == 1 || $subItem->product_type == "specificPackage") {
             $fe_price = floatval($sub_price * $feePercentage / 100);
             $order_amount = $request->custom_amount;
             $unitAmount = $subItem->amount; // Each 100 units
@@ -668,7 +860,7 @@ class HomeController extends Controller
             $fe_price = floatval($sub_price * $feePercentage / 100);
         }
 
-
+        $totalPrice = floatval($sub_price + $fe_price);
 
         // Deduct the amount from the user's wallet
         $before_balance = $wallet->balance;
@@ -784,6 +976,9 @@ class HomeController extends Controller
         $config = Config::with('media')->first();
         View::share('config', $config);
 
+        $categories = TicketCategory::all();
+        View::share('categories', $categories);
+
         $favoritesCount = 0;
         if ($user) {
             $favoritesCount = $user->favorites()->count();
@@ -804,6 +999,9 @@ class HomeController extends Controller
         $config = Config::with('media')->first();
         View::share('config', $config);
 
+        $categories = TicketCategory::all();
+        View::share('categories', $categories);
+
         $favoritesCount = 0;
         if ($user) {
             $favoritesCount = $user->favorites()->count();
@@ -819,6 +1017,9 @@ class HomeController extends Controller
         $user = Auth::user();
         $config = Config::with('media')->first();
         View::share('config', $config);
+
+        $categories = TicketCategory::all();
+        View::share('categories', $categories);
 
         $favoritesCount = 0;
         if ($user) {
@@ -836,6 +1037,9 @@ class HomeController extends Controller
         $config = Config::with('media')->first();
         View::share('config', $config);
 
+        $categories = TicketCategory::all();
+        View::share('categories', $categories);
+
         $favoritesCount = 0;
         if ($user) {
             $favoritesCount = $user->favorites()->count();
@@ -851,6 +1055,9 @@ class HomeController extends Controller
     public function item(Request $request, $id)
     {
         $config = Config::with('media')->first();
+        $categories = TicketCategory::all();
+        View::share('categories', $categories);
+
         $user = Auth::user();
         $favoritesCount = 0;
 
@@ -1015,6 +1222,9 @@ class HomeController extends Controller
         // Fetch and share config data
         $config = Config::with('media')->first();
         View::share('config', $config);
+
+        $categories = TicketCategory::all();
+        View::share('categories', $categories);
 
         // Get the authenticated user, if not redirect to sign-in
         $user = Auth::guard('web')->user();

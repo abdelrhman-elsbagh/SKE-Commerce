@@ -44,6 +44,11 @@ class ConfigController extends Controller
             $config->addMediaFromRequest('dark_logo_input')->toMediaCollection('dark_logos');
         }
 
+        if ($request->hasFile('fav_icon')) {
+            $config->clearMediaCollection('fav_icon'); // Remove any previous dark logo
+            $config->addMediaFromRequest('fav_icon')->toMediaCollection('fav_icon');
+        }
+
         return redirect()->route('configs.edit')->with('success', 'Config updated successfully.');
     }
 }

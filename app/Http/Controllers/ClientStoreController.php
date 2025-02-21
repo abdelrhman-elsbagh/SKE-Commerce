@@ -156,7 +156,8 @@ class ClientStoreController extends Controller
         if (!$clientStore) {
             // Create a new client store if it doesn't exist
             $clientStore = ClientStore::create([
-                'name' => 'EkoStore', // Replace with a default name or from the request if provided
+                'name' => 'ZDDK',
+                'key_name' => 'ZDDK',
                 'email' => $request->email,
                 'domain' => $domain,
                 'secret_key' => $request->api_key,
@@ -175,7 +176,7 @@ class ClientStoreController extends Controller
 
     public function ekoIntegrate()
     {
-        $clientStores = ClientStore::where('name', 'EkoStore')->where('status', 'active')->get(); // Fetch all client stores
+        $clientStores = ClientStore::where('key_name', 'ZDDK')->where('status', 'active')->get(); // Fetch all client stores
         return view('admin.clientStores.eko_integrate', compact('clientStores'));
     }
 }

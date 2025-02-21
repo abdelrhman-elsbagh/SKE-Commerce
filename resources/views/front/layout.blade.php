@@ -4,13 +4,18 @@
 <head>
     <meta charset="utf-8">
     <title>@yield('title', 'Document')</title>
-    <meta content="Ske E-Commerce" name="author">
-    <meta content="Ske E-Commerce" name="description">
+    <meta content="{{$config->name ?? "Ske E-Commerce"}} " name="author">
+    <meta content="{{$config->seo_description ?? "Ske E-Commerce"}}" name="description">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="HandheldFriendly" content="true">
     <meta name="format-detection" content="telephone=no">
     <meta content="IE=edge" http-equiv="X-UA-Compatible">
-    <link rel="shortcut icon" href="{{ asset('assets/img/favicon.png')}}" type="image/x-icon">
+    @if($config->getFirstMediaUrl('fav_icon'))
+        <link rel="shortcut icon" href="{{ $config->getFirstMediaUrl('fav_icon') }}" type="image/x-icon">
+    @else
+        <link rel="shortcut icon" href="{{ asset('assets/img/favicon.png')}}" type="image/x-icon">
+    @endif
+
     <link rel="stylesheet" href="{{ asset('assets/css/libs.min.css')}}">
     <link rel="stylesheet" href="{{ asset('assets/css/main.css')}}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -245,7 +250,7 @@
     <header class="page-header">
         <div class="page-header__inner">
             <div class="page-header__sidebar">
-                <div class="page-header__menu-btn"><button class="menu-btn ico_menu is-active"></button></div>
+                <div class="page-header__menu-btn"><button class="menu-btn ico_menu"></button></div>
                 <div class="page-header__logo">
                     <a href="{{ route('home') }}">
                         @if(isset($_COOKIE['darkTheme']) && $_COOKIE['darkTheme']=== 'true' && $config->getFirstMediaUrl('dark_logos'))
@@ -273,7 +278,8 @@
                     @elseauth('web')
                         <div class="fav-head-icon">
                             <a href="{{route('favourites')}}">
-                                <i class="fas fa-heart"></i><span class="count">{{$favoritesCount}}</span>
+{{--                                <i class="fas fa-heart"></i><span class="count">{{$favoritesCount}}</span>--}}
+                                <i class="fas fa-heart"></i>
                             </a>
                         </div>
                         <a class="profile head-wallet-icon" href="{{route('wallet')}}">
@@ -312,7 +318,7 @@
     </header>
     <div class="page-content">
 
-        <aside class="sidebar is-show" id="sidebar">
+        <aside class="sidebar" id="sidebar">
             <input id="toggle" type="checkbox">
             <div class="sidebar-box">
                 <ul class="uk-nav">
@@ -339,10 +345,20 @@
                         @else
                             <li id="home"><a href="{{route('home')}}"><i class="fas fa-home"></i><span>@lang('messages.home')</span></a></li>
                             <li id="wallet"><a href="{{route('wallet')}}"><i class="fas fa-wallet"></i><span>@lang('messages.wallet')</span></a></li>
+
                             <li id="purchase-request"><a href="#modal-purchase-request" data-uk-toggle>
                                     <i class="fas fa-money-bill-wave"></i><span>@lang('messages.purchase_request')</span></a></li>
 {{--                            <li id="payment-methods"><a href="{{ route('payments-page') }}"><i class="fas fa-credit-card"></i><span>@lang('messages.payment_methods')</span></a></li>--}}
-                            <li id="partners"><a href="{{route('partners')}}"><i class="fas fa-id-badge"></i><span>@lang('messages.partners')</span></a></li>
+
+                                <!-- Menu item to open the Create Ticket modal -->
+                                <li id="create-ticket">
+                                    <a href="#createTicketModal" data-uk-toggle>
+                                        <i class="fas fa-ticket-alt"></i>
+                                        <span>Tickets</span>
+                                    </a>
+                                </li>
+
+                                <li id="partners"><a href="{{route('partners')}}"><i class="fas fa-id-badge"></i><span>@lang('messages.partners')</span></a></li>
                             <li id="posts"><a href="{{route('posts')}}"><i class="fas fa-tag"></i><span>@lang('messages.posts')</span></a></li>
                             @endif
                         @if(Auth::user()->is_external)
@@ -467,6 +483,74 @@
             <div id="form-messages"></div>
         </div>
     </div>
+
+
+
+
+    <!-- Create Ticket Modal -->
+    <div id="createTicketModal" class="uk-flex-top" uk-modal>
+        <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+            <button class="uk-modal-close-default" type="button" uk-close></button>
+            <h2 class="uk-modal-title">Tickets</h2>
+
+            <!-- Tabs for Create Ticket and List Tickets -->
+            <ul class="uk-tab custom-tab-links" data-uk-tab>
+                <li class="active"><a href="#" data-tab="create-ticket-tab">Create Ticket</a></li>
+                <li><a href="#" data-tab="my-tickets-tab">My Tickets</a></li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="uk-tab-content custom-tab-content" style="padding: 0">
+                <!-- Create Ticket Tab Content -->
+                <div id="create-ticket-tab" class="tab-content active">
+                    <form id="create-ticket-form" action="{{ route('user-create-ticket') }}" method="POST" enctype="multipart/form-data" >
+                        @csrf
+
+                        <div class="uk-margin">
+                            <label for="ticket_category_id" class="uk-form-label">Category</label>
+                            <div class="uk-form-controls">
+                                <select class="uk-select" name="ticket_category_id" id="ticket_category_id" required>
+                                    <option value="">Select Category</option>
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="uk-margin">
+                            <label for="message" class="uk-form-label">Message</label>
+                            <div class="uk-form-controls">
+                                <textarea class="uk-textarea" id="message" name="message" rows="3" required></textarea>
+                            </div>
+                        </div>
+
+                        <div class="uk-margin">
+                            <label for="image" class="uk-form-label">Upload Image</label>
+                            <div class="uk-form-controls">
+                                <input class="uk-input" id="image" name="image" type="file" accept="image/*">
+                                <div id="image-preview" class="mt-3"></div> <!-- Preview image -->
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="user_id" value="{{ \Illuminate\Support\Facades\Auth::user()?->id }}">
+
+                        <div class="uk-margin">
+                            <button type="submit" class="uk-button uk-button-primary uk-width-1-1">Create Ticket</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- My Tickets Tab Content -->
+                <div id="my-tickets-tab" class="tab-content">
+                    <div id="tickets-list">
+                        <p>Loading tickets...</p> <!-- Tickets will be dynamically loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <div class="page-modals">
@@ -611,6 +695,104 @@
         });
     });
 </script>
+
+<script>
+    $(document).ready(function() {
+        // Switch tab content manually
+        $('.custom-tab-links a').click(function(e) {
+            e.preventDefault();
+
+            // Remove 'active' class from all tabs and tab contents
+            $('.custom-tab-links li').removeClass('active');
+            $('.tab-content').removeClass('active');
+
+            // Add 'active' class to the clicked tab and the corresponding tab content
+            $(this).parent().addClass('active');
+            var tabContent = $(this).data('tab');
+            $('#' + tabContent).addClass('active');
+        });
+
+        // Image preview before uploading
+        $('#image').change(function() {
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                $('#image-preview').html('<img src="' + e.target.result + '" alt="Image Preview" style="max-width: 200px; max-height: 150px;">');
+            }
+            reader.readAsDataURL(this.files[0]);
+        });
+
+        // Handle form submission with AJAX for creating ticket
+        $('#create-ticket-form').on('submit', function(e) {
+            e.preventDefault(); // Prevent default form submission
+
+            var formData = new FormData(this);
+
+            $.ajax({
+                url: $(this).attr('action'),
+                method: $(this).attr('method'),
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    UIkit.modal('#createTicketModal').hide();
+                    $('#create-ticket-form')[0].reset(); // Reset the form
+                    $('#image-preview').html(''); // Reset image preview
+                    toastr.success('Your Ticket Sent Successfully');
+                },
+                error: function(response) {
+                    UIkit.modal('#createTicketModal').hide();
+                    $('#create-ticket-form')[0].reset(); // Reset the form
+                    $('#image-preview').html(''); // Reset image preview
+                    toastr.error('There was an error creating the ticket')
+                }
+            });
+        });
+
+        // When the "My Tickets" tab is clicked, fetch and display tickets
+        $('ul.custom-tab-links li:nth-child(2) a').on('click', function(e) {
+            e.preventDefault();
+
+            // Clear the loading message
+            $('#tickets-list').html('<p>Loading tickets...</p>');
+
+            // Fetch tickets via AJAX (GET request)
+            $.ajax({
+                url: '{{ route('user-tickets') }}',
+                method: 'GET', // Use GET request to fetch tickets
+                success: function(response) {
+                    // Clear the loading message
+                    $('#tickets-list').html('');
+
+                    if (response.length > 0) {
+                        // Iterate through the tickets and display them
+                        response.forEach(function(ticket) {
+                            var ticketHtml = '<div class="ticket">';
+                            ticketHtml += '<h4>Ticket #'+ ticket.id +'</h4>';
+                            ticketHtml += '<p><strong>Category:</strong> ' + ticket.category.name + '</p>'; // Category ID
+                            ticketHtml += '<p><strong>Message:</strong> ' + ticket.message + '</p>';
+                            ticketHtml += '<p><strong>Status:</strong> ' + ticket.status + '</p>';
+                            ticketHtml += '<p><strong>Response:</strong> ' + (ticket.response ? ticket.response : 'No response yet.') + '</p>';
+                            ticketHtml += '</div>';
+
+                            $('#tickets-list').append(ticketHtml);
+                        });
+                    } else {
+                        $('#tickets-list').html('<p>No tickets found.</p>');
+                    }
+                },
+                error: function() {
+                    $('#tickets-list').html('<p>Error loading tickets.</p>');
+                }
+            });
+        });
+    });
+</script>
+
+@section('script')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+@endsection
+
 
 @yield('scripts')
 

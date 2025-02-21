@@ -18,8 +18,11 @@ class ApiItemsController extends Controller
     public function edit()
     {
         $users = ClientStore::where('status', 'active')->get();
-        return view('admin.api-items.edit', compact('users'));
+        $items = Item::all(); // Fetch all items (or filter as needed)
+
+        return view('admin.api-items.edit', compact('users', 'items'));
     }
+
 
     public function fetchSubItem(Request $request)
     {
@@ -69,7 +72,7 @@ class ApiItemsController extends Controller
             'secret_key' => $validated['source_key'],
             'domain' => $domain,
             'status' => 'active',
-            'name' => 'EkoStore',
+            'key_name' => 'ZDDK',
         ])->first();
         // Check if the source key matches a ClientStore's secret_key
         if ($clientStore == null) {
@@ -119,7 +122,7 @@ class ApiItemsController extends Controller
             'secret_key' => $validated['source_key'],
             'domain' => $domain,
             'status' => 'active',
-            'name' => 'EkoStore',
+            'key_name' => 'ZDDK',
         ])->first();
 
         if ($clientStore) {
@@ -174,13 +177,11 @@ class ApiItemsController extends Controller
                     $apiUrl = "{$client->domain}/client/api/products";
                     $apiToken = $client->secret_key; // Replace with your actual API token
 
-//                    dd($apiUrl);
-
                     // Fetch data from the EkoStore API
                     $response = Http::withHeaders(['api-token' => $apiToken])->get($apiUrl);
 
                     if ($response->failed()) {
-                        return response()->json(['success' => false, 'message' => 'Failed to fetch data from the EkoStore API'], 500);
+                        return response()->json(['success' => false, 'message' => 'Failed to fetch data from the ZDDK API'], 500);
                     }
 
                     $products = $response->json();
@@ -201,39 +202,17 @@ class ApiItemsController extends Controller
                                     'name' => $product['name'],
                                     'description' => implode(', ', $product['params']),
                                     'price' => $product['price'],
-                                    'amount' => $product['qty_values']['min'] ?? 1,
+                                    'original_price' => $product['price'],
+                                    'amount' => 1,
                                     'product_type' => $product['product_type'] ?? "package",
                                     'is_custom' => $product['product_type'] == 'amount' ? 1 : 0,
                                     'minimum_amount' => $product['qty_values']['min'] ?? 1,
                                     'max_amount' => $product['qty_values']['max'] ?? 1,
+                                    'qty_values' => (!isset($product['qty_values']['max']) && !isset($product['qty_values']['min'])) ? json_encode($product['qty_values']) : null,
                                 ];
                             })->toArray(),
                         ];
                     }
-//                    foreach ($products as $product) {
-//
-//                        $items[] = [
-//                            'id' => $product['id'],
-//                            'name' => $product['name'],
-//                            'category' => $product['category_name'] ?? 'Out Source',
-//                            'category_img' => $product['category_img'] ?? null,
-//                            'description' => implode(', ', $product['params']),
-//                            'price' => $product['price'],
-//                            'amount' => $product['qty_values']['min'] ?? 0,
-//                            'sub_items' => [
-//                                [
-//                                    'id' => $product['id'],
-//                                    'name' => $product['name'],
-//                                    'description' => implode(', ', $product['params']),
-//                                    'price' => $product['price'],
-//                                    'amount' => $product['qty_values']['min'] ?? 0,
-//                                    'is_custom' => $product['product_type'] == 'amount' ? 1 : 0,
-//                                    'minimum_amount' => $product['qty_values']['min'] ?? null,
-//                                    'max_amount' => $product['qty_values']['max'] ?? null,
-//                                ],
-//                            ],
-//                        ];
-//                    }
 
                     return response()->json(['items' => $items]);
                 }
@@ -257,6 +236,8 @@ class ApiItemsController extends Controller
             'sub_items.*.name' => 'required|string',
             'sub_items.*.description' => 'nullable|string',
             'sub_items.*.amount' => 'required|numeric',
+            'sub_items.*.qty_values' => 'nullable',
+            'sub_items.*.product_type' => 'nullable',
             'sub_items.*.price' => 'required|numeric',
             'sub_items.*.external_id' => 'required|string',
 
@@ -265,7 +246,7 @@ class ApiItemsController extends Controller
             'sub_items.*.max_amount' => 'nullable|integer',
 
 //            'sub_items.*.user_id' => 'nullable|integer',
-            'sub_items.*.item_id' => 'required|string',
+            'sub_items.*.item_id' => 'nullable|string',
             'sub_items.*.item_name' => 'required|string',
 
             'sub_items.*.item_ar_name' => 'nullable|string',
@@ -277,7 +258,10 @@ class ApiItemsController extends Controller
             'client_id' => 'nullable|integer',
             'sub_items.*.category' => 'nullable|string',
             'sub_items.*.image' => 'nullable|string',
+            'country' => 'nullable|string',
+            'selected_item' => 'nullable|string',
         ]);
+
 
         // Ensure the user is authenticated
         $user = Auth::user();
@@ -288,11 +272,14 @@ class ApiItemsController extends Controller
 
         $importedItems = [];
         $client_id = $validated['client_id'];
+        $country = $validated['country'] ?? 'Global';
 
 
         foreach ($validated['sub_items'] as $subItemData) {
 
             $category_name = $subItemData['category'] ?? 'OUT-SOURCE';
+
+
             // Get or create the OUT-SOURCE category for the user
             $category = Category::firstOrCreate(
                 ['name' => $category_name, 'user_id' => $user->id]
@@ -306,12 +293,33 @@ class ApiItemsController extends Controller
             $itemDesc = $subItemData['description'] ?? "";
             $itemArName = $subItemData['ar_name'] ?? "";
             $itemArDesc = $subItemData['ar_description'] ?? "";
+            $parentItem = null;
 
 
-            $parentItem = Item::where(function ($query) use ($itemExternalId, $itemName, $user) {
-                $query->where('external_id', $itemExternalId)
-                    ->orWhere('name', $itemName);
-            })->first();
+//            $parentItem = Item::where(function ($query) use ($itemExternalId, $itemName, $user) {
+//                $query->where('external_id', $itemExternalId)
+//                    ->orWhere('name', $itemName);
+//            })->first();
+
+            if (!empty($validated['selected_item'])) {
+                $parentItem = Item::find($validated['selected_item']); // Use the selected item
+            }
+            else{
+                $parentItem = Item::where(function ($query) use ($itemExternalId, $itemName, $user) {
+                    $query->where('external_id', $itemExternalId)
+                        ->orWhere('name', $itemName);
+                })->first();
+            }
+
+//            // ✅ Step 3: If neither "selected_item" nor "item_id" is available, search for an existing item or create a new one
+//            if (!$parentItem) {
+//                $parentItem = Item::where(function ($query) use ($itemExternalId, $itemName, $user) {
+//                    $query->where('external_id', $itemExternalId);
+//                    if ($itemName) {
+//                        $query->orWhere('name', $itemName);
+//                    }
+//                })->first();
+//            }
 
             // If the item does not exist, create it
             if (!$parentItem) {
@@ -335,6 +343,12 @@ class ApiItemsController extends Controller
                 ->where('item_id', $parentItem->id)
                 ->first();
 
+//            dd($subItemData['qty_values']);
+
+            $qty_list = $subItemData['product_type'] == "specificPackage" && !empty($subItemData['qty_values'])
+                ? array_values(array_filter(json_decode($subItemData['qty_values'], true), fn($value) => !is_null($value)))
+                : null;
+
             // If the sub-item does not exist, create it
             if (!$subItem) {
                 SubItem::create([
@@ -350,20 +364,22 @@ class ApiItemsController extends Controller
                     'external_id' => $subItemData['external_id'],
                     'external_user_id' => $subItemData['user_id'] ?? Auth::user()->id,
                     'external_item_id' => $subItemData['item_id'],
-                    'product_type' => $subItemData['is_custom'] ? "amount" : "package",
-                    'domain' => $domain,
+                    'product_type' => $subItemData['product_type'] ?? "package",
+                    'qty_list' =>  $qty_list ? json_encode($qty_list) : null,
+                    'domain' => $request->input('domain'),
                     'client_store_id' => $client_id,
+                    'country' => $validated['country'] ?? 'Global',
                     'out_flag' => $clientStore != null ? 1 : 0,
                 ]);
             }
 
             $categoryImage = $subItemData['image'] ?? null;
             // Attach category image if available
-            if ($categoryImage && !$parentItem->getFirstMediaUrl('images')) {
+            if ($categoryImage && !$parentItem->hasMedia('images')) {
                 $parentItem->addMediaFromUrl($categoryImage)->toMediaCollection('images');
             }
 
-            if ($categoryImage && !$parentItem->getFirstMediaUrl('front_image')) {
+            if ($categoryImage && !$parentItem->hasMedia('front_image')) {
                 $parentItem->addMediaFromUrl($categoryImage)->toMediaCollection('front_image');
             }
         }
